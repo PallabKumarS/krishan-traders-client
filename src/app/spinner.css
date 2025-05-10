@@ -1,0 +1,115 @@
+/* Wrapper for centering */
+.bulb-wrapper {
+  width: 150px;
+  height: 250px;
+  position: relative;
+  margin: 2rem auto;
+}
+
+/* Bulb body */
+.bulb {
+  width: 80px;
+  height: 110px;
+  background: gray;
+  border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: flicker 5s infinite ease-in-out;
+  box-shadow: 0 0 10px transparent;
+}
+
+/* Light highlight */
+.bulb::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  width: 12px;
+  height: 30px;
+  background: white;
+  opacity: 0.4;
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+
+/* Bulb neck / base connection rings */
+.base {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 15px;
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.base::before,
+.base::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 8px;
+  background: #1e293b;
+  border-radius: 4px;
+  left: 0;
+}
+
+.base::before {
+  top: -10px;
+}
+
+.base::after {
+  top: 15px;
+}
+
+/* Light rays */
+.ray {
+  width: 4px;
+  height: 20px;
+  background: hsl(45, 100%, 65%);
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform-origin: bottom center;
+  border-radius: 2px;
+  opacity: 0.8;
+  animation: flicker 5s infinite ease-in-out;
+}
+
+.ray:nth-child(3) { transform: rotate(0deg) translateY(-60px); }
+.ray:nth-child(4) { transform: rotate(30deg) translateY(-60px); }
+.ray:nth-child(5) { transform: rotate(60deg) translateY(-60px); }
+.ray:nth-child(6) { transform: rotate(90deg) translateY(-60px); }
+.ray:nth-child(7) { transform: rotate(120deg) translateY(-60px); }
+.ray:nth-child(8) { transform: rotate(150deg) translateY(-60px); }
+.ray:nth-child(9) { transform: rotate(180deg) translateY(-60px); }
+.ray:nth-child(10) { transform: rotate(210deg) translateY(-60px); }
+.ray:nth-child(11) { transform: rotate(240deg) translateY(-60px); }
+.ray:nth-child(12) { transform: rotate(270deg) translateY(-60px); }
+.ray:nth-child(13) { transform: rotate(300deg) translateY(-60px); }
+.ray:nth-child(14) { transform: rotate(330deg) translateY(-60px); }
+
+/* Flicker effect */
+@keyframes flicker {
+  0%, 100% {
+    background: gray;
+    box-shadow: 0 0 10px transparent;
+    opacity: 1;
+  }
+  30% {
+    background: hsl(45, 100%, 65%);
+    box-shadow: 0 0 25px hsla(45, 100%, 65%, 0.8);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  70% {
+    background: hsl(45, 100%, 65%);
+    box-shadow: 0 0 15px hsla(45, 100%, 65%, 0.5);
+    opacity: 0.9;
+  }
+}
