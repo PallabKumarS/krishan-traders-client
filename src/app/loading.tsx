@@ -1,5 +1,5 @@
-import LoadingC from "@/components/ui/loading";
+import LoadingComponent from "@/components/ui/LoadingComponent";
 
 export default function Loading() {
-  return <LoadingC />;
+  return <LoadingComponent />;
 }
