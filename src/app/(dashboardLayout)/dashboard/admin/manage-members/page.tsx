@@ -1,3 +1,4 @@
+import UserManagement from "@/components/modules/UserManagement";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -5,20 +6,22 @@ export const metadata: Metadata = {
   description: "Add and manage team members for Krishan Traders",
 };
 
-const ManageMembersPage = () => {
+const ManageMembersPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, unknown>>;
+}) => {
+  const query = await searchParams;
+
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-6">Manage Team Members</h1>
       <p className="text-muted-foreground mb-8">
         Add, edit, or remove team members and manage their access permissions.
       </p>
-      
+
       {/* Members list will be added here */}
-      <div className="bg-card p-6 rounded-lg shadow">
-        <p className="text-center text-muted-foreground">
-          Team members management interface will be implemented here.
-        </p>
-      </div>
+      <UserManagement query={query} />
     </div>
   );
 };

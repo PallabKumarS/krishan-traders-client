@@ -1,3 +1,4 @@
+import { TStock } from "./stock.types";
 import { TUser } from "./user.types";
 
 export type TRecord = {
@@ -6,7 +7,8 @@ export type TRecord = {
   soldDate?: string;
   stockDate?: string;
   quantity: number;
-  stockId: string;
+  stockId: TStock;
+  status: "sold" | "stocked" | "pending" | "rejected" | "accepted";
   _id: string;
   createdAt: Date;
   updatedAt: Date;

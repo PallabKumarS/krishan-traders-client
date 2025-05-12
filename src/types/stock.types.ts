@@ -16,4 +16,9 @@ export type TStock = {
   updatedAt: Date;
 };
 
-export type TStockStatus = "pending" | "accepted" | "sold" | "expired";
+export type TStockStatus =
+  | "pending"
+  | "accepted"
+  | "sold"
+  | "expired"
+  | "rejected";

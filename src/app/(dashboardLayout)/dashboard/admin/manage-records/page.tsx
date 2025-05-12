@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 const ManageRecordsPage = () => {
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-6">Transaction Records</h1>
       <p className="text-muted-foreground mb-8">
         View, filter, and export transaction records for your business.

@@ -67,7 +67,7 @@ export const getToken = async () => {
 
 type DecodedUser = {
   id: string;
-  role: "admin" | "buyer" | "seller";
+  role: "admin" | "buyer" | "staff";
   email: string;
   iat: number;
   exp: number;

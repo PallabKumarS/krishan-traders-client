@@ -61,21 +61,6 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user?.email ? (
             <>
-              {user?.role !== "guest" && (
-                <Link
-                  href="/dashboard/manage-stock"
-                  className="hidden sm:flex items-center gap-2 
-                    bg-primary/10 text-primary 
-                    hover:bg-primary/20 
-                    px-3 py-2 
-                    rounded-full 
-                    transition-colors"
-                >
-                  <PlusCircle className="w-5 h-5" />
-                  Post Idea
-                </Link>
-              )}
-
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none">
                   <Avatar className="ring-2 ring-primary/30 hover:ring-primary/50 transition-all">
@@ -97,16 +82,16 @@ export default function Navbar() {
                       href={`/dashboard/profile`}
                       className="cursor-pointer flex items-center gap-3"
                     >
-                      <Home className="w-4 h-4" /> Dashboard
+                      <Home className="w-4 h-4" /> Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link
-                      href={`/dashboard/manage-stock`}
+                      href={`/dashboard/admin/manage-stocks`}
                       className="cursor-pointer flex items-center gap-3"
                     >
-                      <FileDiffIcon className="w-4 h-4" /> Dashboard
+                      <FileDiffIcon className="w-4 h-4" /> Stock Management
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

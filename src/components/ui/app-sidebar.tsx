@@ -9,12 +9,12 @@ import {
   FileSearch,
   ChevronRight,
   ChevronDown,
-  LightbulbIcon,
   UserCheck,
   UserLockIcon,
   Settings2Icon,
   ColumnsSettings,
   Leaf,
+  FileAxis3dIcon,
 } from "lucide-react";
 
 import {
@@ -58,31 +58,26 @@ const adminRoutes = [
   {
     title: "User Management",
     icon: Users,
-    href: "/dashboard/admin/user-management",
+    href: "/dashboard/admin/manage-members",
   },
   {
-    title: "Idea Management",
-    icon: LightbulbIcon,
-    href: "/dashboard/admin/idea-management",
+    title: "Stock Management",
+    icon: FileAxis3dIcon,
+    href: "/dashboard/admin/manage-stocks",
   },
   {
-    title: "Category Management",
+    title: "Record Management",
     icon: FileSearch,
-    href: "/dashboard/admin/category-management",
+    href: "/dashboard/admin/manage-records",
   },
 ];
 
 // member routes
-const sellerRoutes = [
+const staffRoutes = [
   {
-    title: "Manage Ideas",
+    title: "Add Or Sell Stock",
     icon: ColumnsSettings,
-    href: "/dashboard/member/manage-idea",
-  },
-  {
-    title: "Payment History",
-    icon: FileSearch,
-    href: "/dashboard/member/payments",
+    href: "/dashboard/staff/manage-stocks",
   },
 ];
 
@@ -156,7 +151,11 @@ export function AppSidebar() {
                     href="/"
                     className="flex items-center gap-3 hover:scale-105 transition-transform"
                   >
-                    <Leaf className="text-primary h-10 w-10" fontSize={20} size={20} />
+                    <Leaf
+                      className="text-primary h-10 w-10"
+                      fontSize={20}
+                      size={20}
+                    />
                     <span
                       className="text-gradient"
                       style={{ fontSize: "26px" }}
@@ -188,19 +187,20 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               {renderMenuItems(adminRoutes)}
+              {renderMenuItems(staffRoutes)}
             </SidebarGroupContent>
           </SidebarGroup>
         )}
 
         {/* Member Panel */}
-        {user?.role === "seller" && (
+        {user?.role === "staff" && (
           <SidebarGroup>
             <SidebarGroupLabel className="flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-muted-foreground" />
-              Seller
+              Staff
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              {renderMenuItems(sellerRoutes)}
+              {renderMenuItems(staffRoutes)}
             </SidebarGroupContent>
           </SidebarGroup>
         )}

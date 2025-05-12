@@ -47,7 +47,7 @@ export const registerUser = async (data: {
   name: string;
   email: string;
   password: string;
-  role: "seller" | "admin" | "guest";
+  role: "staff" | "admin" | "guest";
 }) => {
   try {
     const res = await fetch(`${process.env.BASE_API}/auth/register`, {
