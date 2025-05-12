@@ -10,11 +10,11 @@ import {
   ChevronRight,
   ChevronDown,
   LightbulbIcon,
-  Lightbulb,
   UserCheck,
   UserLockIcon,
   Settings2Icon,
   ColumnsSettings,
+  Leaf,
 } from "lucide-react";
 
 import {
@@ -47,11 +47,6 @@ const items = [
     href: "/",
   },
   {
-    title: "All Ideas",
-    icon: Lightbulb,
-    href: "/ideas",
-  },
-  {
     title: "Profile",
     icon: User,
     href: `/dashboard/profile`,
@@ -78,7 +73,7 @@ const adminRoutes = [
 ];
 
 // member routes
-const memberRoutes = [
+const sellerRoutes = [
   {
     title: "Manage Ideas",
     icon: ColumnsSettings,
@@ -156,17 +151,17 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem key="logo">
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild className="h-20">
                   <Link
                     href="/"
                     className="flex items-center gap-3 hover:scale-105 transition-transform"
                   >
-                    <LightbulbIcon className="text-primary" />
+                    <Leaf className="text-primary h-10 w-10" fontSize={20} size={20} />
                     <span
                       className="text-gradient"
                       style={{ fontSize: "26px" }}
                     >
-                      Eco Sphere
+                      Krishan <br /> Traders
                     </span>
                   </Link>
                 </SidebarMenuButton>
@@ -205,7 +200,7 @@ export function AppSidebar() {
               Seller
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              {renderMenuItems(memberRoutes)}
+              {renderMenuItems(sellerRoutes)}
             </SidebarGroupContent>
           </SidebarGroup>
         )}

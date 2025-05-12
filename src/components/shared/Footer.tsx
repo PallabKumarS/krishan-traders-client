@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  ShoppingCart,
   Mail,
   Phone,
   MapPin,
   Facebook,
   Instagram,
   X,
-  LightbulbIcon,
+  Leaf,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,10 +15,7 @@ import { useRouter } from "next/navigation";
 const Footer = () => {
   const router = useRouter();
 
-  const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About Us" },
-  ];
+  const navLinks = [{ href: "/", label: "Home" }];
 
   const socialLinks = [
     { href: "#", icon: Facebook, label: "Facebook" },
@@ -39,14 +35,14 @@ const Footer = () => {
               }}
               className="transition-transform hover:scale-105 flex items-center justify-center"
             >
-              <LightbulbIcon className="mr-2 text-primary size-9" />
+              <Leaf className="mr-2 text-primary size-9" />
               <h1 className="text-2xl font-black">
-                <span className="text-gradient">Eco Sphere</span>
+                <span className="text-gradient">Krishan Traders</span>
               </h1>
             </div>
             <p className="text-muted-foreground">
-              EcoSphere is a platform dedicated to promoting sustainable ideas
-              and eco-friendly practices.
+              Your trusted partner for quality fertilizers and agricultural
+              supplies since 1995.
             </p>
           </div>
 
@@ -64,14 +60,6 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
-              <li>
-                <Link
-                  href="/dashboard/member/manage-idea"
-                  className="text-muted-foreground hover:text-primary hover:underline decoration-primary decoration-2 underline-offset-4 transition-all"
-                >
-                  Add Your Idea
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -82,19 +70,19 @@ const Footer = () => {
               <li className="flex items-center space-x-2 text-muted-foreground group cursor-pointer justify-center">
                 <Mail className="w-4 h-4 group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-primary group-hover:underline decoration-primary decoration-2 underline-offset-4 transition-all">
-                  contact@eco-sphere.com
+                  contact@krishantraders.com
                 </span>
               </li>
               <li className="flex items-center space-x-2 text-muted-foreground group cursor-pointer justify-center">
                 <Phone className="w-4 h-4 group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-primary group-hover:underline decoration-primary decoration-2 underline-offset-4 transition-all">
-                  +1 (555) 123-4567
+                  +91 9876543210
                 </span>
               </li>
               <li className="flex items-center space-x-2 text-muted-foreground group cursor-pointer justify-center">
                 <MapPin className="w-4 h-4 group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-primary group-hover:underline decoration-primary decoration-2 underline-offset-4 transition-all">
-                  123 Green Lane, Eco City
+                  123 Farm Road, Agricultural District
                 </span>
               </li>
             </ul>
@@ -115,19 +103,13 @@ const Footer = () => {
                 </Link>
               ))}
             </div>
-            <div className="mt-4 flex justify-center items-center space-x-2">
-              <ShoppingCart className="w-5 h-5 text-primary" />
-              <span className="text-sm text-muted-foreground">
-                Secure Shopping
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Bottom Section */}
         <div className="mt-16 pt-8 border-t">
           <div className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Eco Sphere. All rights reserved.
+            © {new Date().getFullYear()} Krishan Traders. All rights reserved.
           </div>
         </div>
       </div>

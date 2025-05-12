@@ -1,115 +1,176 @@
 /* Wrapper for centering */
-.bulb-wrapper {
+.leaf-wrapper {
   width: 150px;
   height: 250px;
   position: relative;
   margin: 2rem auto;
 }
 
-/* Bulb body */
-.bulb {
-  width: 80px;
-  height: 110px;
-  background: gray;
-  border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+/* Main leaf body */
+.leaf {
+  width: 60px;
+  height: 90px;
+  background: var(--primary);
+  border-radius: 50% 0 50% 0;
   position: absolute;
-  top: 10px;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  animation: pulse 3s infinite ease-in-out;
+  box-shadow: 0 0 15px transparent;
+}
+
+/* Leaf vein */
+.leaf::after {
+  content: "";
+  position: absolute;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  animation: flicker 5s infinite ease-in-out;
-  box-shadow: 0 0 10px transparent;
-}
-
-/* Light highlight */
-.bulb::after {
-  content: '';
-  position: absolute;
-  top: 20%;
-  left: 20%;
-  width: 12px;
-  height: 30px;
-  background: white;
-  opacity: 0.4;
-  border-radius: 50%;
-  transform: rotate(-20deg);
-}
-
-/* Bulb neck / base connection rings */
-.base {
-  position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 15px;
-  background: #1e293b;
-  border-radius: 4px;
-}
-
-.base::before,
-.base::after {
-  content: '';
-  position: absolute;
-  width: 40px;
-  height: 8px;
-  background: #1e293b;
-  border-radius: 4px;
-  left: 0;
-}
-
-.base::before {
-  top: -10px;
-}
-
-.base::after {
-  top: 15px;
-}
-
-/* Light rays */
-.ray {
   width: 4px;
-  height: 20px;
-  background: hsl(45, 100%, 65%);
+  height: 90px;
+  background: var(--accent);
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+/* Stem */
+.stem {
   position: absolute;
-  top: -30px;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 80px;
+  background: var(--chart-3);
+  border-radius: 4px;
+}
+
+.stem::before,
+.stem::after {
+  content: "";
+  position: absolute;
+  background: var(--chart-3);
+  border-radius: 4px;
+}
+
+.stem::before {
+  width: 4px;
+  height: 30px;
+  top: 20px;
+  left: -10px;
+  transform: rotate(-45deg);
+}
+
+.stem::after {
+  width: 4px;
+  height: 30px;
+  top: 20px;
+  right: -10px;
+  transform: rotate(45deg);
+}
+
+/* Small leaves around the main leaf */
+.small-leaf {
+  width: 30px;
+  height: 40px;
+  background: var(--secondary);
+  position: absolute;
+  top: 30px;
   left: 50%;
   transform-origin: bottom center;
-  border-radius: 2px;
+  border-radius: 50% 0 50% 0;
   opacity: 0.8;
-  animation: flicker 5s infinite ease-in-out;
+  animation: sway 4s infinite ease-in-out;
 }
 
-.ray:nth-child(3) { transform: rotate(0deg) translateY(-60px); }
-.ray:nth-child(4) { transform: rotate(30deg) translateY(-60px); }
-.ray:nth-child(5) { transform: rotate(60deg) translateY(-60px); }
-.ray:nth-child(6) { transform: rotate(90deg) translateY(-60px); }
-.ray:nth-child(7) { transform: rotate(120deg) translateY(-60px); }
-.ray:nth-child(8) { transform: rotate(150deg) translateY(-60px); }
-.ray:nth-child(9) { transform: rotate(180deg) translateY(-60px); }
-.ray:nth-child(10) { transform: rotate(210deg) translateY(-60px); }
-.ray:nth-child(11) { transform: rotate(240deg) translateY(-60px); }
-.ray:nth-child(12) { transform: rotate(270deg) translateY(-60px); }
-.ray:nth-child(13) { transform: rotate(300deg) translateY(-60px); }
-.ray:nth-child(14) { transform: rotate(330deg) translateY(-60px); }
+.small-leaf:nth-child(3) {
+  transform: rotate(0deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-1);
+}
+.small-leaf:nth-child(4) {
+  transform: rotate(30deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-2);
+}
+.small-leaf:nth-child(5) {
+  transform: rotate(60deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-3);
+}
+.small-leaf:nth-child(6) {
+  transform: rotate(90deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-1);
+}
+.small-leaf:nth-child(7) {
+  transform: rotate(120deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-2);
+}
+.small-leaf:nth-child(8) {
+  transform: rotate(150deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-3);
+}
+.small-leaf:nth-child(9) {
+  transform: rotate(180deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-1);
+}
+.small-leaf:nth-child(10) {
+  transform: rotate(210deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-2);
+}
+.small-leaf:nth-child(11) {
+  transform: rotate(240deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-3);
+}
+.small-leaf:nth-child(12) {
+  transform: rotate(270deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-1);
+}
+.small-leaf:nth-child(13) {
+  transform: rotate(300deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-2);
+}
+.small-leaf:nth-child(14) {
+  transform: rotate(330deg) translateY(-60px) rotate(45deg);
+  background: var(--chart-3);
+}
 
-/* Flicker effect */
-@keyframes flicker {
-  0%, 100% {
-    background: gray;
+/* Pulse effect for main leaf */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(45deg) scale(1);
     box-shadow: 0 0 10px transparent;
-    opacity: 1;
   }
-  30% {
-    background: hsl(45, 100%, 65%);
-    box-shadow: 0 0 25px hsla(45, 100%, 65%, 0.8);
-    opacity: 1;
+  50% {
+    transform: translateX(-50%) rotate(45deg) scale(1.1);
+    box-shadow: 0 0 20px var(--primary);
   }
-  60% {
-    opacity: 0.7;
+}
+
+/* Swaying leaves effect */
+@keyframes sway {
+  0%,
+  100% {
+    transform-origin: bottom center;
+    transform: rotate(var(--rotation)) translateY(-60px) rotate(45deg);
   }
-  70% {
-    background: hsl(45, 100%, 65%);
-    box-shadow: 0 0 15px hsla(45, 100%, 65%, 0.5);
-    opacity: 0.9;
+  25% {
+    transform: rotate(var(--rotation)) translateY(-60px) rotate(50deg);
   }
+  75% {
+    transform: rotate(var(--rotation)) translateY(-60px) rotate(40deg);
+  }
+}
+
+/* Add a soil base */
+.leaf-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 20px;
+  background: var(--chart-4);
+  border-radius: 50%;
+  z-index: -1;
 }

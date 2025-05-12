@@ -3,6 +3,7 @@
 
 import { getValidToken } from "@/lib/verifyToken";
 import { cookies } from "next/headers";
+import { FieldValues } from "react-hook-form";
 
 export const setCookies = async (accessToken: string, refreshToken: string) => {
   (await cookies()).set("accessToken", accessToken);
@@ -46,6 +47,7 @@ export const registerUser = async (data: {
   name: string;
   email: string;
   password: string;
+  role: "seller" | "admin" | "guest";
 }) => {
   try {
     const res = await fetch(`${process.env.BASE_API}/auth/register`, {
@@ -58,6 +60,8 @@ export const registerUser = async (data: {
 
     const resData = await res.json();
 
+    console.log(resData);
+
     return resData;
   } catch (error) {
     return error;
@@ -65,7 +69,7 @@ export const registerUser = async (data: {
 };
 
 // change password
-export const passwordChange = async (userData: any) => {
+export const passwordChange = async (userData: FieldValues) => {
   try {
     const res = await fetch(`${process.env.BASE_API}/auth/change-password`, {
       method: "PATCH",

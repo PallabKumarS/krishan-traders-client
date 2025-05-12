@@ -1,17 +1,15 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   LogOut,
   Menu,
   X,
   Home,
-  List,
-  Info,
   PlusCircle,
   User,
-  TextIcon,
+  Leaf,
+  FileDiffIcon,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -35,12 +33,6 @@ export default function Navbar() {
   const router = useRouter();
   const { user, logout } = useAppContext();
 
-  const navItems = [
-    { href: "/ideas", label: "All Ideas", icon: List },
-    { href: "/about", label: "About", icon: Info },
-    { href: "/blog", label: "Blog", icon: TextIcon },
-  ];
-
   const handleLogout = () => {
     logout();
 
@@ -54,44 +46,24 @@ export default function Navbar() {
       <nav className="max-w-[90%] mx-auto px-4 flex items-center justify-center lg:justify-between gap-4 flex-wrap lg:flex-nowrap">
         {/* Logo with hover effect */}
         <div
-          onClick={() => router.push("/")}
-          className="flex-shrink-0 cursor-pointer group"
+          onClick={() => {
+            router.push("/");
+          }}
+          className="transition-transform hover:scale-105 flex items-center justify-center"
         >
-          <h1 className="text-2xl font-black transition-all duration-300 group-hover:scale-105">
-            <span className="text-gradient">Eco Sphere</span>
+          <Leaf className="mr-2 text-primary size-9" />
+          <h1 className="text-2xl font-black">
+            <span className="text-gradient">Krishan Traders</span>
           </h1>
-        </div>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="
-                flex items-center gap-2 
-                text-muted-foreground 
-                hover:text-primary 
-                transition-colors 
-                group
-                px-3 py-2 
-                rounded-full 
-                hover:bg-accent/20
-              "
-            >
-              <item.icon className="w-5 h-5 group-hover:rotate-6 transition-transform" />
-              {item.label}
-            </Link>
-          ))}
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-3">
           {user?.email ? (
             <>
-              {user?.role === "seller" && (
+              {user?.role !== "guest" && (
                 <Link
-                  href="/dashboard/member/manage-idea"
+                  href="/dashboard/manage-stock"
                   className="hidden sm:flex items-center gap-2 
                     bg-primary/10 text-primary 
                     hover:bg-primary/20 
@@ -126,6 +98,15 @@ export default function Navbar() {
                       className="cursor-pointer flex items-center gap-3"
                     >
                       <Home className="w-4 h-4" /> Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/dashboard/manage-stock`}
+                      className="cursor-pointer flex items-center gap-3"
+                    >
+                      <FileDiffIcon className="w-4 h-4" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -175,57 +156,6 @@ export default function Navbar() {
           </Button>
         </div>
       </nav>
-
-      {/* Mobile Navigation Menu */}
-      {isMenuOpen && (
-        <AnimatePresence>
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-            className="md:hidden border-t"
-          >
-            <div className="container mx-auto px-4 py-4 space-y-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="
-                    flex items-center gap-3 
-                    text-muted-foreground 
-                    hover:text-primary 
-                    transition-colors 
-                    py-2 
-                    px-3 
-                    rounded-full 
-                    hover:bg-accent/20
-                  "
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              ))}
-              {user?.role === "seller" && (
-                <Link
-                  href="/dashboard/member/manage-idea"
-                  className="hidden sm:flex items-center gap-2 
-                    bg-primary/10 text-primary 
-                    hover:bg-primary/20 
-                    px-3 py-2 
-                    rounded-full 
-                    transition-colors"
-                >
-                  <PlusCircle className="w-5 h-5" />
-                  Post Idea
-                </Link>
-              )}
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      )}
     </header>
   );
 }

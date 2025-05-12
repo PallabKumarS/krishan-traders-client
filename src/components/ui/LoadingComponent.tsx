@@ -4,20 +4,17 @@ import "../../app/spinner.css";
 const LoadingComponent = () => {
   return (
     <div className="h-screen w-full flex justify-center items-center">
-      <div className="bulb-wrapper relative">
-        {/* Glow Effect */}
-        <div className="glow"></div>
+      <div className="leaf-wrapper relative">
+        {/* Main Leaf */}
+        <div className="leaf"></div>
 
-        {/* Bulb */}
-        <div className="bulb"></div>
-
-        {/* Rays */}
+        {/* Small Leaves */}
         {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className={`ray ray-${i}`}></div>
+          <div key={i} className="small-leaf"></div>
         ))}
 
-        {/* Bulb neck rings */}
-        <div className="base"></div>
+        {/* Stem */}
+        <div className="stem"></div>
       </div>
     </div>
   );
