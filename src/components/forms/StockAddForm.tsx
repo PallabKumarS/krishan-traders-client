@@ -24,9 +24,10 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useAppContext } from "@/providers/ContextProvider";
-import { addStock } from "@/services/StockService";
 import ButtonLoader from "../shared/ButtonLoader";
 import { TStock } from "@/types";
+import { addStock } from "@/services/RecordService";
+import { updateStock } from "@/services/StockService";
 
 const formSchema = z.object({
   productName: z.string().min(1).min(0),
@@ -63,17 +64,19 @@ export default function StockAddForm({
     setLoading(true);
     const toastId = toast.loading("Submitting...");
 
-    const stocKData = {
+    const stock = {
       ...values,
       quantity: Number(values.quantity),
-      stockDate: new Date(),
+      stockedDate: new Date(),
       stockedBy: user?._id,
     };
 
-    // return console.log(stocKData);
+    // return console.log(stock);
 
     try {
-      const res = await addStock(stocKData);
+      const res = edit
+        ? await addStock(stock)
+        : updateStock(stockData?._id as string, stock);
 
       if (res.success) {
         toast.success(res.message, { id: toastId });

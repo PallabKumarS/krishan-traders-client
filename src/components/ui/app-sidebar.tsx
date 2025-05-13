@@ -56,26 +56,26 @@ const items = [
 // admin routes
 const adminRoutes = [
   {
-    title: "User Management",
+    title: "Users",
     icon: Users,
     href: "/dashboard/admin/manage-members",
   },
   {
-    title: "Stock Management",
+    title: "Stocks",
     icon: FileAxis3dIcon,
     href: "/dashboard/admin/manage-stocks",
   },
   {
-    title: "Record Management",
+    title: "Transactions",
     icon: FileSearch,
-    href: "/dashboard/admin/manage-records",
+    href: "/dashboard/admin/manage-transactions",
   },
 ];
 
 // member routes
 const staffRoutes = [
   {
-    title: "Add Or Sell Stock",
+    title: "Add/Sell Stock",
     icon: ColumnsSettings,
     href: "/dashboard/staff/manage-stocks",
   },

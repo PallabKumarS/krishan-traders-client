@@ -9,20 +9,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Edit, LucideArrowDownSquare, Trash2 } from "lucide-react";
-import { TMeta, TStock } from "@/types";
+import { TMeta, TRecord, TStock } from "@/types";
 import { ManagementTable } from "@/components/shared/ManagementTable";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
-import {
-  acceptStock,
-  deleteStock,
-  getAllStocks,
-} from "@/services/StockService";
+import { deleteStock, getAllStocks } from "@/services/StockService";
 import { useEffect, useState } from "react";
 import LoadingData from "@/components/shared/LoadingData";
 import { PaginationComponent } from "@/components/shared/PaginationComponent";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { acceptAddStock } from "@/services/RecordService";
 
 const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
   const [stocks, setStocks] = useState<TStock[]>([]);
@@ -53,14 +50,14 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
   // Stock manage actions
   const handleStockStatusChange = async (
     id: string,
-    status: TStock["status"]
+    status: TRecord["status"]
   ) => {
     const toastId = toast.loading(
       `${status === "accepted" ? "Accepting" : "Rejecting"} stock request...`
     );
 
     try {
-      const res = await acceptStock(id);
+      const res = await acceptAddStock(id, { status: status });
 
       if (res.success) {
         toast.success(res.message, {
@@ -169,7 +166,7 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
                   onSelect={() =>
                     handleStockStatusChange(
                       row.original._id,
-                      s as TStock["status"]
+                      s as TRecord["status"]
                     )
                   }
                 >

@@ -43,52 +43,6 @@ export const getSingleStock = async (stockId: string) => {
   }
 };
 
-// Add stock
-export const addStock = async (stockData: FieldValues): Promise<any> => {
-  const token = await getValidToken();
-
-  try {
-    const res = await fetch(`${process.env.BASE_API}/stocks/add-stock`, {
-      method: "POST",
-      body: JSON.stringify(stockData),
-      headers: {
-        "Content-type": "application/json",
-        Authorization: token,
-      },
-    });
-
-    revalidateTag("stocks");
-    revalidateTag("records");
-
-    return await res.json();
-  } catch (error: any) {
-    return error;
-  }
-};
-
-// Sell stock
-export const sellStock = async (stockData: FieldValues): Promise<any> => {
-  const token = await getValidToken();
-
-  try {
-    const res = await fetch(`${process.env.BASE_API}/stocks/sell-stock`, {
-      method: "POST",
-      body: JSON.stringify(stockData),
-      headers: {
-        "Content-type": "application/json",
-        Authorization: token,
-      },
-    });
-
-    revalidateTag("stocks");
-    revalidateTag("records");
-
-    return await res.json();
-  } catch (error: any) {
-    return error;
-  }
-};
-
 // Update stock
 export const updateStock = async (
   stockId: string,
@@ -107,30 +61,6 @@ export const updateStock = async (
 
     revalidateTag("stock");
     revalidateTag("stocks");
-
-    return await res.json();
-  } catch (error: any) {
-    return error;
-  }
-};
-
-// accept stock
-export const acceptStock = async (stockId: string): Promise<any> => {
-  const token = await getValidToken();
-  try {
-    const res = await fetch(
-      `${process.env.BASE_API}/stocks/${stockId}/accept-stock`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-
-    revalidateTag("stock");
-    revalidateTag("stocks");
-    revalidateTag("records");
 
     return await res.json();
   } catch (error: any) {

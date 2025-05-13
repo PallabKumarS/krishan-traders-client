@@ -6,10 +6,10 @@ export type TStock = {
   size: string;
   status: TStockStatus;
   quantity: number;
-  stockDate: Date;
+  stockedDate: Date;
   stockedBy: TUser;
   expiryDate: Date;
-  sellDate?: Date;
+  soldDate?: Date;
   soldBy?: TUser;
   _id: string;
   createdAt: Date;

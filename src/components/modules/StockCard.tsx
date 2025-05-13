@@ -10,13 +10,24 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { Calendar, Package, ShoppingCart, Tag } from "lucide-react";
+import {
+  Calendar,
+  Edit,
+  Package,
+  ShoppingCart,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useAppContext } from "@/providers/ContextProvider";
+import { deleteStock } from "@/services/StockService";
+import { Modal } from "../shared/Modal";
+import StockAddForm from "../forms/StockAddForm";
+import ConfirmationBox from "../shared/ConfirmationBox";
 
 interface StockCardProps {
   stock: TStock;
@@ -39,6 +50,28 @@ const StockCard = ({ stock }: StockCardProps) => {
 
   const handleSellStock = (stockId: string) => {
     toast.info(`Selling stock with ID: ${stockId}`);
+  };
+
+  const handleStockDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting stock...");
+
+    try {
+      const res = await deleteStock(id);
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+        });
+      } else {
+        toast.error(res.message, {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error("Error deleting stock", {
+        id: toastId,
+      });
+      console.log(error);
+    }
   };
 
   return (
@@ -80,12 +113,17 @@ const StockCard = ({ stock }: StockCardProps) => {
           <div className="flex items-center text-sm">
             <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>
-              Added: <strong>{format(new Date(stock.stockDate), "PPP")}</strong>
+              Added:{" "}
+              <strong>
+                {stock?.stockedDate
+                  ? format(new Date(stock.stockedDate), "PPP")
+                  : "Not available"}
+              </strong>
             </span>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="mt-auto">
+      <CardFooter className="mt-auto flex gap-4 flex-wrap">
         <Button
           variant="default"
           size="sm"
@@ -95,6 +133,29 @@ const StockCard = ({ stock }: StockCardProps) => {
           <ShoppingCart className="mr-1 h-4 w-4" />
           Sell
         </Button>
+
+        {user?.role == "admin" && (
+          <>
+            <Modal
+              title="Edit Stock Data"
+              trigger={
+                <Button variant="outline" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+              }
+              content={<StockAddForm edit={true} stockData={stock} />}
+            />
+
+            <ConfirmationBox
+              trigger={
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              }
+              onConfirm={() => handleStockDelete(stock._id)}
+            />
+          </>
+        )}
       </CardFooter>
     </Card>
   );

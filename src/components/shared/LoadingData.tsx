@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Lightbulb } from "lucide-react";
+import { Leaf } from "lucide-react";
 
 const LoadingData = () => {
   return (
@@ -31,7 +31,7 @@ const LoadingData = () => {
             repeatType: "loop",
           }}
         >
-          <Lightbulb className="w-24 h-24 text-primary" strokeWidth={1.5} />
+          <Leaf className="w-24 h-24 text-primary" strokeWidth={1.5} />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

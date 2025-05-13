@@ -8,8 +8,7 @@ import { TMeta, TStock } from "@/types";
 import LoadingData from "../shared/LoadingData";
 import { Modal } from "../shared/Modal";
 import { Button } from "../ui/button";
-import { Package, ShoppingCart } from "lucide-react";
-import { toast } from "sonner";
+import { Package } from "lucide-react";
 import { PaginationComponent } from "../shared/PaginationComponent";
 import StockCard from "./StockCard";
 
