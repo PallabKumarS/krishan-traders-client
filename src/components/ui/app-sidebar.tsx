@@ -61,11 +61,6 @@ const adminRoutes = [
     href: "/dashboard/admin/manage-members",
   },
   {
-    title: "Stocks",
-    icon: FileAxis3dIcon,
-    href: "/dashboard/admin/manage-stocks",
-  },
-  {
     title: "Transactions",
     icon: FileSearch,
     href: "/dashboard/admin/manage-transactions",
@@ -75,7 +70,7 @@ const adminRoutes = [
 // member routes
 const staffRoutes = [
   {
-    title: "Add/Sell Stock",
+    title: "Stocks",
     icon: ColumnsSettings,
     href: "/dashboard/staff/manage-stocks",
   },

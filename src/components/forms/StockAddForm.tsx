@@ -71,12 +71,11 @@ export default function StockAddForm({
       stockedBy: user?._id,
     };
 
-    // return console.log(stock);
-
     try {
-      const res = edit
+      const res = !edit
         ? await addStock(stock)
-        : updateStock(stockData?._id as string, stock);
+        : await updateStock(stockData?._id as string, stock);
+
 
       if (res.success) {
         toast.success(res.message, { id: toastId });

@@ -28,6 +28,7 @@ import { deleteStock } from "@/services/StockService";
 import { Modal } from "../shared/Modal";
 import StockAddForm from "../forms/StockAddForm";
 import ConfirmationBox from "../shared/ConfirmationBox";
+import SellStockForm from "../forms/SellStockForm";
 
 interface StockCardProps {
   stock: TStock;
@@ -46,10 +47,6 @@ const StockCard = ({ stock }: StockCardProps) => {
     if (daysUntilExpiry <= 3) return "text-red-500 font-semibold";
     if (daysUntilExpiry <= 7) return "text-yellow-500 font-semibold";
     return "text-green-500 font-semibold";
-  };
-
-  const handleSellStock = (stockId: string) => {
-    toast.info(`Selling stock with ID: ${stockId}`);
   };
 
   const handleStockDelete = async (id: string) => {
@@ -80,7 +77,12 @@ const StockCard = ({ stock }: StockCardProps) => {
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-xl">{stock.productName}</CardTitle>
-            <CardDescription>{stock.brandName}</CardDescription>
+            <CardDescription className="space-y-2">
+              {stock.brandName}
+              <Badge variant="secondary" className="text-xs">
+                ID: {stock._id.slice(-6)}
+              </Badge>
+            </CardDescription>
           </div>
           <Badge variant="outline" className="capitalize">
             {stock.size}
@@ -113,7 +115,7 @@ const StockCard = ({ stock }: StockCardProps) => {
           <div className="flex items-center text-sm">
             <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>
-              Added:{" "}
+              Added by <strong>{stock.stockedBy.name}</strong> on{" "}
               <strong>
                 {stock?.stockedDate
                   ? format(new Date(stock.stockedDate), "PPP")
@@ -121,18 +123,42 @@ const StockCard = ({ stock }: StockCardProps) => {
               </strong>
             </span>
           </div>
+          {stock.soldDate && stock.soldBy && (
+            <div className="flex items-center text-sm">
+              <ShoppingCart className="mr-2 h-4 w-4 text-blue-500" />
+              <span>
+                Sold by <strong>{stock.soldBy.name}</strong> on{" "}
+                <strong>{format(new Date(stock.soldDate), "PPP")}</strong>
+              </span>
+            </div>
+          )}
+          {stock.message && (
+            <div className="flex items-center text-sm">
+              <Tag className="mr-2 h-4 w-4 text-yellow-500" />
+              <span className="text-muted-foreground italic">
+                "{stock.message}"
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
       <CardFooter className="mt-auto flex gap-4 flex-wrap">
-        <Button
-          variant="default"
-          size="sm"
-          className="flex items-center mt-auto"
-          onClick={() => handleSellStock(stock._id)}
-        >
-          <ShoppingCart className="mr-1 h-4 w-4" />
-          Sell
-        </Button>
+        <Modal
+          title="Sell stock"
+          trigger={
+            <Button
+              variant="default"
+              size="sm"
+              className="flex items-center mt-auto"
+            >
+              <ShoppingCart className="mr-1 h-4 w-4" />
+              Sell
+            </Button>
+          }
+          content={
+            <SellStockForm maxQuantity={stock.quantity} stockId={stock._id} />
+          }
+        />
 
         {user?.role == "admin" && (
           <>

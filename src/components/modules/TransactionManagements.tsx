@@ -51,13 +51,6 @@ const TransactionManagements = ({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Transaction History</h1>
-        <p className="text-muted-foreground">
-          View and manage all stock transactions
-        </p>
-      </div>
-
       <Tabs defaultValue="" onValueChange={handleTabChange} className="w-full">
         <div className="overflow-x-auto pb-2">
           <TabsList className="w-full md:w-auto">
@@ -102,7 +95,7 @@ const TransactionManagements = ({
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-4 mb-10">
         {records.map((record) => (
           <RecordCard key={record._id} record={record} />
         ))}

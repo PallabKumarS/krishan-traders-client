@@ -7,6 +7,7 @@ import {
   Clock,
   Package,
   Tag,
+  Trash2,
   User,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -18,10 +19,15 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { acceptAddStock, acceptSellStock } from "@/services/RecordService";
+import {
+  acceptAddStock,
+  acceptSellStock,
+  deleteRecord,
+} from "@/services/RecordService";
 import { toast } from "sonner";
 import { useState } from "react";
 import ButtonLoader from "../shared/ButtonLoader";
+import ConfirmationBox from "../shared/ConfirmationBox";
 
 interface RecordCardProps {
   record: TRecord;
@@ -32,11 +38,10 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Determine if it's a stock addition or sale
-  const isStockAddition =
-    record.status === "expired" || (record.stockedBy && !record.soldBy);
+  const isStockAddition = record?.stockedBy && !record.soldBy;
 
   // Get the relevant user
-  const user = isStockAddition ? record.stockedBy : record.soldBy;
+  const user = isStockAddition ? record?.stockedBy : record.soldBy;
 
   // Get status color
   const getStatusColor = () => {
@@ -79,8 +84,30 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
     }
   };
 
+  const handleStockDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting stock...");
+
+    try {
+      const res = await deleteRecord(id);
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+        });
+      } else {
+        toast.error(res.message, {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error("Error deleting stock", {
+        id: toastId,
+      });
+      console.log(error);
+    }
+  };
+
   // Only show status dropdown for pending records
-  const showStatusDropdown = record.status === "pending";
+  const showStatusDropdown = record?.status === "pending";
 
   return (
     <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -88,14 +115,19 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
         <div className="flex items-start justify-between mb-2">
           <div className="flex flex-col">
             <span className="font-medium text-sm">
-              {record.stockId.productName}
+              {record?.stockId?.productName}
             </span>
-            <span className="text-xs text-muted-foreground">
-              {record.stockId.brandName}
-            </span>
+            <div className="">
+              <p className="text-xs text-muted-foreground">
+                {record?.stockId?.brandName}
+              </p>
+              <Badge variant="secondary" className="text-xs">
+                ID: {record?._id.slice(-6)}
+              </Badge>
+            </div>
           </div>
           <Badge className={`capitalize text-xs ${getStatusColor()}`}>
-            {record.status}
+            {record?.status}
           </Badge>
         </div>
 
@@ -110,7 +142,7 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
           <div className="flex items-center gap-1">
             <Package className="h-3 w-3 text-muted-foreground" />
             <span>
-              Qty: <strong>{record.quantity}</strong>
+              Qty: <strong>{record?.quantity}</strong>
             </span>
           </div>
 
@@ -129,14 +161,16 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
           {/* Created date */}
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3 text-muted-foreground" />
-            <span>{format(new Date(record.createdAt), "PP")}</span>
+            <span>{format(new Date(record?.createdAt), "PP")}</span>
           </div>
 
           {/* Stocked date if available */}
           {record.stockedDate && (
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 text-green-500" />
-              <span>Stocked: {format(new Date(record.stockedDate), "PP")}</span>
+              <span>
+                Stocked: {format(new Date(record?.stockedDate), "PP")}
+              </span>
             </div>
           )}
 
@@ -144,30 +178,30 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
           {record.soldDate && (
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 text-blue-500" />
-              <span>Sold: {format(new Date(record.soldDate), "PP")}</span>
+              <span>Sold: {format(new Date(record?.soldDate), "PP")}</span>
             </div>
           )}
 
           {/* Expiry date if available */}
-          {record.stockId.expiryDate && (
+          {record?.stockId?.expiryDate && (
             <div className="flex items-center gap-1">
               <Tag className="h-3 w-3 text-red-500" />
               <span>
-                Expires: {format(new Date(record.stockId.expiryDate), "PP")}
+                Expires: {format(new Date(record?.stockId?.expiryDate), "PP")}
               </span>
             </div>
           )}
         </div>
       </CardContent>
 
-      {showStatusDropdown && (
-        <CardFooter className="p-2 pt-0">
+      <CardFooter className="p-2 pt-0 space-x-4 justify-end">
+        {showStatusDropdown && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full text-xs"
+                className="text-xs"
                 disabled={isUpdating}
               >
                 {isUpdating ? <ButtonLoader /> : "Accept/Reject"}
@@ -182,8 +216,19 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </CardFooter>
-      )}
+        )}
+
+        <div className="">
+          <ConfirmationBox
+            trigger={
+              <Button variant="destructive" size="sm">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            }
+            onConfirm={() => handleStockDelete(record._id)}
+          />
+        </div>
+      </CardFooter>
     </Card>
   );
 };

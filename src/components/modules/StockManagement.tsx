@@ -1,40 +1,38 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Edit, LucideArrowDownSquare, Trash2 } from "lucide-react";
-import { TMeta, TRecord, TStock } from "@/types";
-import { ManagementTable } from "@/components/shared/ManagementTable";
-import ConfirmationBox from "@/components/shared/ConfirmationBox";
-import { toast } from "sonner";
-import { deleteStock, getAllStocks } from "@/services/StockService";
 import { useEffect, useState } from "react";
-import LoadingData from "@/components/shared/LoadingData";
-import { PaginationComponent } from "@/components/shared/PaginationComponent";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import { acceptAddStock } from "@/services/RecordService";
+import StockAddForm from "../forms/StockAddForm";
+import { useAppContext } from "@/providers/ContextProvider";
+import { getAllStocks } from "@/services/StockService";
+import { TMeta, TStock } from "@/types";
+import LoadingData from "../shared/LoadingData";
+import { Modal } from "../shared/Modal";
+import { Button } from "../ui/button";
+import { Package } from "lucide-react";
+import { PaginationComponent } from "../shared/PaginationComponent";
+import StockCard from "./StockCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+
+type StatusType = "" | "rejected" | "expired" | "accepted" | "sold";
 
 const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
-  const [stocks, setStocks] = useState<TStock[]>([]);
-  const [meta, setMeta] = useState<TMeta>();
   const [isFetching, setIsFetching] = useState(true);
+  const [stockData, setStockData] = useState<TStock[]>([]);
+  const [meta, setMeta] = useState<TMeta>();
+  const [activeStatus, setActiveStatus] = useState<StatusType>("accepted");
+  const { user } = useAppContext();
 
   useEffect(() => {
     const fetchStocks = async () => {
       try {
         const res = await getAllStocks({
           ...query,
+          status: activeStatus,
+          sort: "expiryDate",
         });
 
         if (res.success) {
-          setStocks(res.data);
+          setStockData(res.data);
           setMeta(res.meta);
         }
       } catch (error) {
@@ -45,177 +43,94 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
     };
 
     fetchStocks();
-  }, [query]);
+  }, [query, activeStatus]);
 
-  // Stock manage actions
-  const handleStockStatusChange = async (
-    id: string,
-    status: TRecord["status"]
-  ) => {
-    const toastId = toast.loading(
-      `${status === "accepted" ? "Accepting" : "Rejecting"} stock request...`
-    );
-
-    try {
-      const res = await acceptAddStock(id, { status: status });
-
-      if (res.success) {
-        toast.success(res.message, {
-          id: toastId,
-        });
-      } else {
-        toast.error(res.message as string, {
-          id: toastId,
-        });
-      }
-    } catch (error: any) {
-      toast.error(
-        `Error ${
-          status === "accepted" ? "accepting" : "rejecting"
-        } stock request`,
-        {
-          id: toastId,
-        }
-      );
-      console.log(error);
-    }
+  const handleTabChange = (value: string) => {
+    setActiveStatus(value as StatusType);
   };
-
-  const handleStockDelete = async (id: string) => {
-    const toastId = toast.loading("Deleting stock...");
-
-    try {
-      const res = await deleteStock(id);
-      if (res.success) {
-        // Remove the deleted stock from the local state
-        setStocks(stocks.filter((stock) => stock._id !== id));
-
-        toast.success(res.message, {
-          id: toastId,
-        });
-      } else {
-        toast.error(res.message, {
-          id: toastId,
-        });
-      }
-    } catch (error: any) {
-      toast.error("Error deleting stock", {
-        id: toastId,
-      });
-      console.log(error);
-    }
-  };
-
-  const handleStockEdit = (id: string) => {
-    toast.info(`Editing stock with ID: ${id}`);
-  };
-
-  // column definition
-  const columns: ColumnDef<TStock>[] = [
-    {
-      accessorKey: "productName",
-      header: "Product Name",
-    },
-    {
-      accessorKey: "brandName",
-      header: "Brand Name",
-    },
-    {
-      accessorKey: "quantity",
-      header: "Quantity",
-      cell: ({ row }) => {
-        const quantity = row.original.quantity;
-        const size = row.original.size;
-
-        return (
-          <div className="flex items-center gap-2">
-            <span>{quantity}</span>
-            <Badge variant="outline">{size}</Badge>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "expiryDate",
-      header: "Expiry Date",
-      cell: ({ row }) => {
-        const expiryDate = row.getValue("expiryDate") as string;
-
-        return format(new Date(expiryDate), "PPP");
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.getValue("status") as string;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="capitalize">
-                {status} <LucideArrowDownSquare className="ml-2 h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background">
-              {["pending", "accepted", "rejected"].map((s) => (
-                <DropdownMenuItem
-                  disabled={status === s}
-                  className="capitalize"
-                  key={s}
-                  onSelect={() =>
-                    handleStockStatusChange(
-                      row.original._id,
-                      s as TRecord["status"]
-                    )
-                  }
-                >
-                  {s}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const stock = row.original;
-
-        return (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleStockEdit(stock._id)}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <ConfirmationBox
-              trigger={
-                <Button variant="destructive" size="sm">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              }
-              onConfirm={() => handleStockDelete(stock._id)}
-            />
-          </div>
-        );
-      },
-    },
-  ];
-
-  if (isFetching) return <LoadingData />;
 
   return (
-    <div className="space-y-7">
-      <ManagementTable data={stocks} columns={columns} />
+    <div className="mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Manage Stock</h1>
+        <Modal
+          title="Add Stock"
+          trigger={<Button variant="secondary">Add Stock</Button>}
+          content={<StockAddForm />}
+        />
+      </div>
 
-      <PaginationComponent meta={meta} />
+      <p className="text-muted-foreground mb-8">
+        View, manage, and sell your inventory of fertilizers and agricultural
+        products.
+      </p>
+
+      {user?.role === "admin" && (
+        <Tabs
+          defaultValue="accepted"
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
+          <div className="overflow-x-auto pb-2 mx-auto">
+            <TabsList className="w-full">
+              <TabsTrigger value="accepted">Accepted</TabsTrigger>
+              <TabsTrigger value="rejected">Rejected</TabsTrigger>
+              <TabsTrigger value="expired">Expired</TabsTrigger>
+              <TabsTrigger value="sold">Sold</TabsTrigger>
+              <TabsTrigger value="">All</TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="accepted" className="mt-4">
+            {renderRecordsList()}
+          </TabsContent>
+          <TabsContent value="rejected" className="mt-4">
+            {renderRecordsList()}
+          </TabsContent>
+          <TabsContent value="expired" className="mt-4">
+            {renderRecordsList()}
+          </TabsContent>
+          <TabsContent value="sold" className="mt-4">
+            {renderRecordsList()}
+          </TabsContent>
+          <TabsContent value="" className="mt-4">
+            {renderRecordsList()}
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
+
+  function renderRecordsList() {
+    if (isFetching) return <LoadingData />;
+
+    return (
+      <div>
+        {stockData.length === 0 ? (
+          <div className="text-center py-12 bg-muted/30 rounded-lg">
+            <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-medium mb-2">No Stock Available</h3>
+            <p className="text-muted-foreground mb-4">
+              You don't have any stock items in your inventory yet.
+            </p>
+            <Modal
+              title="Add Stock"
+              trigger={<Button>Add Your First Stock</Button>}
+              content={<StockAddForm />}
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-4 mb-10">
+            {stockData.map((stock) => (
+              <StockCard key={stock._id} stock={stock} />
+            ))}
+          </div>
+        )}
+
+        {meta && meta.totalPage > 0 && <PaginationComponent meta={meta} />}
+      </div>
+    );
+  }
 };
 
 export default StockManagement;

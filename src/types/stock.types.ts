@@ -11,6 +11,7 @@ export type TStock = {
   expiryDate: Date;
   soldDate?: Date;
   soldBy?: TUser;
+  message?: string;
   _id: string;
   createdAt: Date;
   updatedAt: Date;

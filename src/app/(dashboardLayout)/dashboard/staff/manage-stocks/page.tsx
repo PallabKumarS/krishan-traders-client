@@ -1,4 +1,4 @@
-import ManageStock from "@/components/modules/ManageStock";
+import StockManagement from "@/components/modules/StockManagement";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ const AddStockPage = async ({
 }) => {
   const query = await searchParams;
 
-  return <ManageStock query={query} />;
+  return <StockManagement query={query} />;
 };
 
 export default AddStockPage;
