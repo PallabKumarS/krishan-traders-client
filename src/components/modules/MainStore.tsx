@@ -4,23 +4,18 @@ import {
   Building2,
   ColumnsSettings,
   FileSearch,
-  HomeIcon,
   Store,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAppContext } from "@/providers/ContextProvider";
 
-export const items = [
-  {
-    title: "Home",
-    icon: HomeIcon,
-    href: "/",
-  },
+export const commonRoutes = [
   {
     title: "Main Store",
     icon: Store,
-    href: `/dashboard/main-store`,
+    href: `/`,
   },
 ];
 
@@ -81,14 +76,39 @@ const RouteCard = ({
 
 const MainStore = () => {
   const isMobile = useIsMobile();
+  const { user } = useAppContext();
 
-  const allRoutes = [...items, ...adminRoutes, ...staffRoutes];
+  // Filter routes based on user role
+  const getRoutesForUser = () => {
+    let routes = [...commonRoutes];
+
+    if (user?.role === "admin") {
+      // Admin can see all routes
+      routes = [...routes, ...adminRoutes, ...staffRoutes];
+    } else if (user?.role === "staff") {
+      // Staff can only see staff routes
+      routes = [...routes, ...staffRoutes];
+    }
+    // Guest users only see common routes
+
+    // Exclude Main Store route since we're already on this page
+    return routes.filter((route) => route.href !== "/");
+  };
+
+  const userRoutes = getRoutesForUser();
 
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold text-foreground">Main Store</h1>
-        <p className="text-muted-foreground">Navigate to different sections</p>
+        <p className="text-muted-foreground">
+          Navigate to different sections
+          {user && (
+            <span className="block text-sm text-primary mt-1">
+              Welcome, {user.name} ({user.role})
+            </span>
+          )}
+        </p>
       </div>
 
       <div
@@ -98,7 +118,7 @@ const MainStore = () => {
             : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
         }`}
       >
-        {allRoutes.map((route, index) => (
+        {userRoutes.map((route, index) => (
           <div
             key={route.href}
             className="animate-in fade-in-0 slide-in-from-bottom-4"
@@ -115,6 +135,16 @@ const MainStore = () => {
           </div>
         ))}
       </div>
+
+      {userRoutes.length === 1 && (
+        <div className="text-center text-muted-foreground text-sm mt-8">
+          {!user ? (
+            <p>Please log in to access more features</p>
+          ) : (
+            <p>Contact admin for additional access permissions</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

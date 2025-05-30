@@ -33,7 +33,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
 import { config } from "@/middleware";
 import Link from "next/link";
-import { adminRoutes, items, staffRoutes } from "../modules/MainStore";
+import { adminRoutes, commonRoutes, staffRoutes } from "../modules/MainStore";
 
 // common routes for all users
 
@@ -50,7 +50,7 @@ export function AppSidebar() {
     }
   };
 
-  const renderMenuItems = (routes: typeof items) => (
+  const renderMenuItems = (routes: typeof commonRoutes) => (
     <SidebarMenu>
       {routes.map((item) => (
         <SidebarMenuItem
@@ -147,7 +147,9 @@ export function AppSidebar() {
             Quick Access
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            {isLoading ? renderSkeletonMenuItems(2) : renderMenuItems(items)}
+            {isLoading
+              ? renderSkeletonMenuItems(2)
+              : renderMenuItems(commonRoutes)}
           </SidebarGroupContent>
         </SidebarGroup>
 

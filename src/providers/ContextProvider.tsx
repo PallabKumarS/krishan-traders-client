@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import Loading from "@/app/loading";
@@ -55,8 +57,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
         setToken(null);
         localStorage.removeItem("user");
       }
-    } catch (error) {
-      console.error("Error refreshing user:", error);
+    } catch (error: any) {
       setUser(null);
       setToken(null);
       localStorage.removeItem("user");
@@ -155,8 +156,7 @@ export const useUser = () => {
       }
 
       return null;
-    } catch (error) {
-      console.error("Error fetching user:", error);
+    } catch (error: any) {
       return null;
     } finally {
       setIsLoading(false);

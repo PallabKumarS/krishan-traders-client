@@ -244,6 +244,7 @@ export default function StockAddForm({
         <FormField
           control={form.control}
           name="productName"
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Product Name</FormLabel>

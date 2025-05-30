@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import StockAddForm from "../forms/StockAddForm";
 import { useAppContext } from "@/providers/ContextProvider";
 import { getAllStocks } from "@/services/StockService";
-import { TMeta, TStock } from "@/types";
+import { TStock } from "@/types";
 import LoadingData from "../shared/LoadingData";
 import { Modal } from "../shared/Modal";
 import { Button } from "../ui/button";
@@ -15,7 +15,6 @@ import {
   Building2,
   Box,
 } from "lucide-react";
-import { PaginationComponent } from "../shared/PaginationComponent";
 import StockCard from "./StockCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
@@ -36,7 +35,6 @@ interface GroupedStock {
 const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
   const [isFetching, setIsFetching] = useState(true);
   const [stockData, setStockData] = useState<TStock[]>([]);
-  const [meta, setMeta] = useState<TMeta>();
   const [activeStatus, setActiveStatus] = useState<StatusType>("accepted");
   const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(
     new Set()
@@ -57,7 +55,7 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
 
         if (res.success) {
           setStockData(res.data);
-          setMeta(res.meta);
+          // setMeta(res.meta);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
@@ -128,7 +126,7 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
         products.
       </p>
 
-      {user?.role === "admin" && (
+      {user?.role === "admin" ? (
         <Tabs
           defaultValue="accepted"
           onValueChange={handleTabChange}
@@ -160,6 +158,8 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
             {renderRecordsList()}
           </TabsContent>
         </Tabs>
+      ) : (
+        renderRecordsList()
       )}
     </div>
   );
@@ -287,8 +287,6 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
               </Collapsible>
             </div>
           ))}
-
-        {meta && meta.totalPage > 0 && <PaginationComponent meta={meta} />}
       </div>
     );
   }
