@@ -54,14 +54,13 @@ export default function LoginForm() {
         if (redirectPath) {
           router.push(redirectPath);
         } else {
-          router.push("/dashboard/profile");
+          router.push("/dashboard/main-store");
         }
       } else {
         toast.error(res?.message, { id: toastId });
         setIsLoading(false);
       }
     } catch (error: any) {
-      console.error("Form submission error", error);
       toast.error(error.message, { id: toastId });
       setIsLoading(false);
     }

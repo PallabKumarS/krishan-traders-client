@@ -1,7 +1,7 @@
 import { TUser } from "./user.types";
 
 export type TStock = {
-  brandName: string;
+  companyName: string;
   productName: string;
   size: string;
   status: TStockStatus;

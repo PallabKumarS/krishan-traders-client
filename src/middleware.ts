@@ -11,7 +11,10 @@ const roleBasedPrivateRoutes = {
   guest: [],
 };
 
-const sharedRoutes = [/^\/dashboard\/settings/, /^\/dashboard\/profile/];
+const sharedRoutes = [
+  /^\/dashboard\/settings/,
+  /^\/dashboard\/main-store/,
+];
 
 export const middleware = async (request: NextRequest) => {
   const userInfo = await getCurrentUser();

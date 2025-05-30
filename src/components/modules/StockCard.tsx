@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { TStock } from "@/types";
@@ -19,7 +20,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
-import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
@@ -75,15 +75,6 @@ const StockCard = ({ stock }: StockCardProps) => {
     <Card className="overflow-hidden">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-xl">{stock.productName}</CardTitle>
-            <CardDescription className="space-y-2">
-              {stock.brandName}
-              <Badge variant="secondary" className="text-xs">
-                ID: {stock._id.slice(-6)}
-              </Badge>
-            </CardDescription>
-          </div>
           <Badge variant="outline" className="capitalize">
             {stock.size}
           </Badge>
@@ -136,7 +127,7 @@ const StockCard = ({ stock }: StockCardProps) => {
             <div className="flex items-center text-sm">
               <Tag className="mr-2 h-4 w-4 text-yellow-500" />
               <span className="text-muted-foreground italic">
-                "{stock.message}"
+                &quot;{stock.message}&quot;
               </span>
             </div>
           )}

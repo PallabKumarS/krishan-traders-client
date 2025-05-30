@@ -31,7 +31,7 @@ import { updateStock } from "@/services/StockService";
 
 const formSchema = z.object({
   productName: z.string().min(1).min(0),
-  brandName: z.string().min(1),
+  companyName: z.string().min(1),
   size: z.string().min(1),
   quantity: z.string().min(1),
   expiryDate: z.coerce.date(),
@@ -51,7 +51,7 @@ export default function StockAddForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       productName: stockData?.productName || "",
-      brandName: stockData?.brandName || "",
+      companyName: stockData?.companyName || "",
       size: stockData?.size ? stockData?.size : "",
       quantity: String(stockData?.quantity) || "",
       expiryDate: stockData?.expiryDate
@@ -75,7 +75,6 @@ export default function StockAddForm({
       const res = !edit
         ? await addStock(stock)
         : await updateStock(stockData?._id as string, stock);
-
 
       if (res.success) {
         toast.success(res.message, { id: toastId });
@@ -116,7 +115,7 @@ export default function StockAddForm({
 
         <FormField
           control={form.control}
-          name="brandName"
+          name="companyName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Brand Name</FormLabel>

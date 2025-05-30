@@ -49,7 +49,7 @@ const LoginPage = () => {
 
   return (
     <motion.div
-      className="flex justify-center items-center min-h-screen overflow-hidden relative"
+      className="flex justify-center items-center min-h-screen overflow-hidden relative px-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -109,7 +109,7 @@ const LoginPage = () => {
 
       {/* Login/Register Card */}
       <motion.div
-        className="relative z-10 w-[400px]"
+        className="relative z-10 w-[400px] mb-5"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -120,7 +120,7 @@ const LoginPage = () => {
             <h1 className="text-3xl font-bold text-white">Krishan Traders</h1>
           </div>
         </div>
-        
+
         <Tabs
           defaultValue="login"
           className="w-full"
@@ -175,8 +175,8 @@ const LoginPage = () => {
                         <CardTitle>Create New Account</CardTitle>
                       </div>
                       <CardDescription>
-                        Join Krishan Traders for quality agricultural products and
-                        services.
+                        Join Krishan Traders for quality agricultural products
+                        and services.
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-2">

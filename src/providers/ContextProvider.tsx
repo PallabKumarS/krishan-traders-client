@@ -24,6 +24,7 @@ type AppContextType = {
   setToken: Dispatch<SetStateAction<string | null>>;
 };
 
+
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const ContextProvider = ({ children }: { children: ReactNode }) => {

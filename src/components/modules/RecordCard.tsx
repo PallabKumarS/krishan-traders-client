@@ -119,7 +119,7 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
             </span>
             <div className="">
               <p className="text-xs text-muted-foreground">
-                {record?.stockId?.brandName}
+                {record?.stockId?.companyName}
               </p>
               <Badge variant="secondary" className="text-xs">
                 ID: {record?._id.slice(-6)}

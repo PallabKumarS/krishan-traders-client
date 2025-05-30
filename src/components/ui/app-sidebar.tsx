@@ -14,7 +14,6 @@ import {
   Settings2Icon,
   ColumnsSettings,
   Leaf,
-  FileAxis3dIcon,
 } from "lucide-react";
 
 import {
@@ -47,9 +46,9 @@ const items = [
     href: "/",
   },
   {
-    title: "Profile",
+    title: "Main Store",
     icon: User,
-    href: `/dashboard/profile`,
+    href: `/dashboard/main-store`,
   },
 ];
 
