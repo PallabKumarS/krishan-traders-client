@@ -22,22 +22,23 @@ type AppContextType = {
   setIsLoading: (isLoading: boolean) => void;
   logout: () => void;
   setToken: Dispatch<SetStateAction<string | null>>;
+  refreshUser: () => Promise<void>;
 };
-
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<TUser | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const initialize = async () => {
-      const token = await getToken();
-      if (token) {
-        setToken(token);
+  const refreshUser = async () => {
+    setIsLoading(true);
+    try {
+      const currentToken = await getToken();
+
+      if (currentToken) {
+        setToken(currentToken);
 
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -52,12 +53,35 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUser(null);
         setToken(null);
+        localStorage.removeItem("user");
       }
-
+    } catch (error) {
+      console.error("Error refreshing user:", error);
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem("user");
+    } finally {
       setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
+
+  // Listen for storage changes (when user logs in from another tab)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "user") {
+        refreshUser();
+      }
     };
 
-    initialize();
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   const logout = () => {
@@ -78,6 +102,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading,
         logout,
         setToken,
+        refreshUser,
       }}
     >
       {children}
@@ -92,4 +117,55 @@ export const useAppContext = () => {
   if (!context)
     throw new Error("useAppContext must be used within ContextProvider");
   return context;
+};
+
+export const useUser = () => {
+  const { user, setUser } = useAppContext();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUser = async () => {
+    try {
+      setIsLoading(true);
+
+      // First check if token exists
+      const token = await getToken();
+      if (!token) {
+        return null;
+      }
+
+      // If user already exists, return it
+      if (user) {
+        return user;
+      }
+
+      // Check localStorage first
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        return parsedUser;
+      }
+
+      // Fetch user from API
+      const res = await getMe();
+      if (res?.success) {
+        setUser(res.data);
+        localStorage.setItem("user", JSON.stringify(res.data));
+        return res.data;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    user,
+    fetchUser,
+    isLoading,
+  };
 };

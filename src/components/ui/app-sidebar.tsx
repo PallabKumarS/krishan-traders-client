@@ -28,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
 import { config } from "@/middleware";
@@ -39,7 +40,7 @@ import { adminRoutes, items, staffRoutes } from "../modules/MainStore";
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAppContext();
+  const { user, logout, isLoading } = useAppContext();
 
   const handleLogout = () => {
     logout();
@@ -93,6 +94,21 @@ export function AppSidebar() {
     </SidebarMenu>
   );
 
+  const renderSkeletonMenuItems = (count: number) => (
+    <SidebarMenu>
+      {Array.from({ length: count }).map((_, index) => (
+        <SidebarMenuItem key={index}>
+          <SidebarMenuButton>
+            <div className="flex items-center gap-3 w-full">
+              <Skeleton className="w-5 h-5 rounded" />
+              <Skeleton className="h-4 flex-grow" />
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+
   return (
     <Sidebar className="h-full" collapsible="icon">
       <SidebarContent>
@@ -130,84 +146,111 @@ export function AppSidebar() {
             <Settings2Icon className="w-4 h-4 text-muted-foreground" />
             Quick Access
           </SidebarGroupLabel>
-          <SidebarGroupContent>{renderMenuItems(items)}</SidebarGroupContent>
+          <SidebarGroupContent>
+            {isLoading ? renderSkeletonMenuItems(2) : renderMenuItems(items)}
+          </SidebarGroupContent>
         </SidebarGroup>
 
         {/* Admin Panel */}
-        {user?.role === "admin" && (
+        {isLoading ? (
           <SidebarGroup>
             <SidebarGroupLabel className="flex items-center gap-2">
-              <UserLockIcon className="w-4 h-4 text-muted-foreground" />
-              Admin Panel
+              <Skeleton className="w-4 h-4" />
+              <Skeleton className="h-4 w-20" />
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              {renderMenuItems(adminRoutes)}
-              {renderMenuItems(staffRoutes)}
+              {renderSkeletonMenuItems(4)}
             </SidebarGroupContent>
           </SidebarGroup>
+        ) : (
+          user?.role === "admin" && (
+            <SidebarGroup>
+              <SidebarGroupLabel className="flex items-center gap-2">
+                <UserLockIcon className="w-4 h-4 text-muted-foreground" />
+                Admin Panel
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                {renderMenuItems(adminRoutes)}
+                {renderMenuItems(staffRoutes)}
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )
         )}
 
         {/* Member Panel */}
-        {user?.role === "staff" && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-muted-foreground" />
-              Staff
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              {renderMenuItems(staffRoutes)}
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        {isLoading
+          ? null
+          : user?.role === "staff" && (
+              <SidebarGroup>
+                <SidebarGroupLabel className="flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-muted-foreground" />
+                  Staff
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  {renderMenuItems(staffRoutes)}
+                </SidebarGroupContent>
+              </SidebarGroup>
+            )}
 
         {/* Logout */}
         <div className="mt-auto border-t p-4 pl-0">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="
-                  flex w-full items-center gap-3 
-                  rounded-lg p-2 
-                  hover:bg-accent/10 
-                  transition-colors 
-                  group
-                "
-              >
-                <Avatar className="h-8 w-8 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all">
-                  {user?.profileImg ? (
-                    <AvatarImage src={user?.profileImg} alt={user?.name} />
-                  ) : (
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                  )}
-                  <AvatarFallback>LK</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">
-                    {user?.email}
-                  </p>
-                </div>
-                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:rotate-180 transition-transform" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="start" side="top">
-              {user?.email ? (
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive-foreground cursor-pointer flex items-center gap-3"
-                  onClick={handleLogout}
+          {isLoading ? (
+            <div className="flex w-full items-center gap-3 rounded-lg p-2">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+              <Skeleton className="h-4 w-4" />
+            </div>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="
+                    flex w-full items-center gap-3 
+                    rounded-lg p-2 
+                    hover:bg-accent/10 
+                    transition-colors 
+                    group
+                  "
                 >
-                  <LogOut className="w-4 h-4" /> Logout
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem
-                  className="text-primary focus:text-primary-foreground cursor-pointer flex items-center gap-3"
-                  onClick={() => router.push("/login")}
-                >
-                  <LogIn className="w-4 h-4" /> Login
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <Avatar className="h-8 w-8 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all">
+                    {user?.profileImg ? (
+                      <AvatarImage src={user?.profileImg} alt={user?.name} />
+                    ) : (
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                    )}
+                    <AvatarFallback>LK</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {user?.email}
+                    </p>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:rotate-180 transition-transform" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="start" side="top">
+                {user?.email ? (
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive-foreground cursor-pointer flex items-center gap-3"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4" /> Logout
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    className="text-primary focus:text-primary-foreground cursor-pointer flex items-center gap-3"
+                    onClick={() => router.push("/login")}
+                  >
+                    <LogIn className="w-4 h-4" /> Login
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </SidebarContent>
     </Sidebar>
