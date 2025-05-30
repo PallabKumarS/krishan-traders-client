@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RecordCard from "../modules/RecordCard";
 import { PaginationComponent } from "../shared/PaginationComponent";
 import { Package } from "lucide-react";
+import { toast } from "sonner";
 
 type StatusType = "" | "pending" | "rejected" | "expired";
 
@@ -35,8 +36,9 @@ const TransactionManagements = ({
           setRecords(res.data);
           setMeta(res.meta);
         }
-      } catch (error) {
-        console.log(error);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        toast.error(error.message);
       } finally {
         setIsFetching(false);
       }

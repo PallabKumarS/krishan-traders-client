@@ -11,10 +11,7 @@ const roleBasedPrivateRoutes = {
   guest: [],
 };
 
-const sharedRoutes = [
-  /^\/dashboard\/settings/,
-  /^\/dashboard\/main-store/,
-];
+const sharedRoutes = [/^\/dashboard\/settings/, /^\/$/];
 
 export const middleware = async (request: NextRequest) => {
   const userInfo = await getCurrentUser();
@@ -29,6 +26,10 @@ export const middleware = async (request: NextRequest) => {
         new URL(`/login?redirectPath=${pathname}`, request.url)
       );
     }
+  }
+
+  if (userInfo && authRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   if (sharedRoutes.some((route) => pathname.match(route))) {
@@ -47,5 +48,5 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/login", "/"],
 };

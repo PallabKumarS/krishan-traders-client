@@ -2,12 +2,7 @@
 "use client";
 
 import { TStock } from "@/types";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
 import {
   Calendar,
@@ -82,7 +77,7 @@ const StockCard = ({ stock }: StockCardProps) => {
           <div className="flex items-center text-sm">
             <Package className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>
-              Quantity: <strong>{stock.quantity}</strong>
+              Quantity: <strong>{stock.quantity}</strong> Box
             </span>
           </div>
           <div className="flex items-center text-sm">

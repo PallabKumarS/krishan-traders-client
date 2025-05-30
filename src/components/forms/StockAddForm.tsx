@@ -36,8 +36,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Calendar as CalendarIcon,
   Check,
@@ -53,6 +52,7 @@ import {
   getAllCompany,
   getProductNamesByCompanyName,
 } from "@/services/CompanyService";
+import DatePicker from "react-datepicker";
 
 const formSchema = z.object({
   productName: z.string().min(1, "Product name is required"),
@@ -158,6 +158,14 @@ export default function StockAddForm({
     setUseCustomProduct(true);
   };
 
+  // Function to format date to YYYY-MM-DD
+  const formatDateToYMD = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const toastId = toast.loading("Submitting...");
@@ -165,8 +173,9 @@ export default function StockAddForm({
     const stock = {
       ...values,
       quantity: Number(values.quantity),
-      stockedDate: new Date(),
+      stockedDate: formatDateToYMD(new Date()),
       stockedBy: user?._id,
+      expiryDate: formatDateToYMD(values.expiryDate),
     };
 
     try {
@@ -406,44 +415,40 @@ export default function StockAddForm({
           )}
         />
 
-        {/* Expiry Date */}
+        {/* Expiry Date - Using HTML date input for better year navigation */}
         <FormField
           control={form.control}
           name="expiryDate"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Expiry Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick an expiry date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
+              <FormControl>
+                <div className="relative">
+                  <DatePicker
                     selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
+                    onChange={(date: Date | null) => {
+                      if (date) {
+                        field.onChange(date);
+                      }
+                    }}
+                    dateFormat="PPP"
+                    minDate={new Date()}
+                    showYearDropdown
+                    showMonthDropdown
+                    dropdownMode="select"
+                    yearDropdownItemNumber={15}
+                    scrollableYearDropdown
+                    placeholderText="Pick an expiry date"
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                      !field.value && "text-muted-foreground"
+                    )}
+                    wrapperClassName="w-full"
+                    popperClassName="z-50"
                   />
-                </PopoverContent>
-              </Popover>
+                  <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

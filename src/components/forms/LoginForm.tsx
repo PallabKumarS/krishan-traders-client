@@ -54,7 +54,7 @@ export default function LoginForm() {
         if (redirectPath) {
           router.push(redirectPath);
         } else {
-          router.push("/dashboard/main-store");
+          router.push("/");
         }
       } else {
         toast.error(res?.message, { id: toastId });

@@ -251,10 +251,11 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
                                     {stocks.map((stock) => {
                                       return (
                                         <span
-                                          className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-sm"
+                                          className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-sm flex items-center gap-1"
                                           key={stock._id}
                                         >
                                           {stock.size} : {stock.quantity}
+                                          <Box className="w-3 h-3" />
                                         </span>
                                       );
                                     })}

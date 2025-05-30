@@ -4,8 +4,8 @@ import { format } from "date-fns";
 import {
   ArrowDown,
   ArrowUp,
+  Box,
   Calendar,
-  Clock,
   Package,
   Tag,
   Trash2,
@@ -29,6 +29,21 @@ import { toast } from "sonner";
 import { useState } from "react";
 import ButtonLoader from "../shared/ButtonLoader";
 import ConfirmationBox from "../shared/ConfirmationBox";
+
+// Text size configuration - easily changeable
+const TEXT_SIZES = {
+  title: "text-lg", // Product name
+  subtitle: "text-base", // Company name
+  badge: "text-sm", // ID badge and status badge
+  info: "text-sm", // All info items (user, quantity, etc.)
+  button: "text-sm", // Button text
+} as const;
+
+// Icon size configuration
+const ICON_SIZES = {
+  small: "h-4 w-4", // Info icons
+  medium: "h-5 w-5", // Button icons
+} as const;
 
 interface RecordCardProps {
   record: TRecord;
@@ -110,64 +125,64 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
 
   return (
     <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <CardContent className="p-3">
-        <div className="flex items-start justify-between mb-2">
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3">
           <div className="flex flex-col">
-            <span className="font-medium text-sm">
+            <span className={`font-medium ${TEXT_SIZES.title}`}>
               {record?.stockId?.productName}
             </span>
             <div className="">
-              <p className="text-xs text-muted-foreground">
+              <p className={`${TEXT_SIZES.subtitle} text-muted-foreground`}>
                 {record?.stockId?.companyName}
               </p>
-              <Badge variant="secondary" className="text-xs">
-                ID: {record?._id.slice(-6)}
-              </Badge>
             </div>
           </div>
-          <Badge className={`capitalize text-xs ${getStatusColor()}`}>
+          <Badge
+            className={`capitalize ${TEXT_SIZES.badge} ${getStatusColor()}`}
+          >
             {record?.status}
           </Badge>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="grid grid-cols-2 gap-3">
           {/* User info */}
-          <div className="flex items-center gap-1">
-            <User className="h-3 w-3 text-muted-foreground" />
-            <span>{user?.name || "Unknown"}</span>
+          <div className="flex items-center gap-2">
+            <User className={`${ICON_SIZES.small} text-muted-foreground`} />
+            <span className={TEXT_SIZES.info}>{user?.name || "Unknown"}</span>
           </div>
 
           {/* Quantity */}
-          <div className="flex items-center gap-1">
-            <Package className="h-3 w-3 text-muted-foreground" />
-            <span>
-              Qty: <strong>{record?.quantity}</strong>
+          <div className="flex items-center gap-2">
+            <Package className={`${ICON_SIZES.small} text-muted-foreground`} />
+            <span className={TEXT_SIZES.info}>
+              Qty:
+              <strong>{record?.quantity}</strong> Box
             </span>
           </div>
 
           {/* Transaction type */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {isStockAddition ? (
-              <ArrowUp className="h-3 w-3 text-green-500" />
+              <ArrowUp className={`${ICON_SIZES.small} text-green-500`} />
             ) : (
-              <ArrowDown className="h-3 w-3 text-blue-500" />
+              <ArrowDown className={`${ICON_SIZES.small} text-blue-500`} />
             )}
-            <span className="capitalize">
+            <span className={`capitalize ${TEXT_SIZES.info}`}>
               {isStockAddition ? "Added" : "Sold"}
             </span>
           </div>
 
-          {/* Created date */}
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3 text-muted-foreground" />
-            <span>{format(new Date(record?.createdAt), "PP")}</span>
+          {/* Size */}
+          <div className="flex items-center gap-2">
+            <Box className={`${ICON_SIZES.small} text-muted-foreground`} />
+            <span className={TEXT_SIZES.info}>{record.stockId.size}</span>
           </div>
 
           {/* Stocked date if available */}
           {record.stockedDate && (
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3 text-green-500" />
-              <span>
+            <div className="flex items-center gap-2 col-span-2">
+              <Calendar className={`${ICON_SIZES.small} text-green-500`} />
+              <span className={TEXT_SIZES.info}>
                 Stocked: {format(new Date(record?.stockedDate), "PP")}
               </span>
             </div>
@@ -175,17 +190,19 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
 
           {/* Sold date if available */}
           {record.soldDate && (
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3 text-blue-500" />
-              <span>Sold: {format(new Date(record?.soldDate), "PP")}</span>
+            <div className="flex items-center gap-2 col-span-2">
+              <Calendar className={`${ICON_SIZES.small} text-blue-500`} />
+              <span className={TEXT_SIZES.info}>
+                Sold: {format(new Date(record?.soldDate), "PP")}
+              </span>
             </div>
           )}
 
           {/* Expiry date if available */}
           {record?.stockId?.expiryDate && (
-            <div className="flex items-center gap-1">
-              <Tag className="h-3 w-3 text-red-500" />
-              <span>
+            <div className="flex items-center gap-2 col-span-2">
+              <Tag className={`${ICON_SIZES.small} text-red-500`} />
+              <span className={TEXT_SIZES.info}>
                 Expires: {format(new Date(record?.stockId?.expiryDate), "PP")}
               </span>
             </div>
@@ -193,24 +210,30 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="p-2 pt-0 space-x-4 justify-end">
+      <CardFooter className="p-3 pt-0 space-x-4 justify-end">
         {showStatusDropdown && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs"
+                className={TEXT_SIZES.button}
                 disabled={isUpdating}
               >
                 {isUpdating ? <ButtonLoader /> : "Accept/Reject"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <DropdownMenuItem onClick={() => handleStatusUpdate("accepted")}>
+              <DropdownMenuItem
+                onClick={() => handleStatusUpdate("accepted")}
+                className={`${TEXT_SIZES.button} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 transition-colors`}
+              >
                 Accept
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusUpdate("rejected")}>
+              <DropdownMenuItem
+                onClick={() => handleStatusUpdate("rejected")}
+                className={`${TEXT_SIZES.button} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 transition-colors`}
+              >
                 Reject
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -221,7 +244,7 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
           <ConfirmationBox
             trigger={
               <Button variant="destructive" size="sm">
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className={ICON_SIZES.medium} />
               </Button>
             }
             onConfirm={() => handleStockDelete(record._id)}
