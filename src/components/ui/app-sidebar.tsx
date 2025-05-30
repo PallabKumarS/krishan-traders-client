@@ -2,7 +2,6 @@
 
 import {
   LogOut,
-  User,
   Users,
   LogIn,
   HomeIcon,
@@ -14,6 +13,8 @@ import {
   Settings2Icon,
   ColumnsSettings,
   Leaf,
+  Store,
+  Building2,
 } from "lucide-react";
 
 import {
@@ -47,7 +48,7 @@ const items = [
   },
   {
     title: "Main Store",
-    icon: User,
+    icon: Store,
     href: `/dashboard/main-store`,
   },
 ];
@@ -63,6 +64,11 @@ const adminRoutes = [
     title: "Transactions",
     icon: FileSearch,
     href: "/dashboard/admin/manage-transactions",
+  },
+  {
+    title: "Company",
+    icon: Building2,
+    href: "/dashboard/admin/manage-company",
   },
 ];
 

@@ -26,7 +26,7 @@ export default function NotFound() {
         </p>
         <div className="flex justify-center space-x-4">
           <div
-          onClick={()=>router.back()}
+            onClick={() => router.back()}
             className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
           >
             Go Back
@@ -40,10 +40,10 @@ export default function NotFound() {
           </Link>
 
           <Link
-            href="/listings"
+            href="/dashboard/main-store"
             className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
           >
-            Browse Listings
+            Go to Main Store
           </Link>
         </div>
       </div>

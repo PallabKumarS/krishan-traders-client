@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TRecord } from "@/types";
 import { format } from "date-fns";
 import {
@@ -66,7 +67,7 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
 
     setIsUpdating(true);
     try {
-      let response = isStockAddition
+      const response = isStockAddition
         ? await acceptAddStock(record._id, { status })
         : await acceptSellStock(record._id, { status });
 
@@ -76,9 +77,8 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
       } else {
         toast.error(response.message || "Failed to update status");
       }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("An error occurred while updating status");
+    } catch (error: any) {
+      toast.error(error.message);
     } finally {
       setIsUpdating(false);
     }
@@ -99,10 +99,9 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
         });
       }
     } catch (error: any) {
-      toast.error("Error deleting stock", {
+      toast.error(error.message, {
         id: toastId,
       });
-      console.log(error);
     }
   };
 

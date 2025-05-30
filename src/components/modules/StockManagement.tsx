@@ -23,6 +23,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
+import { toast } from "sonner";
 
 type StatusType = "" | "rejected" | "expired" | "accepted" | "sold";
 
@@ -58,8 +59,9 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
           setStockData(res.data);
           setMeta(res.meta);
         }
-      } catch (error) {
-        console.log(error);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        toast.error(error.message);
       } finally {
         setIsFetching(false);
       }

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,25 +16,49 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  Check,
+  ChevronsUpDown,
+  Plus,
+} from "lucide-react";
 import { useAppContext } from "@/providers/ContextProvider";
 import ButtonLoader from "../shared/ButtonLoader";
-import { TStock } from "@/types";
+import { TCompany, TStock } from "@/types";
 import { addStock } from "@/services/RecordService";
 import { updateStock } from "@/services/StockService";
+import {
+  getAllCompany,
+  getProductNamesByCompanyName,
+} from "@/services/CompanyService";
 
 const formSchema = z.object({
-  productName: z.string().min(1).min(0),
-  companyName: z.string().min(1),
-  size: z.string().min(1),
-  quantity: z.string().min(1),
+  productName: z.string().min(1, "Product name is required"),
+  companyName: z.string().min(1, "Company name is required"),
+  size: z.string().min(1, "Size is required"),
+  quantity: z.string().min(1, "Quantity is required"),
   expiryDate: z.coerce.date(),
 });
 
@@ -45,6 +70,12 @@ export default function StockAddForm({
   stockData?: TStock;
 }) {
   const [loading, setLoading] = useState(false);
+  const [isCLoading, setIsCLoading] = useState(false);
+  const [companyData, setCompanyData] = useState<TCompany[]>([]);
+  const [productNames, setProductNames] = useState<string[]>([]);
+  const [productComboOpen, setProductComboOpen] = useState(false);
+  const [productInputValue, setProductInputValue] = useState("");
+  const [useCustomProduct, setUseCustomProduct] = useState(false);
   const { user } = useAppContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,6 +90,73 @@ export default function StockAddForm({
         : new Date(),
     },
   });
+
+  const companyName = form.watch("companyName");
+  const productName = form.watch("productName");
+
+  useEffect(() => {
+    setIsCLoading(true);
+
+    const fetchData = async () => {
+      try {
+        const res = await getAllCompany();
+
+        if (res.success) {
+          setCompanyData(res.data);
+        } else {
+          toast.error(res.message || "Failed to fetch companies");
+        }
+      } catch (error: any) {
+        toast.error(error.message);
+      } finally {
+        setIsCLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (companyName) {
+      const fetchProductNames = async () => {
+        try {
+          const res = await getProductNamesByCompanyName(companyName);
+          if (res.success) {
+            setProductNames(res.data);
+          } else {
+            toast.error(res.message || "Failed to fetch products");
+          }
+        } catch (error: any) {
+          toast.error(error.message);
+        }
+      };
+
+      fetchProductNames();
+    } else {
+      setProductNames([]);
+      form.setValue("productName", "");
+      setProductInputValue("");
+      setUseCustomProduct(false);
+    }
+  }, [companyName, form]);
+
+  // Filter products based on input
+  const filteredProducts = productNames.filter((product) =>
+    product.toLowerCase().includes(productInputValue.toLowerCase())
+  );
+
+  const handleProductSelect = (selectedProduct: string) => {
+    form.setValue("productName", selectedProduct);
+    setProductInputValue(selectedProduct);
+    setProductComboOpen(false);
+    setUseCustomProduct(false);
+  };
+
+  const handleCustomProductInput = (value: string) => {
+    setProductInputValue(value);
+    form.setValue("productName", value);
+    setUseCustomProduct(true);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -79,59 +177,196 @@ export default function StockAddForm({
       if (res.success) {
         toast.success(res.message, { id: toastId });
         form.reset();
+        setProductInputValue("");
+        setUseCustomProduct(false);
         setLoading(false);
       } else {
         toast.error(res.message, { id: toastId });
         setLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      toast.error(error.message, {
+        id: toastId,
+      });
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 py-10">
-        <FormField
-          control={form.control}
-          name="productName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter product name..."
-                  type="text"
-                  {...field}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-6">
+        {/* Company Name Dropdown */}
         <FormField
           control={form.control}
           name="companyName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Brand Name</FormLabel>
+              <FormLabel>Company Name</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={isCLoading}
+              >
+                <FormControl>
+                  <SelectTrigger
+                    className={cn(
+                      "w-full",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    <SelectValue
+                      placeholder={
+                        isCLoading ? "Loading companies..." : "Select a company"
+                      }
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {companyData.length === 0 && !isCLoading ? (
+                    <SelectItem value="no-companies" disabled>
+                      No companies available
+                    </SelectItem>
+                  ) : (
+                    companyData.map((company) => (
+                      <SelectItem key={company._id} value={company.name}>
+                        {company.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Product Name Input + Dropdown Combo */}
+        <FormField
+          control={form.control}
+          name="productName"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Product Name</FormLabel>
+
+              {/* Custom Input Field */}
               <FormControl>
                 <Input
-                  placeholder="Enter brand name..."
-                  type="text"
-                  {...field}
+                  placeholder={
+                    !companyName
+                      ? "Select a company first"
+                      : "Type product name or select from existing..."
+                  }
+                  value={productInputValue}
+                  onChange={(e) => handleCustomProductInput(e.target.value)}
+                  disabled={!companyName}
+                  className="w-full"
                 />
               </FormControl>
+
+              {/* Existing Products Dropdown */}
+              {companyName && productNames.length > 0 && (
+                <div className="space-y-2">
+                  <Popover
+                    open={productComboOpen}
+                    onOpenChange={setProductComboOpen}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={productComboOpen}
+                        className="w-full justify-between text-muted-foreground"
+                        type="button"
+                      >
+                        {productInputValue &&
+                        !useCustomProduct &&
+                        productNames.includes(productInputValue)
+                          ? productInputValue
+                          : "Select from existing products..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0" align="start">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search products..."
+                          value={productInputValue}
+                          onValueChange={setProductInputValue}
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            <div className="flex flex-col items-center gap-2 py-4">
+                              <p className="text-sm text-muted-foreground">
+                                No products found.
+                              </p>
+                              {productInputValue && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    handleCustomProductInput(productInputValue);
+                                    setProductComboOpen(false);
+                                  }}
+                                  type="button"
+                                  className="gap-2"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                  Add &quot;{productInputValue}&quot; as new
+                                  product
+                                </Button>
+                              )}
+                            </div>
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {filteredProducts.map((product) => (
+                              <CommandItem
+                                key={product}
+                                value={product}
+                                onSelect={() => handleProductSelect(product)}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    productName === product
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {product}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  {/* Helper text */}
+                  <p className="text-xs text-muted-foreground">
+                    {useCustomProduct && productInputValue ? (
+                      <span className="flex items-center gap-1">
+                        <Plus className="h-3 w-3" />
+                        Adding &quot;{productInputValue}&quot; as a new product
+                      </span>
+                    ) : (
+                      "Type to search existing products or enter a new product name"
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {!companyName && (
+                <p className="text-sm text-muted-foreground">
+                  Please select a company to view available products
+                </p>
+              )}
 
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Stock Size */}
         <FormField
           control={form.control}
           name="size"
@@ -140,17 +375,17 @@ export default function StockAddForm({
               <FormLabel>Stock Size</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter stock size..."
+                  placeholder="Enter stock size (e.g., 50kg, 1L, 500ml)..."
                   type="text"
                   {...field}
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Quantity */}
         <FormField
           control={form.control}
           name="quantity"
@@ -161,15 +396,16 @@ export default function StockAddForm({
                 <Input
                   placeholder="Enter quantity..."
                   type="number"
+                  min="1"
                   {...field}
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Expiry Date */}
         <FormField
           control={form.control}
           name="expiryDate"
@@ -182,14 +418,14 @@ export default function StockAddForm({
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
+                        "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Pick an expiry date</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -200,17 +436,20 @@ export default function StockAddForm({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
+                    disabled={(date) =>
+                      date < new Date() || date < new Date("1900-01-01")
+                    }
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
-
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">
-          {loading ? <ButtonLoader /> : "Submit Stock"}
+
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? <ButtonLoader /> : edit ? "Update Stock" : "Add Stock"}
         </Button>
       </form>
     </Form>
