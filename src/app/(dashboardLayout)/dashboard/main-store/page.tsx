@@ -1,3 +1,4 @@
+import MainStore from "@/components/modules/MainStore";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,11 +7,7 @@ export const metadata: Metadata = {
 };
 
 const page = () => {
-  return (
-    <div>
-      <h1>This is page Component</h1>
-    </div>
-  );
+  return <MainStore />;
 };
 
 export default page;

@@ -1,17 +1,8 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { LogOut, Menu, X, Home, User, Leaf, FileDiffIcon } from "lucide-react";
+import { LogOut, Menu, X, Leaf, Store } from "lucide-react";
 import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "./ThemeToggle";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -34,7 +25,7 @@ export default function Navbar() {
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 py-2 shadow-sm">
-      <nav className="max-w-[90%] min-h-[10vh] mx-auto px-4 md:flex items-center justify-between gap-4">
+      <nav className="max-w-[90%] min-h-[10vh] md:min-h-[7vh] mx-auto px-4 md:flex items-center justify-between gap-4">
         {/* Logo with hover effect */}
         <div
           onClick={() => {
@@ -50,53 +41,25 @@ export default function Navbar() {
           </h1>
         </div>
 
+        {user?.email && (
+          <Link href="/dashboard/main-store">
+            <Button className="flex" variant={"ghost"}>
+              <Store className="w-4 h-4" /> Main Store
+            </Button>
+          </Link>
+        )}
+
         {/* Actions */}
         <div className="flex justify-center items-center gap-3">
           {user?.email ? (
-            <>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none">
-                  <Avatar className="ring-2 ring-primary/30 hover:ring-primary/50 transition-all">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 backdrop-blur-sm bg-background/60"
-                >
-                  <DropdownMenuLabel className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-muted-foreground" />
-                    {user?.name}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={`/dashboard/profile`}
-                      className="cursor-pointer flex items-center gap-3"
-                    >
-                      <Home className="w-4 h-4" /> Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href={`/dashboard/admin/manage-stocks`}
-                      className="cursor-pointer flex items-center gap-3"
-                    >
-                      <FileDiffIcon className="w-4 h-4" /> Stock Management
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive-foreground cursor-pointer flex items-center gap-3"
-                    onClick={handleLogout}
-                  >
-                    <LogOut className="w-4 h-4 text-destructive" /> Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
+            <Button
+              variant={"destructive"}
+              size={"sm"}
+              className="hover:text-destructive-foreground cursor-pointer flex items-center gap-3"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-4 h-4" /> Logout
+            </Button>
           ) : (
             <Link href="/login">
               <Button variant="outline" className="rounded-full">

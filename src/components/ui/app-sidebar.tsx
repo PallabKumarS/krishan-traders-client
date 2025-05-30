@@ -2,19 +2,13 @@
 
 import {
   LogOut,
-  Users,
   LogIn,
-  HomeIcon,
-  FileSearch,
   ChevronRight,
   ChevronDown,
   UserCheck,
   UserLockIcon,
   Settings2Icon,
-  ColumnsSettings,
   Leaf,
-  Store,
-  Building2,
 } from "lucide-react";
 
 import {
@@ -38,48 +32,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
 import { config } from "@/middleware";
 import Link from "next/link";
+import { adminRoutes, items, staffRoutes } from "../modules/MainStore";
 
 // common routes for all users
-const items = [
-  {
-    title: "Home",
-    icon: HomeIcon,
-    href: "/",
-  },
-  {
-    title: "Main Store",
-    icon: Store,
-    href: `/dashboard/main-store`,
-  },
-];
-
-// admin routes
-const adminRoutes = [
-  {
-    title: "Users",
-    icon: Users,
-    href: "/dashboard/admin/manage-members",
-  },
-  {
-    title: "Transactions",
-    icon: FileSearch,
-    href: "/dashboard/admin/manage-transactions",
-  },
-  {
-    title: "Company",
-    icon: Building2,
-    href: "/dashboard/admin/manage-company",
-  },
-];
-
-// member routes
-const staffRoutes = [
-  {
-    title: "Stocks",
-    icon: ColumnsSettings,
-    href: "/dashboard/staff/manage-stocks",
-  },
-];
 
 export function AppSidebar() {
   const pathname = usePathname();
