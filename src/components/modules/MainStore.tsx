@@ -5,6 +5,7 @@ import {
   ColumnsSettings,
   FileClock,
   FileSearch,
+  LucideBoxes,
   Store,
   Users,
 } from "lucide-react";
@@ -16,21 +17,21 @@ export const commonRoutes = [
   {
     title: "Main Store",
     icon: Store,
-    href: `/`,
+    href: "/",
   },
 ];
 
 // admin routes
 export const adminRoutes = [
   {
-    title: "Users",
-    icon: Users,
-    href: "/dashboard/admin/manage-members",
-  },
-  {
     title: "Transactions",
     icon: FileSearch,
     href: "/dashboard/admin/manage-transactions",
+  },
+  {
+    title: "Pending Stocks",
+    icon: FileClock,
+    href: "/dashboard/admin/pending-stocks",
   },
   {
     title: "Company",
@@ -38,9 +39,14 @@ export const adminRoutes = [
     href: "/dashboard/admin/manage-company",
   },
   {
-    title: "Pending Stocks",
-    icon: FileClock,
-    href: "/dashboard/admin/pending-stocks",
+    title: "Users",
+    icon: Users,
+    href: "/dashboard/admin/manage-members",
+  },
+  {
+    title: "Sizes",
+    icon: LucideBoxes,
+    href: "/dashboard/admin/manage-sizes",
   },
 ];
 
@@ -86,19 +92,16 @@ const MainStore = () => {
 
   // Filter routes based on user role
   const getRoutesForUser = () => {
-    let routes = [...commonRoutes];
+    let routes: typeof commonRoutes = [];
 
     if (user?.role === "admin") {
       // Admin can see all routes
-      routes = [...routes, ...adminRoutes, ...staffRoutes];
+      routes = [...staffRoutes, ...adminRoutes];
     } else if (user?.role === "staff") {
       // Staff can only see staff routes
-      routes = [...routes, ...staffRoutes];
+      routes = [...staffRoutes];
     }
-    // Guest users only see common routes
-
-    // Exclude Main Store route since we're already on this page
-    return routes.filter((route) => route.href !== "/");
+    return routes;
   };
 
   const userRoutes = getRoutesForUser();

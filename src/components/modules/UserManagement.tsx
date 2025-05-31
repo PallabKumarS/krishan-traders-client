@@ -63,10 +63,9 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
         });
       }
     } catch (error: any) {
-      toast.error("Error changing user status", {
+      toast.error(error.message, {
         id: toastId,
       });
-      console.log(error);
     }
   };
 
@@ -85,10 +84,9 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
         });
       }
     } catch (error: any) {
-      toast.error("Error changing user role", {
+      toast.error(error.message, {
         id: toastId,
       });
-      console.log(error);
     }
   };
 
@@ -107,10 +105,9 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
         });
       }
     } catch (error: any) {
-      toast.error("Error deleting user", {
+      toast.error(error.message, {
         id: toastId,
       });
-      console.log(error);
     }
   };
 
@@ -173,7 +170,7 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
             <DropdownMenuContent align="end" className="bg-background/80">
               {["admin", "staff", "guest"].map((r) => (
                 <DropdownMenuItem
-                className="capitalize"
+                  className="capitalize"
                   key={r}
                   onSelect={() =>
                     handleUserRoleChange(row.original._id, r as TUser["role"])

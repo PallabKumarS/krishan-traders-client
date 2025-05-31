@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
@@ -13,6 +14,7 @@ export const isTokenExpired = async (token: string): Promise<boolean> => {
 
     return decoded.exp * 1000 < Date.now();
   } catch (err: any) {
+    // eslint-disable-next-line no-console
     console.error(err);
     return true;
   }

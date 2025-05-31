@@ -33,6 +33,7 @@ import { updateStock } from "@/services/StockService";
 import DatePicker from "react-datepicker";
 import { getAllCompany } from "@/services/CompanyService";
 import { FormSkeleton } from "../ui/skeleton";
+import { getSingleSize } from "@/services/SizeService";
 
 const formSchema = z.object({
   productName: z.string().min(1, "Product name is required"),
@@ -51,8 +52,10 @@ export default function StockAddForm({
 }) {
   const [loading, setLoading] = useState(false);
   const [isCLoading, setIsCLoading] = useState(false);
+  const [isSLoading, setIsSLoading] = useState(false);
   const [companyData, setCompanyData] = useState<TCompany[]>([]);
   const [productNames, setProductNames] = useState<string[]>([]);
+  const [sizes, setSizes] = useState<string[]>([]);
   const { user } = useAppContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -69,7 +72,9 @@ export default function StockAddForm({
   });
 
   const companyName = form.watch("companyName");
+  const productName = form.watch("productName");
 
+  // Fetch company data
   useEffect(() => {
     setIsCLoading(true);
 
@@ -92,6 +97,7 @@ export default function StockAddForm({
     fetchData();
   }, []);
 
+  // Fetch product names based on selected company
   useEffect(() => {
     if (companyName) {
       // Find the selected company and get its products
@@ -110,6 +116,24 @@ export default function StockAddForm({
       form.setValue("productName", "");
     }
   }, [companyName, form, companyData]);
+
+  // Fetch sizes based on selected product
+  useEffect(() => {
+    setIsSLoading(true);
+    if (productName) {
+      const fetchSizes = async () => {
+        const res = await getSingleSize(productName);
+        if (res.success) {
+          setSizes(res.data.size);
+        } else {
+          toast.error(res.message || "Failed to fetch sizes");
+        }
+      };
+
+      fetchSizes();
+      setIsSLoading(false);
+    }
+  }, [productName]);
 
   // Function to format date to YYYY-MM-DD
   const formatDateToYMD = (date: Date): string => {
@@ -193,7 +217,11 @@ export default function StockAddForm({
                       </SelectItem>
                     ) : (
                       companyData.map((company) => (
-                        <SelectItem key={company._id} value={company.name}>
+                        <SelectItem
+                          key={company._id}
+                          value={company.name}
+                          disabled={company.isDisabled}
+                        >
                           {company.name}
                         </SelectItem>
                       ))
@@ -261,13 +289,43 @@ export default function StockAddForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Stock Size</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter stock size (e.g., 50kg, 1L, 500ml)..."
-                    type="text"
-                    {...field}
-                  />
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={isSLoading}
+                >
+                  <FormControl>
+                    <SelectTrigger
+                      className={cn(
+                        "w-full",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      <SelectValue
+                        placeholder={
+                          isSLoading
+                            ? "Select a product first"
+                            : sizes.length === 0
+                            ? "No sizes available"
+                            : "Select a size"
+                        }
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {sizes.length === 0 ? (
+                      <SelectItem value="no-sizes" disabled>
+                        No Sizes available
+                      </SelectItem>
+                    ) : (
+                      sizes.map((size, index) => (
+                        <SelectItem key={index} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

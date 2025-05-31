@@ -2,6 +2,7 @@ export * from "./user.types";
 export * from "./record.types";
 export * from "./stock.types";
 export * from "./company.types";
+export * from "./size.types";
 
 export type TMeta = {
   page: number;

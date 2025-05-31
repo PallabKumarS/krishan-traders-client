@@ -58,7 +58,6 @@ export default function RegisterForm({
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Form submission error", error);
       toast.error(error.message, { id: toastId });
       setIsLoading(false);
     }

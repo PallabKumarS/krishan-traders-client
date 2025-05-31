@@ -76,9 +76,9 @@ const SellStockForm = ({ stockId, maxQuantity }: SellStockFormProps) => {
       }
 
       form.reset();
-    } catch (error) {
-      console.error("Error selling stock:", error);
-      toast.error("An error occurred while selling the stock", { id: toastId });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error.message, { id: toastId });
     } finally {
       setLoading(false);
     }

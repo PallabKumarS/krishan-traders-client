@@ -37,7 +37,6 @@ export const loginUser = async (data: { email: string; password: string }) => {
 
     return resData;
   } catch (error) {
-    console.error("Error logging in:", error);
     return error;
   }
 };
@@ -59,8 +58,6 @@ export const registerUser = async (data: {
     });
 
     const resData = await res.json();
-
-    console.log(resData);
 
     return resData;
   } catch (error) {
