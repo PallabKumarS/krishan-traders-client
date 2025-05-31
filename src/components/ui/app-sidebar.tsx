@@ -172,8 +172,8 @@ export function AppSidebar() {
                 Admin Panel
               </SidebarGroupLabel>
               <SidebarGroupContent>
-                {renderMenuItems(adminRoutes)}
                 {renderMenuItems(staffRoutes)}
+                {renderMenuItems(adminRoutes)}
               </SidebarGroupContent>
             </SidebarGroup>
           )
