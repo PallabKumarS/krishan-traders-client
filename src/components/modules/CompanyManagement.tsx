@@ -25,7 +25,7 @@ const CompanyManagement = () => {
       } else {
         toast.error("Failed to fetch companies");
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.message || "Failed to fetch companies");
     } finally {
@@ -97,27 +97,6 @@ const CompanyManagement = () => {
               <p className="text-sm text-muted-foreground">Active Partners</p>
               <p className="text-2xl font-bold">
                 {companyData.filter((c) => c.isDisabled === false).length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-card border rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Recent Additions</p>
-              <p className="text-2xl font-bold">
-                {
-                  companyData.filter((company) => {
-                    const createdDate = new Date(company.createdAt);
-                    const thirtyDaysAgo = new Date();
-                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                    return createdDate > thirtyDaysAgo;
-                  }).length
-                }
               </p>
             </div>
           </div>

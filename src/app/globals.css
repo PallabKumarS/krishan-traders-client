@@ -41,6 +41,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-shimmer-wave: shimmer-wave 1.5s ease-in-out infinite;
 }
 
 :root {
@@ -66,7 +68,7 @@
   --chart-1: oklch(0.55 0.18 140); /* Green */
   --chart-2: oklch(0.75 0.12 90); /* Brown */
   --chart-3: oklch(0.65 0.15 120); /* Light green */
-  --chart-4: oklch(0.60 0.10 60); /* Dark brown */
+  --chart-4: oklch(0.6 0.1 60); /* Dark brown */
   --chart-5: oklch(0.45 0.15 150); /* Deep green */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
@@ -85,9 +87,9 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.60 0.15 140); /* Brighter green for dark mode */
+  --primary: oklch(0.6 0.15 140); /* Brighter green for dark mode */
   --primary-foreground: oklch(0.393 0.095 152.535);
-  --secondary: oklch(0.70 0.10 90); /* Lighter brown for dark mode */
+  --secondary: oklch(0.7 0.1 90); /* Lighter brown for dark mode */
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
   --muted-foreground: oklch(0.705 0.015 286.067);
@@ -96,11 +98,11 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.60 0.15 140);
-  --chart-1: oklch(0.60 0.15 140); /* Green */
-  --chart-2: oklch(0.70 0.10 90); /* Brown */
+  --ring: oklch(0.6 0.15 140);
+  --chart-1: oklch(0.6 0.15 140); /* Green */
+  --chart-2: oklch(0.7 0.1 90); /* Brown */
   --chart-3: oklch(0.55 0.12 120); /* Light green */
-  --chart-4: oklch(0.50 0.08 60); /* Dark brown */
+  --chart-4: oklch(0.5 0.08 60); /* Dark brown */
   --chart-5: oklch(0.65 0.18 150); /* Deep green */
   --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: oklch(0.985 0 0);
@@ -139,4 +141,22 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes shimmer-wave {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-shimmer-wave {
+  animation: shimmer-wave 1.5s ease-in-out infinite;
 }
