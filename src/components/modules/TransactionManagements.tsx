@@ -29,7 +29,7 @@ const TransactionManagements = ({
         const res = await getAllRecords({
           ...query,
           status: activeStatus,
-          sort: "createdAt",
+          sort: "-createdAt",
         });
 
         if (res.success) {

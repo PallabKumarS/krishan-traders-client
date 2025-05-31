@@ -32,7 +32,7 @@ import { addStock } from "@/services/RecordService";
 import { updateStock } from "@/services/StockService";
 import DatePicker from "react-datepicker";
 import { getAllCompany } from "@/services/CompanyService";
-import { FormFieldSkeleton, FormSkeleton, Skeleton } from "../ui/skeleton";
+import { FormSkeleton } from "../ui/skeleton";
 
 const formSchema = z.object({
   productName: z.string().min(1, "Product name is required"),
