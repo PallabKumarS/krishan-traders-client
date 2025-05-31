@@ -13,12 +13,6 @@ import {
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardFooter } from "../ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import {
   acceptAddStock,
@@ -212,32 +206,31 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
 
       <CardFooter className="p-3 pt-0 space-x-4 justify-end">
         {showStatusDropdown && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={TEXT_SIZES.button}
-                disabled={isUpdating}
-              >
-                {isUpdating ? <ButtonLoader /> : "Accept/Reject"}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center">
-              <DropdownMenuItem
-                onClick={() => handleStatusUpdate("accepted")}
-                className={`${TEXT_SIZES.button} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 transition-colors`}
-              >
-                Accept
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleStatusUpdate("rejected")}
-                className={`${TEXT_SIZES.button} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 transition-colors`}
-              >
-                Reject
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex justify-start gap-2 flex-1">
+            <Button
+              onClick={() => handleStatusUpdate("accepted")}
+              disabled={isUpdating}
+              size="sm"
+              className={`${TEXT_SIZES.button} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800 transition-colors`}
+            >
+              {isUpdating ? <ButtonLoader /> : "Accept"}
+            </Button>
+
+            <ConfirmationBox
+              trigger={
+                <Button
+                  disabled={isUpdating}
+                  size="sm"
+                  className={`${TEXT_SIZES.button} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800 transition-colors`}
+                >
+                  {isUpdating ? <ButtonLoader /> : "Reject"}
+                </Button>
+              }
+              title="Are you sure you want to reject this record?"
+              description="This action cannot be undone."
+              onConfirm={() => handleStatusUpdate("rejected")}
+            />
+          </div>
         )}
 
         <div className="">

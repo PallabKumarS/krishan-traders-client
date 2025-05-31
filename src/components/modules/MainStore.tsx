@@ -3,6 +3,7 @@
 import {
   Building2,
   ColumnsSettings,
+  FileClock,
   FileSearch,
   Store,
   Users,
@@ -35,6 +36,11 @@ export const adminRoutes = [
     title: "Company",
     icon: Building2,
     href: "/dashboard/admin/manage-company",
+  },
+  {
+    title: "Pending Stocks",
+    icon: FileClock,
+    href: "/dashboard/admin/pending-stocks",
   },
 ];
 
