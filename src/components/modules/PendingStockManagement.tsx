@@ -9,8 +9,6 @@ import LoadingData from "../shared/LoadingData";
 import { Package } from "lucide-react";
 import RecordCard from "./RecordCard";
 
-type StatusType = "" | "pending" | "rejected" | "expired";
-
 const PendingStockManagement = ({
   query,
 }: {
