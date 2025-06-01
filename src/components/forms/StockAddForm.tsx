@@ -162,7 +162,6 @@ export default function StockAddForm({
 
       if (res.success) {
         toast.success(res.message, { id: toastId });
-        form.reset();
         setLoading(false);
       } else {
         toast.error(res.message, { id: toastId });
