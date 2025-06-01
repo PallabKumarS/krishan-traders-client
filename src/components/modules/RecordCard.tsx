@@ -169,7 +169,7 @@ const RecordCard = ({ record, onStatusUpdate }: RecordCardProps) => {
           {/* Size */}
           <div className="flex items-center gap-2">
             <Box className={`${ICON_SIZES.small} text-muted-foreground`} />
-            <span className={TEXT_SIZES.info}>{record.stockId.size}</span>
+            <span className={TEXT_SIZES.info}>{record?.stockId?.size}</span>
           </div>
 
           {/* Stocked date if available */}
