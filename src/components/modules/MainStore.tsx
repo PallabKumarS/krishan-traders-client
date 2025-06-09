@@ -4,6 +4,7 @@ import {
   Building2,
   ColumnsSettings,
   FileClock,
+  FilePlus,
   FileSearch,
   LucideBoxes,
   Store,
@@ -12,6 +13,8 @@ import {
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppContext } from "@/providers/ContextProvider";
+import { Modal } from "../shared/Modal";
+import StockAddForm from "../forms/StockAddForm";
 
 export const commonRoutes = [
   {
@@ -87,7 +90,6 @@ const RouteCard = ({
 };
 
 const MainStore = () => {
-  const isMobile = useIsMobile();
   const { user } = useAppContext();
 
   // Filter routes based on user role
@@ -120,13 +122,7 @@ const MainStore = () => {
         </p>
       </div>
 
-      <div
-        className={`grid gap-4 ${
-          isMobile
-            ? "grid-cols-2"
-            : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
-        }`}
-      >
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {userRoutes.map((route, index) => (
           <div
             key={route.href}
@@ -143,6 +139,35 @@ const MainStore = () => {
             />
           </div>
         ))}
+
+        {/* extra add stock for staff */}
+        <div
+          className="animate-in fade-in-0 slide-in-from-bottom-4"
+          style={{
+            animationDelay: `${200}ms`,
+            animationFillMode: "both",
+          }}
+        >
+          {user?.role === "staff" && (
+            <Modal
+              title="Add Stock"
+              trigger={
+                <div className="group relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary/50">
+                  <div className="flex flex-col items-center space-y-3">
+                    <div className="rounded-full bg-primary/10 p-3 transition-colors duration-300 group-hover:bg-primary/20">
+                      <FilePlus className="h-6 w-6 text-primary transition-transform duration-300 group-hover:scale-110" />
+                    </div>
+                    <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                      Add Stock
+                    </h3>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                </div>
+              }
+              content={<StockAddForm />}
+            />
+          )}
+        </div>
       </div>
 
       {userRoutes.length === 1 && (
