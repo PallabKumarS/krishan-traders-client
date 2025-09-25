@@ -23,7 +23,6 @@ import {
 import { useEffect, useState } from "react";
 import LoadingData from "@/components/shared/LoadingData";
 import { PaginationComponent } from "@/components/shared/PaginationComponent";
-import UserRowActions from "./UserRowActions";
 import EditableCell from "./EditableCell";
 
 const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
