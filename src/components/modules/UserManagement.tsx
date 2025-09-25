@@ -23,6 +23,8 @@ import {
 import { useEffect, useState } from "react";
 import LoadingData from "@/components/shared/LoadingData";
 import { PaginationComponent } from "@/components/shared/PaginationComponent";
+import UserRowActions from "./UserRowActions";
+import EditableCell from "./EditableCell";
 
 const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
   const [users, setUsers] = useState<TUser[]>([]);
@@ -116,10 +118,24 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
     {
       accessorKey: "name",
       header: "Name",
+      cell: ({ row }) => (
+        <EditableCell
+          id={row.original._id}
+          field="name"
+          initialValue={row.original.name}
+        />
+      ),
     },
     {
       accessorKey: "email",
       header: "Email",
+      cell: ({ row }) => (
+        <EditableCell
+          id={row.original._id}
+          field="email"
+          initialValue={row.original.email}
+        />
+      ),
     },
     {
       accessorKey: "status",
@@ -168,7 +184,7 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background/80">
-              {["admin", "staff", "guest"].map((r) => (
+              {["admin", "staff", "guest", "subAdmin"].map((r) => (
                 <DropdownMenuItem
                   className="capitalize"
                   key={r}

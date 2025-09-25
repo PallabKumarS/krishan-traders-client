@@ -13,6 +13,6 @@ export type TUser = {
   updatedAt: Date;
 };
 
-export type TUserRole = "admin" | "staff" | "guest";
+export type TUserRole = "admin" | "staff" | "guest" | "subAdmin";
 
 export type TUserStatus = "active" | "blocked";
