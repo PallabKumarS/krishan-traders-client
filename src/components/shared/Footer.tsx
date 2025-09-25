@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  X,
-  Leaf,
-} from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Leaf } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -18,9 +10,11 @@ const Footer = () => {
   const navLinks = [{ href: "/", label: "Home" }];
 
   const socialLinks = [
-    { href: "#", icon: Facebook, label: "Facebook" },
-    { href: "#", icon: Instagram, label: "Instagram" },
-    { href: "#", icon: X, label: "Twitter" },
+    {
+      href: "https://www.facebook.com/share/16uUfXZbZb",
+      icon: Facebook,
+      label: "Facebook",
+    },
   ];
 
   return (
@@ -70,19 +64,19 @@ const Footer = () => {
               <li className="flex items-center space-x-2 text-muted-foreground group cursor-pointer justify-center">
                 <Mail className="w-4 h-4 group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-primary group-hover:underline decoration-primary decoration-2 underline-offset-4 transition-all">
-                  contact@krishantraders.com
+                  krishantraders1992@gmail.com
                 </span>
               </li>
               <li className="flex items-center space-x-2 text-muted-foreground group cursor-pointer justify-center">
                 <Phone className="w-4 h-4 group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-primary group-hover:underline decoration-primary decoration-2 underline-offset-4 transition-all">
-                  +91 9876543210
+                  +8801787844888
                 </span>
               </li>
               <li className="flex items-center space-x-2 text-muted-foreground group cursor-pointer justify-center">
                 <MapPin className="w-4 h-4 group-hover:text-primary transition-colors" />
                 <span className="group-hover:text-primary group-hover:underline decoration-primary decoration-2 underline-offset-4 transition-all">
-                  123 Farm Road, Agricultural District
+                  Setabganj Road, Birganj, Dinajpur
                 </span>
               </li>
             </ul>
