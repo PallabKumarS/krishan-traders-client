@@ -21,6 +21,7 @@ import ButtonLoader from "../shared/ButtonLoader";
 import { useState } from "react";
 import { loginUser } from "@/services/AuthService";
 import { useAppContext } from "@/providers/ContextProvider";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string(),
@@ -106,6 +107,11 @@ export default function LoginForm() {
                 />
               </FormControl>
 
+              <Link href={"/forgot-password"}>
+                <p className="text-left text-primary hover:cursor-pointer">
+                  Forgot password?
+                </p>
+              </Link>
               <FormMessage />
             </FormItem>
           )}

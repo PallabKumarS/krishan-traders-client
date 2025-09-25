@@ -80,10 +80,44 @@ export const passwordChange = async (userData: FieldValues) => {
 
     const result = await res.json();
 
-    if (result.success) {
-    }
-
     return result;
+  } catch (error: any) {
+    return error;
+  }
+};
+
+export const forgotPassword = async (email: string) => {
+  try {
+    const res = await fetch(`${process.env.BASE_API}/auth/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    return await res.json();
+  } catch (error: any) {
+    return error;
+  }
+};
+
+// reset password
+export const resetPassword = async (data: {
+  code: number;
+  password: string;
+  email: string;
+}) => {
+  try {
+    const res = await fetch(`${process.env.BASE_API}/auth/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    return await res.json();
   } catch (error: any) {
     return error;
   }
