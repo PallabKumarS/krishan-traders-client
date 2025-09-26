@@ -11,7 +11,6 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppContext } from "@/providers/ContextProvider";
 import { Modal } from "../shared/Modal";
 import StockAddForm from "../forms/StockAddForm";
@@ -62,6 +61,21 @@ export const staffRoutes = [
   },
 ];
 
+// sub admin routes
+export const subAdminRoutes = [
+  ...staffRoutes,
+  {
+    title: "Transactions",
+    icon: FileSearch,
+    href: "/dashboard/admin/manage-transactions",
+  },
+  {
+    title: "Pending Stocks",
+    icon: FileClock,
+    href: "/dashboard/admin/pending-stocks",
+  },
+];
+
 const RouteCard = ({
   title,
   icon: Icon,
@@ -102,6 +116,9 @@ const MainStore = () => {
     } else if (user?.role === "staff") {
       // Staff can only see staff routes
       routes = [...staffRoutes];
+    } else if (user?.role === "subAdmin") {
+      // routes for sub admin
+      routes = [...subAdminRoutes];
     }
     return routes;
   };
