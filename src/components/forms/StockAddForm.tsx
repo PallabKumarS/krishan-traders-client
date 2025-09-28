@@ -74,6 +74,28 @@ export default function StockAddForm({
   const companyName = form.watch("companyName");
   const productName = form.watch("productName");
 
+  const useInputFocusScroll = () => {
+    useEffect(() => {
+      const handleFocus = (event: FocusEvent) => {
+        const target = event.target as HTMLElement;
+        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+          setTimeout(() => {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "nearest",
+            });
+          }, 300);
+        }
+      };
+
+      document.addEventListener("focusin", handleFocus);
+      return () => document.removeEventListener("focusin", handleFocus);
+    }, []);
+  };
+
+  useInputFocusScroll();
+
   // Fetch company data
   useEffect(() => {
     setIsCLoading(true);
