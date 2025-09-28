@@ -23,6 +23,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { toast } from "sonner";
+import SearchBox from "../shared/SearchBox";
 
 type StatusType = "" | "rejected" | "expired" | "accepted" | "sold";
 
@@ -36,6 +37,7 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
   const [isFetching, setIsFetching] = useState(true);
   const [stockData, setStockData] = useState<TStock[]>([]);
   const [activeStatus, setActiveStatus] = useState<StatusType>("accepted");
+  const [searchValue, setSearchValue] = useState("");
   const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(
     new Set()
   );
@@ -54,8 +56,28 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
         });
 
         if (res.success) {
-          setStockData(res.data);
-          // setMeta(res.meta);
+          if (searchValue) {
+            const filteredStocksByCompany = res.data.filter((stock: TStock) =>
+              stock.companyName
+                .toLowerCase()
+                .includes(searchValue.toLowerCase())
+            );
+
+            const filteredStocksByProduct = res.data.filter((stock: TStock) =>
+              stock.productName
+                .toLowerCase()
+                .includes(searchValue.toLowerCase())
+            );
+
+            setStockData(
+              filteredStocksByCompany?.length > 0
+                ? filteredStocksByCompany
+                : filteredStocksByProduct
+            );
+            return;
+          } else {
+            setStockData(res.data);
+          }
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
@@ -66,7 +88,7 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
     };
 
     fetchStocks();
-  }, [query, activeStatus]);
+  }, [query, activeStatus, searchValue]);
 
   const handleTabChange = (value: string) => {
     setActiveStatus(value as StatusType);
@@ -112,6 +134,7 @@ const StockManagement = ({ query }: { query: Record<string, unknown> }) => {
 
   return (
     <div className="mx-auto">
+      <SearchBox setSearchValue={setSearchValue} />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Manage Stock</h1>
         <Modal

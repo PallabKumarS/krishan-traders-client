@@ -218,12 +218,12 @@ export function AppSidebar() {
                   "
                 >
                   <Avatar className="h-8 w-8 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all">
-                    {user?.profileImg ? (
+                    {/* {user?.profileImg ? (
                       <AvatarImage src={user?.profileImg} alt={user?.name} />
                     ) : (
                       <AvatarImage src="https://github.com/shadcn.png" />
-                    )}
-                    <AvatarFallback>LK</AvatarFallback>
+                    )} */}
+                    <AvatarFallback>KT</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
                     <p className="text-sm font-medium">{user?.name}</p>

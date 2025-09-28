@@ -10,18 +10,35 @@ import { Ruler, Plus } from "lucide-react";
 import SizeCard from "./SizeCard";
 import LoadingData from "../shared/LoadingData";
 import SizeForm from "../forms/SizeForm";
+import SearchBox from "../shared/SearchBox";
 
 const SizeManagement = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [sizeData, setSizeData] = useState<TSize[]>([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
-  const fetchSizes = async () => {
+  const fetchSizes = async (searchValue?: string) => {
     setIsFetching(true);
     try {
       const res = await getAllSizes();
+
       if (res?.success) {
-        setSizeData(res.data);
+        if (searchValue) {
+          const filteredByProducts = res.data.filter((size: TSize) =>
+            size.productName.toLowerCase().includes(searchValue.toLowerCase())
+          );
+
+          const filteredBySizes = res.data.filter((size: TSize) =>
+            size.size.includes(searchValue.toLowerCase())
+          );
+
+          setSizeData(
+            filteredByProducts.length > 0 ? filteredByProducts : filteredBySizes
+          );
+        } else {
+          setSizeData(res.data);
+        }
       } else {
         toast.error("Failed to fetch product sizes");
       }
@@ -34,8 +51,8 @@ const SizeManagement = () => {
   };
 
   useEffect(() => {
-    fetchSizes();
-  }, []);
+    fetchSizes(searchValue);
+  }, [searchValue]);
 
   const handleAddSuccess = () => {
     setAddModalOpen(false);
@@ -52,6 +69,7 @@ const SizeManagement = () => {
 
   return (
     <div className="mx-auto">
+      <SearchBox setSearchValue={setSearchValue} />
       {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center gap-2 mb-6">
         <div>
