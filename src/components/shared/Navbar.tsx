@@ -6,15 +6,30 @@ import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
+import { jwtDecode } from "jwt-decode";
+import { getToken } from "@/lib/verifyToken";
+import { useEffect, useState } from "react";
+import { set } from "date-fns";
 
 export default function Navbar() {
   const router = useRouter();
   const { user, logout } = useAppContext();
+  const [tempUser, setTempUser] = useState<any>(null);
 
   const handleLogout = () => {
     logout();
     router.push("/login");
   };
+
+  useEffect(() => {
+    if (!user) {
+      const fetchTempUser = async () => {
+        const tempUser = jwtDecode((await getToken()) || "");
+        setTempUser(tempUser);
+      };
+      fetchTempUser();
+    }
+  }, [user]);
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-30 py-2 shadow-sm">
@@ -36,7 +51,7 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="flex justify-center items-center gap-3">
-          {user?.email ? (
+          {user?.email || tempUser?.email ? (
             <Button
               variant={"destructive"}
               size={"sm"}
