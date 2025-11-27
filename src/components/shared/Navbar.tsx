@@ -4,12 +4,11 @@ import { Button } from "../ui/button";
 import { LogOut, Leaf } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
 import { jwtDecode } from "jwt-decode";
 import { getToken } from "@/lib/verifyToken";
 import { useEffect, useState } from "react";
-import { set } from "date-fns";
 
 export default function Navbar() {
   const router = useRouter();
