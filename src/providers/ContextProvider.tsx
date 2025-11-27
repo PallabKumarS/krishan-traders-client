@@ -7,6 +7,7 @@ import { getToken } from "@/lib/verifyToken";
 import { deleteCookie } from "@/services/AuthService";
 import { getMe } from "@/services/UserService";
 import { TUser } from "@/types";
+import { jwtDecode } from "jwt-decode";
 import {
   createContext,
   Dispatch,
