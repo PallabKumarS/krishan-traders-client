@@ -1,13 +1,13 @@
 import UserModel from "../user/user.model";
 import { AppError } from "../../errors/AppError";
 import httpStatus from "http-status";
-import config from "../../config";
 import { createToken, verifyToken } from "./auth.utils";
 import type { TLoginUser } from "./auth.interface";
 import type { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import type { TUser } from "../user/user.interface";
 import { sendPasswordResetEmail } from "../../utils/sendMail";
+import config from "@/server/config";
 
 // login user here
 const loginUser = async (payload: TLoginUser) => {

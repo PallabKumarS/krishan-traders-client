@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import type { TUser, IUser } from "./user.interface";
 import bcrypt from "bcrypt";
-const SALT = Number(process.env.BCRYPT_SALT_ROUNDS ?? 10);
+import config from "@/server/config";
 
 const userSchema = new Schema<TUser, IUser>(
   {
@@ -32,7 +32,10 @@ userSchema.pre("save", async function () {
 
   if (!user.isModified("password")) return;
 
-  user.password = await bcrypt.hash(user.password, SALT);
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds)
+  );
 });
 
 // empty password field
