@@ -2,9 +2,11 @@
 import { SizeService } from "@/server/modules/size/size.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function GET(request: Request) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     const data = await SizeService.getAllSizeFromDB();
@@ -21,6 +23,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();

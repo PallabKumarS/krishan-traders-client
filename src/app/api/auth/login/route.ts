@@ -2,9 +2,11 @@
 import { AuthService } from "@/server/modules/auth/auth.service";
 import { handleApiError } from "@/server/errors/handleApiError";
 import { cookies } from "next/headers";
+import { connectDB } from "@/lib/mongodb";
 
 export async function POST(request: Request) {
   try {
+    await connectDB();
     const body = await request.json();
     const { accessToken, refreshToken } = await AuthService.loginUser(body);
 

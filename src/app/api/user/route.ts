@@ -1,9 +1,11 @@
 import { UserService } from "@/server/modules/user/user.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function GET(request: Request) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     const { searchParams } = new URL(request.url);

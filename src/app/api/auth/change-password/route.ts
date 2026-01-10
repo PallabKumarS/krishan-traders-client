@@ -2,9 +2,11 @@
 import { AuthService } from "@/server/modules/auth/auth.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function PATCH(request: Request) {
   try {
+    await connectDB();
     const user = await requireAuth(request, ["admin", "staff"]);
     const body = await request.json();
 

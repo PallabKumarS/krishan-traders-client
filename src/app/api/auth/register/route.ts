@@ -1,9 +1,11 @@
 // src/app/api/auth/register/route.ts
 import { AuthService } from "@/server/modules/auth/auth.service";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function POST(request: Request) {
   try {
+    await connectDB();
     const body = await request.json();
     const user = await AuthService.registerUser(body);
 

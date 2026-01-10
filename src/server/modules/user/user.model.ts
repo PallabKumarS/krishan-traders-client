@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import type { TUser, IUser } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "@/server/config";
@@ -57,6 +57,7 @@ userSchema.statics.isPasswordMatched = async function (
   return await bcrypt.compare(myPlaintextPassword, hashedPassword);
 };
 
-const UserModel = model<TUser, IUser>("Users", userSchema);
+const UserModel =
+  (mongoose.models.Users as IUser) || model<TUser, IUser>("Users", userSchema);
 
 export default UserModel;

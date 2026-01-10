@@ -2,9 +2,11 @@
 import { UserService } from "@/server/modules/user/user.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function GET(request: Request) {
   try {
+   await connectDB(); 
     const user = await requireAuth(request, ["admin", "staff"]);
 
     const data = await UserService.getMeFromDB(user.userId);

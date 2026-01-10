@@ -2,12 +2,14 @@
 import { CompanyService } from "@/server/modules/company/company.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();
@@ -28,6 +30,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     await CompanyService.deleteCompanyFromDB(params.id);

@@ -2,12 +2,14 @@
 import { SizeService } from "@/server/modules/size/size.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/mongodb";
 
 export async function GET(
   request: Request,
   { params }: { params: { productName: string } }
 ) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin", "staff"]);
 
     const data = await SizeService.getSingleSizeFromDB(params.productName);
@@ -27,6 +29,7 @@ export async function PATCH(
   { params }: { params: { productName: string } }
 ) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();
@@ -47,6 +50,7 @@ export async function DELETE(
   { params }: { params: { productName: string } }
 ) {
   try {
+    await connectDB();
     await requireAuth(request, ["admin"]);
 
     await SizeService.deleteSizeFromDB(params.productName);
