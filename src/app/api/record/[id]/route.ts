@@ -1,22 +1,20 @@
-// src/app/api/users/[id]/role/route.ts
-import { UserService } from "@/server/modules/user/user.service";
+import { RecordService } from "@/server/modules/record/record.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
 
-export async function PATCH(
+export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
     await requireAuth(request, ["admin"]);
 
-    const body = await request.json();
-    const data = await UserService.updateUserRoleIntoDB(params.id, body);
+    await RecordService.deleteRecordFromDB(params.id);
 
     return Response.json({
       success: true,
-      message: "User role updated successfully",
-      data,
+      message: "Record deleted successfully",
+      data: null,
     });
   } catch (error) {
     return handleApiError(error);

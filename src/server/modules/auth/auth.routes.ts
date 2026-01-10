@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "./auth.controller";
-import validateRequest from "../../auth/validateRequest";
-import auth from "../../auth/requireAuth";
+import validateRequest from "../../guards/validateRequest";
+import auth from "../../guards/requireAuth";
 import { USER_ROLE } from "../user/user.constant";
 import { AuthValidation } from "./auth.validation";
 import { UserValidation } from "../user/user.validation";

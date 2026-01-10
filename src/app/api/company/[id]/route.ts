@@ -1,5 +1,5 @@
-// src/app/api/stocks/[id]/route.ts
-import { StockService } from "@/server/modules/stock/stock.service";
+// src/app/api/company/[id]/route.ts
+import { CompanyService } from "@/server/modules/company/company.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
 
@@ -11,11 +11,11 @@ export async function PATCH(
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();
-    const data = await StockService.updateStockInDB(params.id, body);
+    const data = await CompanyService.updateCompanyIntoDB(params.id, body);
 
     return Response.json({
       success: true,
-      message: "Stock updated successfully",
+      message: "Company updated successfully",
       data,
     });
   } catch (error) {
@@ -30,11 +30,11 @@ export async function DELETE(
   try {
     await requireAuth(request, ["admin"]);
 
-    await StockService.deleteStockFromDB(params.id);
+    await CompanyService.deleteCompanyFromDB(params.id);
 
     return Response.json({
       success: true,
-      message: "Stock deleted successfully",
+      message: "Company deleted successfully",
       data: null,
     });
   } catch (error) {

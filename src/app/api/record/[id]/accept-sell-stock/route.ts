@@ -1,5 +1,5 @@
-// src/app/api/users/[id]/role/route.ts
-import { UserService } from "@/server/modules/user/user.service";
+// src/app/api/records/[id]/accept-sell-stock/route.ts
+import { RecordService } from "@/server/modules/record/record.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
 
@@ -11,11 +11,11 @@ export async function PATCH(
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();
-    const data = await UserService.updateUserRoleIntoDB(params.id, body);
+    const data = await RecordService.acceptSellStockInDB(params.id, body);
 
     return Response.json({
       success: true,
-      message: "User role updated successfully",
+      message: "Stock accepted successfully",
       data,
     });
   } catch (error) {

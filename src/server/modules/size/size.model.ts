@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { TSize } from "./size.interface";
+import type { TSize } from "./size.interface";
 
 const sizeSchema = new Schema<TSize>(
 	{

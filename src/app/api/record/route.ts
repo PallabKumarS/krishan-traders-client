@@ -1,4 +1,5 @@
-import { UserService } from "@/server/modules/user/user.service";
+// src/app/api/records/route.ts
+import { RecordService } from "@/server/modules/record/record.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
 
@@ -9,11 +10,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = Object.fromEntries(searchParams.entries());
 
-    const result = await UserService.getAllUserFromDB(query);
+    const result = await RecordService.getAllRecordFromDB(query);
 
     return Response.json({
       success: true,
-      message: "Users retrieved successfully",
+      message: "Records retrieved successfully",
       data: result.data,
       meta: result.meta,
     });
