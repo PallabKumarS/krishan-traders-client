@@ -16,7 +16,8 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "complexity": "off"
+      "complexity": "off",
+      "style": "off"
     }
   },
   "javascript": {
