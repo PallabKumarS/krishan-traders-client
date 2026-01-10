@@ -1,176 +1,176 @@
 /* Wrapper for centering */
 .leaf-wrapper {
-  width: 150px;
-  height: 250px;
-  position: relative;
-  margin: 2rem auto;
+	width: 150px;
+	height: 250px;
+	position: relative;
+	margin: 2rem auto;
 }
 
 /* Main leaf body */
 .leaf {
-  width: 60px;
-  height: 90px;
-  background: var(--primary);
-  border-radius: 50% 0 50% 0;
-  position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  animation: pulse 3s infinite ease-in-out;
-  box-shadow: 0 0 15px transparent;
+	width: 60px;
+	height: 90px;
+	background: var(--primary);
+	border-radius: 50% 0 50% 0;
+	position: absolute;
+	top: 40px;
+	left: 50%;
+	transform: translateX(-50%) rotate(45deg);
+	animation: pulse 3s infinite ease-in-out;
+	box-shadow: 0 0 15px transparent;
 }
 
 /* Leaf vein */
 .leaf::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 90px;
-  background: var(--accent);
-  opacity: 0.8;
-  border-radius: 2px;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 4px;
+	height: 90px;
+	background: var(--accent);
+	opacity: 0.8;
+	border-radius: 2px;
 }
 
 /* Stem */
 .stem {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 80px;
-  background: var(--chart-3);
-  border-radius: 4px;
+	position: absolute;
+	bottom: 80px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 6px;
+	height: 80px;
+	background: var(--chart-3);
+	border-radius: 4px;
 }
 
 .stem::before,
 .stem::after {
-  content: "";
-  position: absolute;
-  background: var(--chart-3);
-  border-radius: 4px;
+	content: "";
+	position: absolute;
+	background: var(--chart-3);
+	border-radius: 4px;
 }
 
 .stem::before {
-  width: 4px;
-  height: 30px;
-  top: 20px;
-  left: -10px;
-  transform: rotate(-45deg);
+	width: 4px;
+	height: 30px;
+	top: 20px;
+	left: -10px;
+	transform: rotate(-45deg);
 }
 
 .stem::after {
-  width: 4px;
-  height: 30px;
-  top: 20px;
-  right: -10px;
-  transform: rotate(45deg);
+	width: 4px;
+	height: 30px;
+	top: 20px;
+	right: -10px;
+	transform: rotate(45deg);
 }
 
 /* Small leaves around the main leaf */
 .small-leaf {
-  width: 30px;
-  height: 40px;
-  background: var(--secondary);
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform-origin: bottom center;
-  border-radius: 50% 0 50% 0;
-  opacity: 0.8;
-  animation: sway 4s infinite ease-in-out;
+	width: 30px;
+	height: 40px;
+	background: var(--secondary);
+	position: absolute;
+	top: 30px;
+	left: 50%;
+	transform-origin: bottom center;
+	border-radius: 50% 0 50% 0;
+	opacity: 0.8;
+	animation: sway 4s infinite ease-in-out;
 }
 
 .small-leaf:nth-child(3) {
-  transform: rotate(0deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-1);
+	transform: rotate(0deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-1);
 }
 .small-leaf:nth-child(4) {
-  transform: rotate(30deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-2);
+	transform: rotate(30deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-2);
 }
 .small-leaf:nth-child(5) {
-  transform: rotate(60deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-3);
+	transform: rotate(60deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-3);
 }
 .small-leaf:nth-child(6) {
-  transform: rotate(90deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-1);
+	transform: rotate(90deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-1);
 }
 .small-leaf:nth-child(7) {
-  transform: rotate(120deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-2);
+	transform: rotate(120deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-2);
 }
 .small-leaf:nth-child(8) {
-  transform: rotate(150deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-3);
+	transform: rotate(150deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-3);
 }
 .small-leaf:nth-child(9) {
-  transform: rotate(180deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-1);
+	transform: rotate(180deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-1);
 }
 .small-leaf:nth-child(10) {
-  transform: rotate(210deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-2);
+	transform: rotate(210deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-2);
 }
 .small-leaf:nth-child(11) {
-  transform: rotate(240deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-3);
+	transform: rotate(240deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-3);
 }
 .small-leaf:nth-child(12) {
-  transform: rotate(270deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-1);
+	transform: rotate(270deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-1);
 }
 .small-leaf:nth-child(13) {
-  transform: rotate(300deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-2);
+	transform: rotate(300deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-2);
 }
 .small-leaf:nth-child(14) {
-  transform: rotate(330deg) translateY(-60px) rotate(45deg);
-  background: var(--chart-3);
+	transform: rotate(330deg) translateY(-60px) rotate(45deg);
+	background: var(--chart-3);
 }
 
 /* Pulse effect for main leaf */
 @keyframes pulse {
-  0%,
-  100% {
-    transform: translateX(-50%) rotate(45deg) scale(1);
-    box-shadow: 0 0 10px transparent;
-  }
-  50% {
-    transform: translateX(-50%) rotate(45deg) scale(1.1);
-    box-shadow: 0 0 20px var(--primary);
-  }
+	0%,
+	100% {
+		transform: translateX(-50%) rotate(45deg) scale(1);
+		box-shadow: 0 0 10px transparent;
+	}
+	50% {
+		transform: translateX(-50%) rotate(45deg) scale(1.1);
+		box-shadow: 0 0 20px var(--primary);
+	}
 }
 
 /* Swaying leaves effect */
 @keyframes sway {
-  0%,
-  100% {
-    transform-origin: bottom center;
-    transform: rotate(var(--rotation)) translateY(-60px) rotate(45deg);
-  }
-  25% {
-    transform: rotate(var(--rotation)) translateY(-60px) rotate(50deg);
-  }
-  75% {
-    transform: rotate(var(--rotation)) translateY(-60px) rotate(40deg);
-  }
+	0%,
+	100% {
+		transform-origin: bottom center;
+		transform: rotate(var(--rotation)) translateY(-60px) rotate(45deg);
+	}
+	25% {
+		transform: rotate(var(--rotation)) translateY(-60px) rotate(50deg);
+	}
+	75% {
+		transform: rotate(var(--rotation)) translateY(-60px) rotate(40deg);
+	}
 }
 
 /* Add a soil base */
 .leaf-wrapper::after {
-  content: "";
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 20px;
-  background: var(--chart-4);
-  border-radius: 50%;
-  z-index: -1;
+	content: "";
+	position: absolute;
+	bottom: 40px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 120px;
+	height: 20px;
+	background: var(--chart-4);
+	border-radius: 50%;
+	z-index: -1;
 }

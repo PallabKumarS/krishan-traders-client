@@ -3,39 +3,39 @@
 import crypto from "crypto";
 
 export const uploadToCloudinary = async (file: File) => {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME as string;
-  const apiKey = process.env.CLOUDINARY_API_KEY as string;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET as string;
+	const cloudName = process.env.CLOUDINARY_CLOUD_NAME as string;
+	const apiKey = process.env.CLOUDINARY_API_KEY as string;
+	const apiSecret = process.env.CLOUDINARY_API_SECRET as string;
 
-  const timestamp = Math.floor(Date.now() / 1000);
-  const paramsToSign = `timestamp=${timestamp}`;
+	const timestamp = Math.floor(Date.now() / 1000);
+	const paramsToSign = `timestamp=${timestamp}`;
 
-  // Create signature
-  const signature = crypto
-    .createHash("sha1")
-    .update(paramsToSign + apiSecret)
-    .digest("hex");
+	// Create signature
+	const signature = crypto
+		.createHash("sha1")
+		.update(paramsToSign + apiSecret)
+		.digest("hex");
 
-  const data = new FormData();
+	const data = new FormData();
 
-  data.append("file", file);
-  data.append("api_key", apiKey);
-  data.append("timestamp", timestamp.toString());
-  data.append("signature", signature);
+	data.append("file", file);
+	data.append("api_key", apiKey);
+	data.append("timestamp", timestamp.toString());
+	data.append("signature", signature);
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    {
-      method: "POST",
-      body: data,
-    }
-  );
+	const res = await fetch(
+		`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+		{
+			method: "POST",
+			body: data,
+		},
+	);
 
-  const result = await res.json();
+	const result = await res.json();
 
-  if (!res.ok) {
-    throw new Error(result.error?.message || "Upload failed");
-  }
+	if (!res.ok) {
+		throw new Error(result.error?.message || "Upload failed");
+	}
 
-  return result.secure_url;
+	return result.secure_url;
 };

@@ -6,16 +6,16 @@ import path from "path";
 const moduleName = process.argv[2];
 
 if (!moduleName) {
-  console.error("Error: Module name is required.");
-  process.exit(1);
+	console.error("Error: Module name is required.");
+	process.exit(1);
 }
 
 function folderName(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1) + "Service";
+	return str.charAt(0).toUpperCase() + str.slice(1) + "Service";
 }
 
 function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // Define the directory and file path
@@ -45,7 +45,7 @@ export const getAll${capitalize(moduleName)}s = async () => {
 
 // Get single ${moduleName}
 export const getSingle${capitalize(
-  moduleName
+	moduleName,
 )} = async (${moduleName.toLowerCase()}Id: string) => {
   const token = await getValidToken();
   try {
@@ -65,9 +65,9 @@ export const getSingle${capitalize(
 
 // Create ${moduleName}
 export const create${capitalize(
-  moduleName
+	moduleName,
 )} = async (${moduleName.toLowerCase()}Data: T${capitalize(
-  moduleName
+	moduleName,
 )}): Promise<any> => {
   const token = await getValidToken();
 
@@ -91,7 +91,7 @@ export const create${capitalize(
 
 // Delete ${moduleName}
 export const delete${capitalize(
-  moduleName
+	moduleName,
 )} = async (${moduleName.toLowerCase()}Id: string): Promise<any> => {
   const token = await getValidToken();
 
@@ -112,13 +112,13 @@ export const delete${capitalize(
 
 // Create directory and file
 const createModule = async () => {
-  try {
-    await mkdir(dirPath, { recursive: true });
-    await writeFile(filePath, fileContent, "utf8");
-    console.log(`Module ${moduleName} created successfully at ${filePath}`);
-  } catch (error) {
-    console.error("Error creating module:", error);
-  }
+	try {
+		await mkdir(dirPath, { recursive: true });
+		await writeFile(filePath, fileContent, "utf8");
+		console.log(`Module ${moduleName} created successfully at ${filePath}`);
+	} catch (error) {
+		console.error("Error creating module:", error);
+	}
 };
 
 createModule();
