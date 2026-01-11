@@ -13,7 +13,7 @@ const roleBasedPrivateRoutes = {
 
 const sharedRoutes = [/^\/dashboard\/settings/, /^\/$/];
 
-export const middleware = async (request: NextRequest) => {
+export const proxy = async (request: NextRequest) => {
   const userInfo = await getCurrentUser();
 
   const { pathname } = request.nextUrl;

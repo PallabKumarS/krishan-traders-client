@@ -31,7 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
-import { config } from "@/middleware";
+import { config } from "@/proxy";
 import Link from "next/link";
 import { adminRoutes, commonRoutes, staffRoutes } from "../modules/MainStore";
 

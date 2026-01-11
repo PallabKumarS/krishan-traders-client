@@ -34,7 +34,7 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirectPath");
   const router = useRouter();
-  const { setToken, refreshUser } = useAppContext();
+  const { refreshUser } = useAppContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,7 +48,6 @@ export default function LoginForm() {
       const res = await loginUser(values);
 
       if (res?.success) {
-        setToken(res?.data.accessToken);
         setIsLoading(false);
         toast.success(res?.message, { id: toastId });
         await refreshUser();

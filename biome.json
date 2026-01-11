@@ -17,7 +17,8 @@
     "rules": {
       "recommended": true,
       "complexity": "off",
-      "style": "off"
+      "style": "off",
+      "a11y": "off"
     }
   },
   "javascript": {

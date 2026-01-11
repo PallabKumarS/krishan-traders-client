@@ -6,9 +6,8 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function GET(request: Request) {
   try {
-   await connectDB(); 
+    await connectDB();
     const user = await requireAuth(request, ["admin", "staff"]);
-
     const data = await UserService.getMeFromDB(user.userId);
 
     return Response.json({

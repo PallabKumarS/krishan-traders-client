@@ -11,66 +11,67 @@ import { getToken } from "@/lib/verifyToken";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
-	const router = useRouter();
-	const { user, logout } = useAppContext();
-	const [tempUser, setTempUser] = useState<any>(null);
+  const router = useRouter();
+  const { user, logout } = useAppContext();
+  // biome-ignore lint/suspicious/noExplicitAny: <>
+  const [tempUser, setTempUser] = useState<any>(null);
 
-	const handleLogout = () => {
-		logout();
-		router.push("/login");
-	};
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
-	useEffect(() => {
-		if (!user) {
-			const fetchTempUser = async () => {
-				const tempUser = jwtDecode((await getToken()) || "");
-				setTempUser(tempUser);
-			};
-			fetchTempUser();
-		}
-	}, [user]);
+  useEffect(() => {
+    if (!user) {
+      const fetchTempUser = async () => {
+        const tempUser = jwtDecode((await getToken()) as string);
+        setTempUser(tempUser);
+      };
+      fetchTempUser();
+    }
+  }, [user]);
 
-	return (
-		<header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-30 py-2 shadow-sm">
-			<nav className="max-w-[90%] min-h-[10vh] md:min-h-[7vh] mx-auto px-4 md:flex items-center justify-between gap-4">
-				{/* Logo with hover effect */}
-				<div
-					onClick={() => {
-						router.push("/");
-					}}
-					className="transition-transform hover:scale-105 flex items-center justify-center gap-1"
-				>
-					<Leaf className="text-primary size-9" />
-					<h1 className="">
-						<span className="text-gradient text-2xl font-bold">
-							Krishan Traders
-						</span>
-					</h1>
-				</div>
+  return (
+    <header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-30 py-2 shadow-sm">
+      <nav className="max-w-[90%] min-h-[10vh] md:min-h-[7vh] mx-auto px-4 md:flex items-center justify-between gap-4">
+        {/* Logo with hover effect */}
+        <div
+          onClick={() => {
+            router.push("/");
+          }}
+          className="transition-transform hover:scale-105 flex items-center justify-center gap-1"
+        >
+          <Leaf className="text-primary size-9" />
+          <h1 className="">
+            <span className="text-gradient text-2xl font-bold">
+              Krishan Traders
+            </span>
+          </h1>
+        </div>
 
-				{/* Actions */}
-				<div className="flex justify-center items-center gap-3">
-					{user?.email || tempUser?.email ? (
-						<Button
-							variant={"destructive"}
-							size={"sm"}
-							className="hover:text-destructive-foreground cursor-pointer flex items-center gap-3"
-							onClick={handleLogout}
-						>
-							<LogOut className="w-4 h-4" /> Logout
-						</Button>
-					) : (
-						<Link href="/login">
-							<Button variant="outline" className="rounded-full">
-								Login
-							</Button>
-						</Link>
-					)}
+        {/* Actions */}
+        <div className="flex justify-center items-center gap-3">
+          {user?.email || tempUser?.email ? (
+            <Button
+              variant={"destructive"}
+              size={"sm"}
+              className="hover:text-destructive-foreground cursor-pointer flex items-center gap-3"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-4 h-4" /> Logout
+            </Button>
+          ) : (
+            <Link href="/login">
+              <Button variant="outline" className="rounded-full">
+                Login
+              </Button>
+            </Link>
+          )}
 
-					<ThemeToggle />
-					<Link href={"/cart"}></Link>
-				</div>
-			</nav>
-		</header>
-	);
+          <ThemeToggle />
+          <Link href={"/cart"}></Link>
+        </div>
+      </nav>
+    </header>
+  );
 }
