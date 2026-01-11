@@ -111,7 +111,7 @@ const StockCard = ({ stock }: StockCardProps) => {
             <div className="flex items-center text-sm">
               <ShoppingCart className="mr-2 h-4 w-4 text-blue-500" />
               <span>
-                Sold by <strong>{stock.soldBy?.name}</strong> on{" "}
+                Sold by <strong>{stock.soldBy.name}</strong> on{" "}
                 <strong>{format(new Date(stock.soldDate), "PPP")}</strong>
               </span>
             </div>
