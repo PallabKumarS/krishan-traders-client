@@ -72,7 +72,12 @@ export default function StockDataTableForDesktop({ data }: { data: TStock[] }) {
               <Modal
                 title="Sell Stock"
                 trigger={
-                  <Button size="sm">
+                  <Button
+                    size="sm"
+                    disabled={
+                      stock.status !== "accepted" || stock.quantity === 0
+                    }
+                  >
                     <ShoppingCart className="h-4 w-4" />
                   </Button>
                 }
@@ -87,7 +92,11 @@ export default function StockDataTableForDesktop({ data }: { data: TStock[] }) {
               <Modal
                 title="Edit Stock"
                 trigger={
-                  <Button size="sm" variant="outline">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={stock.status !== "accepted"}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
                 }
