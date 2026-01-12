@@ -7,7 +7,6 @@
   },
   "files": {
     "ignoreUnknown": false
-
   },
   "formatter": {
     "enabled": true,
@@ -19,7 +18,13 @@
       "recommended": true,
       "complexity": "off",
       "style": "off",
-      "a11y": "off"
+      "a11y": {
+        "useKeyWithClickEvents": "off",
+        "useKeyWithMouseEvents": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off"
+      }
     }
   },
   "javascript": {

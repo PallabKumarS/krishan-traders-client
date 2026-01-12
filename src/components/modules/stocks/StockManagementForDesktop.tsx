@@ -47,19 +47,23 @@ export default function StockManagementForDesktop({
   if (loading) return <LoadingData />;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Stock Management</h1>
-        <Modal
-          title="Add Stock"
-          trigger={<Button>Add Stock</Button>}
-          content={<StockAddForm />}
-        />
-      </div>
+    <div className="relative">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-40 bg-background border-b">
+        <div className="flex items-center justify-between px-1 py-3">
+          <h1 className="text-2xl font-semibold">Stock Management</h1>
 
-      {/* Status Tabs */}
-      <div className="sticky top-0 z-30 bg-background border-b pb-2">
+          <Modal
+            title="Add Stock"
+            trigger={
+              <Button className="sticky top-16 right-10">Add Stock</Button>
+            }
+            content={<StockAddForm />}
+          />
+        </div>
+
+        {/* Sticky Tabs (below header) */}
+
         <Tabs value={status} onValueChange={(v) => setStatus(v as StatusType)}>
           <TabsList>
             <TabsTrigger value="accepted">Accepted</TabsTrigger>
@@ -71,8 +75,8 @@ export default function StockManagementForDesktop({
         </Tabs>
       </div>
 
-      {/* Company Tables */}
-      <div className="space-y-10">
+      {/* Scrollable Content */}
+      <div className="space-y-10 pt-6">
         {companies.map((company) => (
           <CompanyStockTableForDesktop
             key={company}

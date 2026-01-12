@@ -13,12 +13,13 @@ export default function CompanyStockTableForDesktop({
   company: string;
   stocks: TStock[];
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
       {/* Company Header */}
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className={cn(
           "w-full flex items-center justify-between px-4 py-3",
@@ -42,7 +43,7 @@ export default function CompanyStockTableForDesktop({
 
       {/* Collapsible Content */}
       {open && (
-        <div className="max-h-[70vh] overflow-auto">
+        <div className="overflow-visible">
           <StockDataTableForDesktop data={stocks} />
         </div>
       )}
