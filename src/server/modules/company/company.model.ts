@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import type { TCompany } from "./company.interface";
 
 const companySchema = new Schema<TCompany>(
@@ -13,6 +13,7 @@ const companySchema = new Schema<TCompany>(
   }
 );
 
-const CompanyModel = model<TCompany>("Companys", companySchema);
+const CompanyModel =
+  mongoose.models.Companys || model<TCompany>("Companys", companySchema);
 
 export default CompanyModel;

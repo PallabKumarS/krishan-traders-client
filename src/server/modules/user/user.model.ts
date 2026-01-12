@@ -58,6 +58,6 @@ userSchema.statics.isPasswordMatched = async function (
 };
 
 const UserModel =
-  (mongoose.models.Users as IUser) || model<TUser, IUser>("Users", userSchema);
+  mongoose.models.Users || model<TUser, IUser>("Users", userSchema);
 
 export default UserModel;

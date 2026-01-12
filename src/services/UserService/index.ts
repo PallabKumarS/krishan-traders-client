@@ -2,7 +2,7 @@
 "use server";
 
 import { getValidToken } from "@/lib/verifyToken";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 
 // Get all users
 export const getAllUsers = async (
@@ -81,9 +81,9 @@ export const updateUser = async (id: string, data: any): Promise<any> => {
       body: JSON.stringify(data),
     });
 
-    revalidateTag("users", "users");
-    revalidateTag("user", "user");
-    revalidateTag("me", "me");
+    updateTag("users");
+    updateTag("user");
+    updateTag("me");
 
     return await res.json();
   } catch (error: any) {
@@ -109,9 +109,9 @@ export const updateUserStatus = async (
       body: JSON.stringify({ status }),
     });
 
-    revalidateTag("users", "users");
-    revalidateTag("user", "user");
-    revalidateTag("me", "me");
+    updateTag("users");
+    updateTag("user");
+    updateTag("me");
 
     return await res.json();
   } catch (error: any) {
@@ -136,9 +136,9 @@ export const updateUserRole = async (
       body: JSON.stringify({ role }),
     });
 
-    revalidateTag("users", "users");
-    revalidateTag("user", "user");
-    revalidateTag("me", "me");
+    updateTag("users");
+    updateTag("user");
+    updateTag("me");
 
     return await res.json();
   } catch (error: any) {
@@ -158,9 +158,9 @@ export const deleteUser = async (id: string): Promise<any> => {
       },
     });
 
-    revalidateTag("users", "users");
-    revalidateTag("user", "user");
-    revalidateTag("me", "me");
+    updateTag("users");
+    updateTag("user");
+    updateTag("me");
 
     return await res.json();
   } catch (error: any) {

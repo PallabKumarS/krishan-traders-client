@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import type { TRecord } from "./record.interface";
 
 const recordSchema = new Schema<TRecord>(
@@ -31,6 +31,7 @@ const recordSchema = new Schema<TRecord>(
   }
 );
 
-const RecordModel = model<TRecord>("Records", recordSchema);
+const RecordModel =
+  mongoose.models.Records || model<TRecord>("Records", recordSchema);
 
 export default RecordModel;

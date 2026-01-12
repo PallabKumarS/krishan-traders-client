@@ -2,7 +2,7 @@
 "use server";
 
 import { getValidToken } from "@/lib/verifyToken";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
 
 // Get all stocks
@@ -60,8 +60,8 @@ export const updateStock = async (
       },
     });
 
-    revalidateTag("stock", "stock");
-    revalidateTag("stocks", "stocks");
+    updateTag("stock");
+    updateTag("stocks");
 
     return await res.json();
   } catch (error: any) {
@@ -72,8 +72,6 @@ export const updateStock = async (
 // Delete stock
 export const deleteStock = async (stockId: string): Promise<any> => {
   const token = await getValidToken();
-
-  console.log("hit", stockId);
   try {
     const res = await fetch(`${process.env.BASE_API}/stocks/${stockId}`, {
       method: "DELETE",
@@ -82,7 +80,7 @@ export const deleteStock = async (stockId: string): Promise<any> => {
       },
     });
 
-    revalidateTag("stocks", "stocks");
+    updateTag("stock");
     return await res.json();
   } catch (error: any) {
     return error;
