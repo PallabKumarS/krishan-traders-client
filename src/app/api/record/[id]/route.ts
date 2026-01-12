@@ -5,13 +5,13 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
-    await RecordService.deleteRecordFromDB(params.id);
+    await RecordService.deleteRecordFromDB((await params).id);
 
     return Response.json({
       success: true,

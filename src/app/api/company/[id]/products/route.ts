@@ -6,13 +6,17 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin", "staff"]);
 
-    const data = await CompanyService.getProductsNameByCompanyFromDB(params.id);
+    const data = await CompanyService.getProductsNameByCompanyFromDB(
+      (
+        await params
+      ).id
+    );
 
     return Response.json({
       success: true,

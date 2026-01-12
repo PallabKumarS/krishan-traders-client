@@ -27,13 +27,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
-    await UserService.deleteUserFromDB(params.id);
+    await UserService.deleteUserFromDB((await params).id);
 
     return Response.json({
       success: true,

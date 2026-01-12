@@ -47,13 +47,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { productName: string } }
+  { params }: { params: Promise<{ productName: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
-    await SizeService.deleteSizeFromDB(params.productName);
+    await SizeService.deleteSizeFromDB((await params).productName);
 
     return Response.json({
       success: true,

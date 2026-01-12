@@ -6,14 +6,19 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();
-    const data = await UserService.updateUserRoleIntoDB(params.id, body);
+    const data = await UserService.updateUserRoleIntoDB(
+      (
+        await params
+      ).id,
+      body
+    );
 
     return Response.json({
       success: true,
