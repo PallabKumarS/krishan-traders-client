@@ -1,0 +1,48 @@
+[
+  { "name": "Admire 200 SL", "companyName": "Bayer Crop Science" },
+  { "name": "Confidor 70 WG", "companyName": "Bayer Crop Science" },
+
+  { "name": "Auto Gold", "companyName": "Auto Crop Care" },
+  { "name": "Intefa Plus", "companyName": "Intefa Crop Care" },
+  { "name": "Mimpex Super", "companyName": "Mimpex Agro Chemicals" },
+  { "name": "Ingenious 25 EC", "companyName": "Ingenious Crop Science" },
+  { "name": "United Power", "companyName": "United Crop Science" },
+
+  {
+    "name": "USTAAD 10 EC",
+    "companyName": "United Phosphorus (Bangladesh) Ltd"
+  },
+
+  { "name": "Aim 40DF", "companyName": "Petrochem Bangladesh Limited" },
+  {
+    "name": "Baronta (GA3) 80%",
+    "companyName": "Petrochem Bangladesh Limited"
+  },
+  { "name": "Champ", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Champion", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Caojin", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Coragen", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Curzate", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Dicarzole", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Ferterra", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Gilzim", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Imidan", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Katap", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "M-Pede", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Magister", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "NIZE", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "P-Bin", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Petrofos", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Pilothrin", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Prominent", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Simmazeb", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Shincyper", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Stanza", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Sulfin", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Thrive", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Petroboron", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Petro-Gyp", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Petromag", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Petrozinc", "companyName": "Petrochem Bangladesh Limited" },
+  { "name": "Zingsul", "companyName": "Petrochem Bangladesh Limited" }
+]

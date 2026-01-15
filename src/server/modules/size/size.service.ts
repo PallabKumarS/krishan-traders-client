@@ -1,5 +1,5 @@
 import type { TSize } from "./size.interface";
-import { SizeModel } from "./size.model";
+import SizeModel from "./size.model";
 
 // get all sizes
 const getAllSizeFromDB = async (query?: Record<string, unknown>) => {
@@ -22,12 +22,29 @@ const getSizeByProductFromDB = async (productId: string) => {
 
 // create size
 const createSizeIntoDB = async (payload: Partial<TSize>) => {
-  return SizeModel.create(payload);
+  const label = `${payload.unitQuantity} ${payload.unit} X ${payload.stackCount}`;
+  return SizeModel.create({
+    ...payload,
+    label,
+  });
 };
 
 // update size
 const updateSizeIntoDB = async (id: string, payload: Partial<TSize>) => {
-  return SizeModel.findByIdAndUpdate(id, payload, { new: true });
+  let label: string | undefined;
+
+  if (payload.unit && payload.unitQuantity && payload.stackCount) {
+    label = `${payload.unitQuantity} ${payload.unit} X ${payload.stackCount}`;
+  }
+
+  return SizeModel.findByIdAndUpdate(
+    id,
+    {
+      ...payload,
+      ...(label ? { label } : {}),
+    },
+    { new: true }
+  );
 };
 
 // delete size

@@ -1,5 +1,5 @@
 import type { TCompany } from "./company.interface";
-import { CompanyModel } from "./company.model";
+import CompanyModel from "./company.model";
 
 // get all companies
 const getAllCompanyFromDB = async (query?: Record<string, unknown>) => {

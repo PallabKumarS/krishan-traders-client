@@ -10,7 +10,7 @@ const companySchema = new Schema<TCompany>(
   { timestamps: true }
 );
 
-export const CompanyModel =
+const CompanyModel =
   models.Companies || model<TCompany>("Companies", companySchema);
 
 export default CompanyModel;
