@@ -1,7 +1,7 @@
 import type { Types } from "mongoose";
 
 export interface TStock {
-  variant: Types.ObjectId;
+  size: Types.ObjectId;
   batchNo?: string;
   quantity: number;
 

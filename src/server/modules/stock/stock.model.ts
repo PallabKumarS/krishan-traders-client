@@ -3,9 +3,9 @@ import type { TStock } from "./stock.interface";
 
 const stockSchema = new Schema<TStock>(
   {
-    variant: {
+    size: {
       type: Schema.Types.ObjectId,
-      ref: "Variants",
+      ref: "Sizes",
       required: true,
     },
 
@@ -18,7 +18,7 @@ const stockSchema = new Schema<TStock>(
       required: true,
     },
     stockedDate: { type: Date, default: Date.now },
-    expiryDate: Date,
+    expiryDate: { type: Date, required: true },
 
     status: {
       type: String,

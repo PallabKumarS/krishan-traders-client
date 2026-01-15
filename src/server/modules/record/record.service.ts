@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import { AppError } from "../../errors/AppError";
 import { RecordModel } from "./record.model";
 import { StockModel } from "../stock/stock.model";
+import calculateSellPieces from "@/server/utils/calculateQuantity";
 
 /* =====================================
    GET ALL RECORDS
@@ -51,19 +52,31 @@ const requestAddStockToDB = async (payload: {
 ===================================== */
 const requestSellStockFromDB = async (payload: {
   stock: string;
+  sellType: "piece" | "carton";
   quantity: number;
   soldBy: string;
 }) => {
-  const stock = await StockModel.findById(payload.stock);
+  const stock = await StockModel.findById(payload.stock).populate({
+    path: "size",
+  });
+
   if (!stock) throw new AppError(httpStatus.NOT_FOUND, "Stock not found");
 
-  if (stock.quantity < payload.quantity) {
+  const unitsPerPack = stock.variant.unitsPerPack || 1;
+
+  const sellPieces = calculateSellPieces(
+    payload.sellType,
+    payload.quantity,
+    unitsPerPack
+  );
+
+  if (stock.quantity < sellPieces) {
     throw new AppError(httpStatus.BAD_REQUEST, "Insufficient stock");
   }
 
   return RecordModel.create({
     stock: payload.stock,
-    quantity: payload.quantity,
+    quantity: sellPieces,
     soldBy: payload.soldBy,
     type: "sale",
     status: "pending",
