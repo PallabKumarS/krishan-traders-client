@@ -23,7 +23,6 @@ const sizes = JSON.parse(
 
 async function seed() {
   await connectDB();
-
   console.log("🌱 Seeding started...");
 
   /* =====================
@@ -34,7 +33,7 @@ async function seed() {
   for (const company of companies) {
     const doc =
       (await CompanyModel.findOne({ name: company.name })) ||
-      (await CompanyModel.create(company));
+      (await CompanyModel.create({ name: company.name }));
 
     companyMap.set(company.name, doc._id.toString());
   }
@@ -62,7 +61,7 @@ async function seed() {
   }
 
   /* =====================
-     SIZES / VARIANTS
+     SIZES
   ===================== */
   for (const size of sizes) {
     const productId = productMap.get(size.productName);
@@ -70,18 +69,17 @@ async function seed() {
 
     const exists = await SizeModel.findOne({
       product: productId,
-      label: size.label,
+      unit: size.unit,
+      unitQuantity: size.unitQuantity,
+      stackCount: size.stackCount,
     });
 
     if (!exists) {
       await SizeModel.create({
         product: productId,
-        label: size.label,
         unit: size.unit,
-        quantityPerUnit: size.quantityPerUnit,
-        unitsPerPack: size.unitsPerPack,
-        tp: size.tp,
-        mrp: size.mrp,
+        unitQuantity: size.unitQuantity,
+        stackCount: size.stackCount,
       });
     }
   }

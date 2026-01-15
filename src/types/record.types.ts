@@ -1,15 +1,12 @@
 import { TStock } from "./stock.types";
 import { TUser } from "./user.types";
 
-export type TRecord = {
-	soldBy?: TUser;
-	stockedBy?: TUser;
-	soldDate?: string;
-	stockedDate?: string;
-	quantity: number;
-	stockId: TStock;
-	status: "sold" | "expired" | "pending" | "rejected" | "accepted";
-	_id: string;
-	createdAt: Date;
-	updatedAt: Date;
-};
+export interface TRecord {
+  stock: TStock;
+  type: "stock_in" | "sale";
+  quantity: number;
+  stockedBy: TUser;
+  status: "pending" | "accepted" | "rejected";
+  soldBy?: TUser;
+  note: string;
+}

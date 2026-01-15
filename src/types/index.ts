@@ -3,17 +3,18 @@ export * from "./record.types";
 export * from "./stock.types";
 export * from "./company.types";
 export * from "./size.types";
+export * from "./product.types";
 
 export type TMeta = {
-	page: number;
-	limit: number;
-	totalPage: number;
-	totalData: number;
+  page: number;
+  limit: number;
+  totalPage: number;
+  totalData: number;
 };
 
 export type TMongoose = {
-	_id: string;
-	createdAt: string;
-	updatedAt: string;
-	__v: number;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 };

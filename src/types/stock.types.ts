@@ -1,25 +1,21 @@
+import { TSize } from "./size.types";
 import { TUser } from "./user.types";
 
-export type TStock = {
-	companyName: string;
-	productName: string;
-	size: string;
-	status: TStockStatus;
-	quantity: number;
-	stockedDate: Date;
-	stockedBy: TUser;
-	expiryDate: Date;
-	soldDate?: Date;
-	soldBy?: TUser;
-	message?: string;
-	_id: string;
-	createdAt: Date;
-	updatedAt: Date;
-};
+export interface TStock {
+  size: TSize;
+  batchNo?: string;
+  quantity: number;
+
+  stockedBy: TUser;
+  stockedDate: Date;
+  expiryDate: Date;
+
+  status: TStockStatus;
+}
 
 export type TStockStatus =
-	| "pending"
-	| "accepted"
-	| "sold"
-	| "expired"
-	| "rejected";
+  | "pending"
+  | "available"
+  | "sold"
+  | "expired"
+  | "rejected";

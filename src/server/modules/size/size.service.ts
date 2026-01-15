@@ -17,7 +17,10 @@ const getAllSizeFromDB = async (query?: Record<string, unknown>) => {
 
 // get sizes by product
 const getSizeByProductFromDB = async (productId: string) => {
-  return SizeModel.find({ product: productId });
+  return SizeModel.find({ product: productId }).populate({
+    path: "product",
+    populate: { path: "company" },
+  });
 };
 
 // create size
