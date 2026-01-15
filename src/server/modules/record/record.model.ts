@@ -11,12 +11,24 @@ const recordSchema = new Schema<TRecord>(
 
     type: {
       type: String,
-      enum: ["stock_in", "sale", "return", "adjustment"],
+      enum: ["stock_in", "sale"],
       required: true,
     },
 
     quantity: { type: Number, required: true },
-    performedBy: {
+
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+    },
+
+    stockedBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Users",
+    },
+    soldBy: {
       type: Schema.Types.ObjectId,
       ref: "Users",
     },

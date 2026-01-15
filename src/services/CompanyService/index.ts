@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
+
 "use server";
 
 import { getValidToken } from "@/lib/verifyToken";
@@ -113,7 +114,7 @@ export const deleteCompany = async (companyId: string): Promise<any> => {
 export const getProductNamesByCompanyName = async (companyName: string) => {
   try {
     const res = await fetch(
-      `${process.env.BASE_API}/company/${companyName}/products`,
+      `${process.env.BASE_API}/products?company=${companyName}`,
       {
         next: {
           tags: ["company-products"],

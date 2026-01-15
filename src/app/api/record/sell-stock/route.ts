@@ -8,7 +8,7 @@ export async function PATCH(request: Request) {
     await requireAuth(request, ["admin", "staff"]);
 
     const body = await request.json();
-    const data = await RecordService.sellStockFromDB(body);
+    const data = await RecordService.requestSellStockFromDB(body);
 
     return Response.json({
       success: true,

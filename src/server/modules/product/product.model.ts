@@ -16,5 +16,7 @@ const productSchema = new Schema<TProduct>(
 
 productSchema.index({ name: 1, company: 1 });
 
-export const ProductModel =
+const ProductModel =
   models.Products || model<TProduct>("Products", productSchema);
+
+export default ProductModel;

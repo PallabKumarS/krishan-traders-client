@@ -17,8 +17,7 @@ export async function GET(request: Request) {
     return Response.json({
       success: true,
       message: "Records retrieved successfully",
-      data: result.data,
-      meta: result.meta,
+      data: result,
     });
   } catch (error) {
     return handleApiError(error);

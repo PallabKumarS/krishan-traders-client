@@ -1,5 +1,5 @@
 import type { TProduct } from "./product.interface";
-import { ProductModel } from "./product.model";
+import ProductModel from "./product.model";
 
 // get all products
 const getAllProductsFromDB = async (query?: Record<string, unknown>) => {

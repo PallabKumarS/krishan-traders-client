@@ -2,9 +2,11 @@ import type { Types } from "mongoose";
 
 export interface TRecord {
   stock: Types.ObjectId;
-  type: "stock_in" | "sale" | "return" | "adjustment";
+  type: "stock_in" | "sale";
   quantity: number;
-  performedBy?: Types.ObjectId;
+  stockedBy: Types.ObjectId;
+  status: "pending" | "accepted" | "rejected";
+  soldBy?: Types.ObjectId;
   note?: string;
   createdAt?: Date;
   updatedAt?: Date;
