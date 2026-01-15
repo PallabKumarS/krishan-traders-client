@@ -2,8 +2,6 @@
 "use client";
 
 import CompanyForm from "@/components/forms/CompanyForm";
-import ProductTableForDesktop from "@/components/modules/manage-info/ProductTableForDesktop";
-import SizeTableForDesktop from "@/components/modules/manage-info/SizeTableForDesktop";
 import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
 import { Badge } from "@/components/ui/badge";
