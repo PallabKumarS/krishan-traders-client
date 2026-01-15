@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { ProductService } from "@/server/modules/product/product.service";
 import { connectDB } from "@/lib/mongodb";
 
@@ -7,13 +6,15 @@ export async function GET(req: Request) {
   await connectDB();
 
   const { searchParams } = new URL(req.url);
-  const company = searchParams.get("company");
+  const query = Object.fromEntries(searchParams.entries());
 
-  const products = await ProductService.getAllProductsFromDB(
-    company ? { company } : undefined
-  );
+  const products = await ProductService.getAllProductsFromDB(query);
 
-  return NextResponse.json(products);
+  return Response.json({
+    success: true,
+    message: "Products retrieved successfully",
+    data: products,
+  });
 }
 
 // CREATE product
@@ -23,5 +24,9 @@ export async function POST(req: Request) {
   const body = await req.json();
   const product = await ProductService.createProductIntoDB(body);
 
-  return NextResponse.json(product, { status: 201 });
+  return Response.json({
+    success: true,
+    message: "Product created successfully",
+    data: product,
+  });
 }

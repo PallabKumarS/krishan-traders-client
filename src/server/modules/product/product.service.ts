@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import type { TProduct } from "./product.interface";
 import ProductModel from "./product.model";
 
@@ -6,25 +7,26 @@ const getAllProductsFromDB = async (query?: Record<string, unknown>) => {
   const filter: Record<string, unknown> = {};
 
   if (query?.company) {
-    filter.company = query.company;
+    filter.company = new Types.ObjectId(query.company as string);
   }
 
-  return ProductModel.find(filter).populate("company");
+  const result = await ProductModel.find(filter).populate("company");
+  return result;
 };
 
 // create product
 const createProductIntoDB = async (payload: Partial<TProduct>) => {
-  return ProductModel.create(payload);
+  return await ProductModel.create(payload);
 };
 
 // update product
 const updateProductIntoDB = async (id: string, payload: Partial<TProduct>) => {
-  return ProductModel.findByIdAndUpdate(id, payload, { new: true });
+  return await ProductModel.findByIdAndUpdate(id, payload, { new: true });
 };
 
 // delete product
 const deleteProductFromDB = async (id: string) => {
-  return ProductModel.findByIdAndDelete(id);
+  return await ProductModel.findByIdAndDelete(id);
 };
 
 export const ProductService = {

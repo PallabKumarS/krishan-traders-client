@@ -1,12 +1,11 @@
 "use client";
 
 import {
-  Building2,
+  BookOpenTextIcon,
   ColumnsSettings,
   FileClock,
   FilePlus,
   FileSearch,
-  LucideBoxes,
   Store,
   Users,
 } from "lucide-react";
@@ -31,24 +30,14 @@ export const adminRoutes = [
     href: "/dashboard/admin/manage-transactions",
   },
   {
-    title: "Pending Stocks",
-    icon: FileClock,
-    href: "/dashboard/admin/pending-stocks",
-  },
-  {
-    title: "Company",
-    icon: Building2,
-    href: "/dashboard/admin/manage-company",
-  },
-  {
     title: "Users",
     icon: Users,
     href: "/dashboard/admin/manage-members",
   },
   {
-    title: "Sizes",
-    icon: LucideBoxes,
-    href: "/dashboard/admin/manage-sizes",
+    title: "Manage Info",
+    icon: BookOpenTextIcon,
+    href: "/dashboard/admin/manage-info",
   },
 ];
 

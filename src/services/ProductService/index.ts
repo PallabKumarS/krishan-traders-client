@@ -7,15 +7,15 @@ import { updateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
 
 // Get all company
-export const getAllCompany = async (query?: Record<string, unknown>) => {
+export const getAllProducts = async (query?: Record<string, unknown>) => {
   const queryString = new URLSearchParams(
     query as Record<string, string>
   ).toString();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/company?${queryString}`, {
+    const res = await fetch(`${process.env.BASE_API}/products?${queryString}`, {
       next: {
-        tags: ["companies"],
+        tags: ["products"],
       },
       headers: {
         "Content-type": "application/json",
@@ -29,12 +29,12 @@ export const getAllCompany = async (query?: Record<string, unknown>) => {
 };
 
 // Get single company
-export const getSingleCompany = async (companyId: string) => {
+export const getSingleProduct = async (productId: string) => {
   const token = await getValidToken();
   try {
-    const res = await fetch(`${process.env.BASE_API}/company/${companyId}`, {
+    const res = await fetch(`${process.env.BASE_API}/products/${productId}`, {
       next: {
-        tags: ["company"],
+        tags: ["product"],
       },
       headers: {
         Authorization: token,
@@ -47,20 +47,20 @@ export const getSingleCompany = async (companyId: string) => {
 };
 
 // Create company
-export const createCompany = async (companyData: FieldValues): Promise<any> => {
+export const createProduct = async (productData: FieldValues): Promise<any> => {
   const token = await getValidToken();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/company`, {
+    const res = await fetch(`${process.env.BASE_API}/products`, {
       method: "POST",
-      body: JSON.stringify(companyData),
+      body: JSON.stringify(productData),
       headers: {
         "Content-type": "application/json",
         Authorization: token,
       },
     });
 
-    updateTag("companies");
+    updateTag("products");
 
     return await res.json();
   } catch (error: any) {
@@ -68,36 +68,36 @@ export const createCompany = async (companyData: FieldValues): Promise<any> => {
   }
 };
 
-// update company
+// update product
 export const updateCompany = async (
-  companyId: string,
-  companyData: FieldValues
+  productId: string,
+  productData: FieldValues
 ): Promise<any> => {
   const token = await getValidToken();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/company/${companyId}`, {
+    const res = await fetch(`${process.env.BASE_API}/products/${productId}`, {
       method: "PATCH",
-      body: JSON.stringify(companyData),
+      body: JSON.stringify(productData),
       headers: {
         "Content-type": "application/json",
         Authorization: token,
       },
     });
 
-    updateTag("companies");
+    updateTag("products");
     return await res.json();
   } catch (error: any) {
     return error;
   }
 };
 
-// Delete company
-export const deleteCompany = async (companyId: string): Promise<any> => {
+// Delete product
+export const deleteCompany = async (productId: string): Promise<any> => {
   const token = await getValidToken();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/company/${companyId}`, {
+    const res = await fetch(`${process.env.BASE_API}/products/${productId}`, {
       method: "DELETE",
       headers: {
         Authorization: token,
@@ -105,6 +105,26 @@ export const deleteCompany = async (companyId: string): Promise<any> => {
     });
 
     updateTag("companies");
+    return await res.json();
+  } catch (error: any) {
+    return error;
+  }
+};
+
+export const getAllProductsByCompany = async (companyId: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.BASE_API}/products?company=${companyId}`,
+      {
+        next: {
+          tags: ["company-products"],
+        },
+        headers: {
+          "Content-type": "application/json",
+          Authorization: await getValidToken(),
+        },
+      }
+    );
     return await res.json();
   } catch (error: any) {
     return error;

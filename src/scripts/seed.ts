@@ -7,7 +7,7 @@ import ProductModel from "@/server/modules/product/product.model";
 import SizeModel from "@/server/modules/size/size.model";
 import { connectDB } from "@/lib/mongodb";
 
-const dataPath = path.join(process.cwd(), "seed/data");
+const dataPath = path.join(process.cwd(), "/src/seed");
 
 const companies = JSON.parse(
   fs.readFileSync(path.join(dataPath, "companies.json"), "utf-8")
@@ -67,6 +67,8 @@ async function seed() {
     const productId = productMap.get(size.productName);
     if (!productId) continue;
 
+    const label = `${size.unitQuantity} ${size.unit} X ${size.stackCount}`;
+
     const exists = await SizeModel.findOne({
       product: productId,
       unit: size.unit,
@@ -80,6 +82,7 @@ async function seed() {
         unit: size.unit,
         unitQuantity: size.unitQuantity,
         stackCount: size.stackCount,
+        label,
       });
     }
   }

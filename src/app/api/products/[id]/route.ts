@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/correctness/noUnusedFunctionParameters: <> */
-import { NextResponse } from "next/server";
 import { ProductService } from "@/server/modules/product/product.service";
 import { connectDB } from "@/lib/mongodb";
 
@@ -14,7 +13,11 @@ export async function GET(
     _id: (await params).id,
   });
 
-  return NextResponse.json(product[0] || null);
+  return Response.json({
+    success: true,
+    message: "Product retrieved successfully",
+    data: product,
+  });
 }
 
 // UPDATE product
@@ -32,7 +35,11 @@ export async function PATCH(
     body
   );
 
-  return NextResponse.json(updated);
+  return Response.json({
+    success: true,
+    message: "Product updated successfully",
+    data: updated,
+  });
 }
 
 // DELETE product
@@ -43,5 +50,9 @@ export async function DELETE(
   await connectDB();
 
   const deleted = await ProductService.deleteProductFromDB((await params).id);
-  return NextResponse.json(deleted);
+  return Response.json({
+    success: true,
+    message: "Product deleted successfully",
+    data: deleted,
+  });
 }
