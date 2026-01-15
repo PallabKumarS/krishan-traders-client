@@ -25,10 +25,10 @@ export const getAllSizes = async () => {
 };
 
 // Get single size
-export const getSingleSize = async (productName: string) => {
+export const getSingleSize = async (productId: string) => {
   const token = await getValidToken();
   try {
-    const res = await fetch(`${process.env.BASE_API}/sizes/${productName}`, {
+    const res = await fetch(`${process.env.BASE_API}/sizes/${productId}`, {
       next: {
         tags: ["size"],
       },
@@ -68,13 +68,13 @@ export const createSize = async (sizeData: FieldValues): Promise<any> => {
 
 // Update size
 export const updateSize = async (
-  productName: string,
+  productId: string,
   sizeData: FieldValues
 ): Promise<any> => {
   const token = await getValidToken();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/sizes/${productName}`, {
+    const res = await fetch(`${process.env.BASE_API}/sizes/${productId}`, {
       method: "PUT",
       body: JSON.stringify(sizeData),
       headers: {
@@ -93,11 +93,11 @@ export const updateSize = async (
 };
 
 // Delete size
-export const deleteSize = async (productName: string): Promise<any> => {
+export const deleteSize = async (productId: string): Promise<any> => {
   const token = await getValidToken();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/sizes/${productName}`, {
+    const res = await fetch(`${process.env.BASE_API}/sizes/${productId}`, {
       method: "DELETE",
       headers: {
         Authorization: token,

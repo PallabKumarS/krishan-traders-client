@@ -6,16 +6,16 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ productName: string }> }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin", "staff"]);
 
-    const data = await SizeService.getSingleSizeFromDB(
+    const data = await SizeService.getSizeByProductFromDB(
       (
         await params
-      ).productName
+      ).productId
     );
 
     return Response.json({
@@ -30,7 +30,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ productName: string }> }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
     await connectDB();
@@ -40,7 +40,7 @@ export async function PATCH(
     const data = await SizeService.updateSizeIntoDB(
       (
         await params
-      ).productName,
+      ).productId,
       body
     );
 
@@ -56,13 +56,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ productName: string }> }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
-    await SizeService.deleteSizeFromDB((await params).productName);
+    await SizeService.deleteSizeFromDB((await params).productId);
 
     return Response.json({
       success: true,
