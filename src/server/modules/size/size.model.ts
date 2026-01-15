@@ -1,16 +1,35 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import type { TSize } from "./size.interface";
 
 const sizeSchema = new Schema<TSize>(
   {
-    productName: { type: String, required: true },
-    size: [{ type: String, required: true }],
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: "Products",
+      required: true,
+    },
+
+    label: { type: String, required: true },
+    unit: {
+      type: String,
+      enum: ["ml", "gm", "kg", "ltr"],
+      required: true,
+    },
+    quantityPerUnit: Number,
+    unitsPerPack: Number,
+
+    tp: Number,
+    mrp: Number,
+    cashPrice: Number,
+    creditPrice: Number,
+
+    isActive: { type: Boolean, default: true },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-const SizeModel = mongoose.models.Sizes || model<TSize>("Sizes", sizeSchema);
+sizeSchema.index({ product: 1 });
+
+export const SizeModel = models.Sizes || model<TSize>("Sizes", sizeSchema);
 
 export default SizeModel;

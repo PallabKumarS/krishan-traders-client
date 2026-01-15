@@ -1,63 +1,25 @@
 import type { TCompany } from "./company.interface";
-import CompanyModel from "./company.model";
-import StockModel from "../stock/stock.model";
+import { CompanyModel } from "./company.model";
 
-// get all company from db
+// get all companies
 const getAllCompanyFromDB = async (query?: Record<string, unknown>) => {
-  const sort = (query?.sort as string)?.split(",")?.join(" ") || "name";
-
-  const result = await CompanyModel.find({}).sort(sort);
-
-  return result;
+  const sort = (query?.sort as string)?.split(",").join(" ") || "name";
+  return CompanyModel.find({}).sort(sort);
 };
 
-// create company into db
+// create company
 const createCompanyIntoDB = async (payload: Partial<TCompany>) => {
-  const result = await CompanyModel.create(payload);
-  return result;
+  return CompanyModel.create(payload);
 };
 
-// edit company into db
+// update company
 const updateCompanyIntoDB = async (id: string, payload: Partial<TCompany>) => {
-  const result = await CompanyModel.findOneAndUpdate({ _id: id }, payload, {
-    new: true,
-  });
-  return result;
+  return CompanyModel.findByIdAndUpdate(id, payload, { new: true });
 };
 
-// delete company from db
+// delete company
 const deleteCompanyFromDB = async (id: string) => {
-  const result = await CompanyModel.findByIdAndDelete(id);
-  return result;
-};
-
-// get products by company name using aggregation
-const getProductsNameByCompanyFromDB = async (companyName: string) => {
-  const result = await StockModel.aggregate([
-    {
-      $match: {
-        companyName: companyName,
-      },
-    },
-    {
-      $group: {
-        _id: "$productName",
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        productName: "$_id",
-      },
-    },
-    {
-      $sort: {
-        productName: 1,
-      },
-    },
-  ]);
-
-  return result.map((item) => item.productName);
+  return CompanyModel.findByIdAndDelete(id);
 };
 
 export const CompanyService = {
@@ -65,5 +27,4 @@ export const CompanyService = {
   createCompanyIntoDB,
   updateCompanyIntoDB,
   deleteCompanyFromDB,
-  getProductsNameByCompanyFromDB,
 };

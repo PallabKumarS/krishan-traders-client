@@ -1,30 +1,36 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import type { TStock } from "./stock.interface";
 
 const stockSchema = new Schema<TStock>(
   {
-    companyName: { type: String, required: true },
-    productName: { type: String, required: true },
-    size: { type: String, required: true },
+    variant: {
+      type: Schema.Types.ObjectId,
+      ref: "Variants",
+      required: true,
+    },
+
+    batchNo: String,
     quantity: { type: Number, required: true },
-    stockedDate: { type: Date, required: true },
-    expiryDate: { type: Date, required: true },
-    soldDate: { type: Date },
-    stockedBy: { type: Schema.Types.ObjectId, ref: "Users", required: true },
-    soldBy: { type: Schema.Types.ObjectId, ref: "Users" },
+
+    stockedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "Users",
+      required: true,
+    },
+    stockedDate: { type: Date, default: Date.now },
+    expiryDate: Date,
+
     status: {
       type: String,
-      enum: ["pending", "accepted", "sold", "expired", "rejected"],
+      enum: ["pending", "available", "sold", "expired", "rejected"],
       default: "pending",
     },
-    message: { type: String },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-const StockModel =
-  mongoose.models.Stocks || model<TStock>("Stocks", stockSchema);
+stockSchema.index({ variant: 1, expiryDate: 1 });
+
+export const StockModel = models.Stocks || model<TStock>("Stocks", stockSchema);
 
 export default StockModel;

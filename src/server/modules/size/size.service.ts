@@ -1,45 +1,44 @@
 import type { TSize } from "./size.interface";
-import SizeModel from "./size.model";
+import { SizeModel } from "./size.model";
 
-// get all product sizes from db
-const getAllSizeFromDB = async () => {
-  const result = await SizeModel.find({});
-  return result;
-};
+// get all sizes
+const getAllSizeFromDB = async (query?: Record<string, unknown>) => {
+  const filter: Record<string, unknown> = {};
 
-// get single product sizes from db
-const getSingleSizeFromDB = async (productName: string) => {
-  const result = await SizeModel.findOne({ productName });
-  return result;
-};
+  if (query?.product) {
+    filter.product = query.product;
+  }
 
-// create new product size
-const createSizeIntoDB = async (payload: Partial<TSize>) => {
-  const result = await SizeModel.create(payload);
-  return result;
-};
-
-// update product size
-const updateSizeIntoDB = async (
-  productName: string,
-  payload: Partial<TSize>
-) => {
-  const result = await SizeModel.findOneAndUpdate({ productName }, payload, {
-    new: true,
+  return SizeModel.find(filter).populate({
+    path: "product",
+    populate: { path: "company" },
   });
-  return result;
 };
 
-// delete product size
-const deleteSizeFromDB = async (productName: string) => {
-  const result = await SizeModel.findOneAndDelete({ productName });
-  return result;
+// get sizes by product
+const getSizeByProductFromDB = async (productId: string) => {
+  return SizeModel.find({ product: productId });
+};
+
+// create size
+const createSizeIntoDB = async (payload: Partial<TSize>) => {
+  return SizeModel.create(payload);
+};
+
+// update size
+const updateSizeIntoDB = async (id: string, payload: Partial<TSize>) => {
+  return SizeModel.findByIdAndUpdate(id, payload, { new: true });
+};
+
+// delete size
+const deleteSizeFromDB = async (id: string) => {
+  return SizeModel.findByIdAndDelete(id);
 };
 
 export const SizeService = {
   getAllSizeFromDB,
+  getSizeByProductFromDB,
   createSizeIntoDB,
   updateSizeIntoDB,
   deleteSizeFromDB,
-  getSingleSizeFromDB,
 };

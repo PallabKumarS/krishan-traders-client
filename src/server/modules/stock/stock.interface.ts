@@ -1,25 +1,25 @@
 import type { Types } from "mongoose";
 
-export type TStock = {
-	companyName: string;
-	productName: string;
-	size: string;
-	status: TStockStatus;
-	quantity: number;
-	stockedDate: Date;
-	stockedBy: Types.ObjectId;
-	expiryDate: Date;
-	soldDate?: Date;
-	soldBy?: Types.ObjectId;
-	message?: string;
-	_id?: Types.ObjectId;
-	createdAt?: Date;
-	updatedAt?: Date;
-};
+export interface TStock {
+  variant: Types.ObjectId;
+  batchNo?: string;
+  quantity: number;
+
+  stockedBy: Types.ObjectId;
+  stockedDate?: Date;
+  expiryDate?: Date;
+
+  status?: TStockStatus;
+  createdAt?: Date;
+  updatedAt?: Date;
+
+  _id?: Types.ObjectId;
+  __v?: number;
+}
 
 export type TStockStatus =
-	| "pending"
-	| "accepted"
-	| "sold"
-	| "expired"
-	| "rejected";
+  | "pending"
+  | "available"
+  | "sold"
+  | "expired"
+  | "rejected";
