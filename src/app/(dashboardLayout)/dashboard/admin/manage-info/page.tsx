@@ -6,24 +6,28 @@ import ProductTableForDesktop from "@/components/modules/manage-info/ProductTabl
 import SizeTableForDesktop from "@/components/modules/manage-info/SizeTableForDesktop";
 import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { getAllCompany } from "@/services/CompanyService";
-import { getAllProductsByCompany } from "@/services/ProductService";
-import { TCompany, TMongoose, TProduct } from "@/types";
+import { getAllSizes } from "@/services/SizeService";
+import { TCompany, TMongoose, TSize } from "@/types";
+import { ColumnDef } from "@tanstack/react-table";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 const ManageInfoPage = () => {
-  const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSizeLoading, setIsSizeLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<
     (TCompany & TMongoose) | null
   >(null);
-  const [products, setProducts] = useState<(TProduct & TMongoose)[]>([]);
+  const [sizes, setSizes] = useState<(TSize & TMongoose)[]>([]);
 
-  //   load companies
+  // load companies
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -42,30 +46,99 @@ const ManageInfoPage = () => {
     fetchCompanies();
   }, []);
 
-  //   load products based on companies
+  // size loading
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchSizes = async () => {
       try {
-        const data = await getAllProductsByCompany(
-          selectedCompany?._id as string
-        );
+        const data = await getAllSizes();
         if (data?.success) {
-          setProducts(data.data);
+          setSizes(data.data);
         }
       } catch (err: any) {
         console.error(err);
+      } finally {
+        setIsSizeLoading(false);
       }
     };
 
-    fetchProducts();
-  }, [selectedCompany]);
+    fetchSizes();
+  }, []);
 
   const handleAddSuccess = () => {
     setAddModalOpen(false);
     window.location.reload();
   };
 
-  if (isLoading) {
+  type SizeTableData = TSize &
+    TMongoose & {
+      product: {
+        name: string;
+        company: {
+          name: string;
+        };
+      };
+    };
+
+  // process data
+  const processData = useMemo(() => {
+    if (!selectedCompany || !sizes.length) {
+      return [];
+    }
+
+    return sizes.filter(
+      (size) => size.product.company._id === selectedCompany._id
+    );
+  }, [selectedCompany, sizes]);
+
+  const sizeColumns: ColumnDef<SizeTableData>[] = [
+    {
+      accessorKey: "product.name",
+      header: "Product Name",
+    },
+    {
+      accessorKey: "product.company.name",
+      header: "Company",
+    },
+    {
+      accessorKey: "label",
+      header: "Size Label",
+      cell: ({ row }) => {
+        const label = row.getValue("label") as string;
+        return <div className="font-medium">{label}</div>;
+      },
+    },
+    {
+      accessorKey: "unitQuantity",
+      header: "Unit Quantity",
+      cell: ({ row }) => {
+        const quantity = row.getValue("unitQuantity") as number;
+        const unit = row.original.unit;
+        return (
+          <div>
+            {quantity} {unit}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "stackCount",
+      header: "Stack Count",
+    },
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => {
+        const isActive = row.getValue("isActive") as boolean;
+        return (
+          <Badge className={cn("bg-slate-500", isActive && "bg-green-500")}>
+            {isActive ? "Active" : "Inactive"}
+          </Badge>
+        );
+      },
+    },
+  ];
+
+  if (isLoading && isSizeLoading) {
     return <LoadingData />;
   }
 
@@ -73,11 +146,14 @@ const ManageInfoPage = () => {
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Manage Information</h1>
 
-      <Tabs defaultValue={companies?.[0]?._id} className="w-full h-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-5 h-full border">
+      <Tabs
+        defaultValue={companies?.[0]?._id}
+        className="w-full h-full mx-auto"
+      >
+        <TabsList className="flex flex-wrap gap-5 h-full border mx-auto">
           {companies.map((company) => (
             <TabsTrigger
-              className="border-2 border-accent "
+              className="border-2 border-accent min-w-60 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground:"
               onClick={() => setSelectedCompany(company)}
               key={company._id}
               value={company._id}
@@ -103,21 +179,14 @@ const ManageInfoPage = () => {
           />
         </div>
 
-        <TabsContent value="companies">
+        <TabsContent value={selectedCompany?._id as string}>
           <DataTable
-            columns={[]}
-            data={[]}
+            columns={processData.length > 0 ? sizeColumns : []}
+            data={processData || []}
             enablePagination={false}
             enableColumnToggle={false}
+            stickyHeader={false}
           />
-        </TabsContent>
-
-        <TabsContent value="products">
-          <ProductTableForDesktop />
-        </TabsContent>
-
-        <TabsContent value="sizes">
-          <SizeTableForDesktop />
         </TabsContent>
       </Tabs>
     </div>

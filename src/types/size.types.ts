@@ -1,7 +1,8 @@
+import { TMongoose } from ".";
 import { TProduct } from "./product.types";
 
 export interface TSize {
-  product: TProduct;
+  product: TProduct & TMongoose;
 
   label: string;
   unit: "ml" | "gm" | "kg" | "ltr";
