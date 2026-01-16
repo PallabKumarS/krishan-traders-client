@@ -13,16 +13,19 @@ import { getAllCompany } from "@/services/CompanyService";
 import { getAllSizes } from "@/services/SizeService";
 import { TCompany, TMongoose, TSize } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Plus } from "lucide-react";
+import { Pen, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 const ManageInfoPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSizeLoading, setIsSizeLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<
     (TCompany & TMongoose) | null
   >(null);
+
+  // data states
+  const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
   const [sizes, setSizes] = useState<(TSize & TMongoose)[]>([]);
 
   // load companies
@@ -67,8 +70,6 @@ const ManageInfoPage = () => {
     window.location.reload();
   };
 
-  console.log(sizes);
-
   type SizeTableData = TSize &
     TMongoose & {
       product: {
@@ -107,7 +108,6 @@ const ManageInfoPage = () => {
       cell: ({ row }) => (
         <div className="font-medium">{row.getValue("label")}</div>
       ),
-      
     },
     {
       accessorKey: "unitQuantity",
@@ -162,16 +162,50 @@ const ManageInfoPage = () => {
         <TabsList className="flex flex-wrap gap-5 h-full border mb-5">
           {companies.map((company) => (
             <TabsTrigger
-              className="border-2 border-accent min-w-60 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground:"
-              onClick={() => setSelectedCompany(company)}
               key={company._id}
               value={company._id}
+              onClick={() => setSelectedCompany(company)}
+              className="flex items-center justify-between gap-3 border-2 border-accent min-w-60 px-4
+                 data-[state=active]:bg-accent
+                 data-[state=active]:text-accent-foreground"
             >
-              {company.name}
+              {/* Company name */}
+              <span className="truncate grow">{company.name}</span>
+
+              {/* Edit icon (NOT a button) */}
+              <Modal
+                key={"edit-company"}
+                title="Edit Company"
+                trigger={
+                  // biome-ignore lint/a11y/useSemanticElements: <>
+                  <span
+                    role="button"
+                    aria-label="Edit company"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="ml-auto inline-flex items-center justify-center rounded-md p-1
+                   text-muted-foreground hover:text-foreground
+                   hover:bg-accent/50 cursor-pointer"
+                  >
+                    <Pen className="h-4 w-4" />
+                  </span>
+                }
+                content={
+                  <CompanyForm
+                    edit={true}
+                    companyData={company}
+                    key={"edit-company"}
+                  />
+                }
+              />
             </TabsTrigger>
           ))}
-          {/* add company and product */}
+
+          {/* Add company */}
           <Modal
+            key={"add-company"}
             title="Add New Company"
             trigger={
               <Button className="gap-2">
