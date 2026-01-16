@@ -6,7 +6,7 @@ import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { getAllCompany } from "@/services/CompanyService";
@@ -93,42 +93,51 @@ const ManageInfoPage = () => {
   const sizeColumns: ColumnDef<SizeTableData>[] = [
     {
       accessorKey: "product.name",
-      header: "Product Name",
-    },
-    {
-      accessorKey: "product.company.name",
-      header: "Company",
+      enableSorting: true,
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Product Name" />
+      ),
     },
     {
       accessorKey: "label",
-      header: "Size Label",
-      cell: ({ row }) => {
-        const label = row.getValue("label") as string;
-        return <div className="font-medium">{label}</div>;
-      },
+      enableSorting: true,
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Size Label" />
+      ),
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("label")}</div>
+      ),
+      
     },
     {
       accessorKey: "unitQuantity",
-      header: "Unit Quantity",
+      enableSorting: true,
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Unit Quantity" />
+      ),
       cell: ({ row }) => {
         const quantity = row.getValue("unitQuantity") as number;
-        const unit = row.original.unit;
         return (
           <div>
-            {quantity} {unit}
+            {quantity} {row.original.unit}
           </div>
         );
       },
     },
     {
       accessorKey: "stackCount",
-      header: "Stack Count",
+      enableSorting: true,
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Stack Count" />
+      ),
     },
     {
       accessorKey: "isActive",
+      enableSorting: false,
       header: "Status",
       cell: ({ row }) => {
         const isActive = row.getValue("isActive") as boolean;
+
         return (
           <Badge className={cn("bg-slate-500", isActive && "bg-green-500")}>
             {isActive ? "Active" : "Inactive"}
@@ -150,7 +159,7 @@ const ManageInfoPage = () => {
         defaultValue={companies?.[0]?._id}
         className="w-full h-full mx-auto"
       >
-        <TabsList className="flex flex-wrap gap-5 h-full border mx-auto">
+        <TabsList className="flex flex-wrap gap-5 h-full border mb-5">
           {companies.map((company) => (
             <TabsTrigger
               className="border-2 border-accent min-w-60 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground:"
@@ -161,10 +170,7 @@ const ManageInfoPage = () => {
               {company.name}
             </TabsTrigger>
           ))}
-        </TabsList>
-
-        {/* add company and product */}
-        <div className="flex justify-end">
+          {/* add company and product */}
           <Modal
             title="Add New Company"
             trigger={
@@ -177,7 +183,7 @@ const ManageInfoPage = () => {
             open={addModalOpen}
             onOpenChange={setAddModalOpen}
           />
-        </div>
+        </TabsList>
 
         <TabsContent value={selectedCompany?._id as string}>
           <DataTable

@@ -3,11 +3,14 @@ import { SizeService } from "@/server/modules/size/size.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
 import { connectDB } from "@/lib/mongodb";
+import mongoose from "mongoose";
 
 export async function GET(request: Request) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
+
+    console.log(Object.keys(mongoose.models));
 
     const data = await SizeService.getAllSizeFromDB();
 

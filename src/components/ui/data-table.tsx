@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  Column,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -30,7 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronDown } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<T> {
@@ -140,7 +141,7 @@ export function DataTable<T>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead className="text-center" key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -153,13 +154,14 @@ export function DataTable<T>({
             ))}
           </TableHeader>
 
+          {/* data of table */}
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-accent/10"
+                  className="hover:bg-accent/10 text-center"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -214,5 +216,28 @@ export function DataTable<T>({
         </div>
       )}
     </div>
+  );
+}
+
+export function SortableHeader<T>({
+  column,
+  title,
+}: {
+  column: Column<T, unknown>;
+  title: string;
+}) {
+  if (!column.getCanSort()) {
+    return <span>{title}</span>;
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      className="px-0"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      {title}
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
   );
 }
