@@ -69,7 +69,7 @@ export const createProduct = async (productData: FieldValues): Promise<any> => {
 };
 
 // update product
-export const updateCompany = async (
+export const updateProduct = async (
   productId: string,
   productData: FieldValues
 ): Promise<any> => {

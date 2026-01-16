@@ -3,6 +3,7 @@
 "use client";
 
 import CompanyForm from "@/components/forms/CompanyForm";
+import ProductForm from "@/components/forms/ProductForm";
 import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { getAllCompany } from "@/services/CompanyService";
 import { getAllSizes } from "@/services/SizeService";
-import { TCompany, TMongoose, TSize } from "@/types";
+import { TCompany, TMongoose, TProduct, TSize } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pen, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -20,7 +21,11 @@ const ManageInfoPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSizeLoading, setIsSizeLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addProductModalOpen, setAddProductModalOpen] = useState(false);
   const [editCompany, setEditCompany] = useState<(TCompany & TMongoose) | null>(
+    null
+  );
+  const [editProduct, setEditProduct] = useState<(TProduct & TMongoose) | null>(
     null
   );
   const [selectedCompany, setSelectedCompany] = useState<
@@ -94,6 +99,26 @@ const ManageInfoPage = () => {
       header: ({ column }) => (
         <SortableHeader column={column} title="Product Name" />
       ),
+      cell: ({ row }) => (
+        <div className="font-medium flex gap-2 justify-center items-center">
+          <span>{row.original.product.name}</span>
+          {/* Edit button */}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-4 w-4 p-3"
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditProduct({
+                ...row.original.product,
+                _id: row.original.product._id,
+              });
+            }}
+          >
+            <Pen className="h-6 w-6" />
+          </Button>
+        </div>
+      ),
     },
     {
       accessorKey: "label",
@@ -161,7 +186,7 @@ const ManageInfoPage = () => {
               key={company._id}
               className={`flex items-center gap-2 min-w-60 border border-accent rounded-xl ${
                 selectedCompany?._id === company._id && "bg-accent/50"
-              }`}
+              } ${company.isDisabled && "opacity-50"}`}
             >
               {/* TAB */}
               <TabsTrigger
@@ -172,7 +197,7 @@ const ManageInfoPage = () => {
                 <span className="truncate">{company.name}</span>
               </TabsTrigger>
 
-              {/* EDIT ACTION (outside tab) */}
+              {/* Edit button */}
               <Button
                 size="icon"
                 variant="ghost"
@@ -220,6 +245,8 @@ const ManageInfoPage = () => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* edit company modal */}
       <Modal
         trigger={null}
         title="Edit Company"
@@ -235,6 +262,29 @@ const ManageInfoPage = () => {
               onSuccess={() => {
                 fetchCompanies();
                 setEditCompany(null);
+              }}
+            />
+          )
+        }
+      />
+
+      {/* edit product modal */}
+      <Modal
+        trigger={null}
+        title="Edit Product"
+        open={!!editProduct}
+        onOpenChange={(open) => {
+          if (!open) setEditProduct(null);
+        }}
+        content={
+          editProduct && (
+            <ProductForm
+              edit
+              productData={editProduct}
+              companies={companies}
+              onSuccess={() => {
+                fetchSizes();
+                setEditProduct(null);
               }}
             />
           )
