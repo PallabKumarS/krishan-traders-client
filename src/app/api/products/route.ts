@@ -22,6 +22,8 @@ export async function POST(req: Request) {
   await connectDB();
 
   const body = await req.json();
+
+  console.log(body);
   const product = await ProductService.createProductIntoDB(body);
 
   return Response.json({

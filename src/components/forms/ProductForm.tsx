@@ -27,7 +27,7 @@ const formSchema = z.object({
     .string()
     .min(1, "Product name is required")
     .min(2, "Product name must be at least 2 characters"),
-  companyId: z.string().min(1, "Company is required"),
+  company: z.string().min(1, "Company is required"),
   isDisabled: z.boolean().optional(),
 });
 
@@ -57,7 +57,7 @@ export default function ProductForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: productData?.name || "",
-      companyId: productData?.company?._id || "",
+      company: productData?.company?._id || "",
       isDisabled: productData?.isDisabled ?? false,
     },
   });
@@ -74,7 +74,7 @@ export default function ProductForm({
         ? values
         : {
             name: values.name,
-            companyId: values.companyId,
+            company: values.company,
           };
 
       const res = edit
@@ -117,7 +117,7 @@ export default function ProductForm({
         {/* Company select */}
         <FormField
           control={form.control}
-          name="companyId"
+          name="company"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Company</FormLabel>
