@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <> */
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <> */
 "use client";
 
 import CompanyForm from "@/components/forms/CompanyForm";
@@ -19,7 +20,9 @@ const ManageInfoPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSizeLoading, setIsSizeLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editCompany, setEditCompany] = useState<(TCompany & TMongoose) | null>(
+    null
+  );
   const [selectedCompany, setSelectedCompany] = useState<
     (TCompany & TMongoose) | null
   >(null);
@@ -29,46 +32,39 @@ const ManageInfoPage = () => {
   const [sizes, setSizes] = useState<(TSize & TMongoose)[]>([]);
 
   // load companies
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const data = await getAllCompany();
-        if (data?.success && data.data.length > 0) {
-          setCompanies(data.data);
-          setSelectedCompany(data.data[0]);
-        }
-      } catch (err: any) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
+  const fetchCompanies = async () => {
+    try {
+      const data = await getAllCompany();
+      if (data?.success && data.data.length > 0) {
+        setCompanies(data.data);
+        setSelectedCompany(data.data[0]);
       }
-    };
-
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchCompanies();
   }, []);
 
   // size loading
-  useEffect(() => {
-    const fetchSizes = async () => {
-      try {
-        const data = await getAllSizes();
-        if (data?.success) {
-          setSizes(data.data);
-        }
-      } catch (err: any) {
-        console.error(err);
-      } finally {
-        setIsSizeLoading(false);
+  const fetchSizes = async () => {
+    try {
+      const data = await getAllSizes();
+      if (data?.success) {
+        setSizes(data.data);
       }
-    };
-
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setIsSizeLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchSizes();
   }, []);
-
-  const handleAddSuccess = () => {
-    setAddModalOpen(false);
-    window.location.reload();
-  };
 
   type SizeTableData = TSize &
     TMongoose & {
@@ -161,59 +157,54 @@ const ManageInfoPage = () => {
       >
         <TabsList className="flex flex-wrap gap-5 h-full border mb-5">
           {companies.map((company) => (
-            <TabsTrigger
+            <div
               key={company._id}
-              value={company._id}
-              onClick={() => setSelectedCompany(company)}
-              className="flex items-center justify-between gap-3 border-2 border-accent min-w-60 px-4
-                 data-[state=active]:bg-accent
-                 data-[state=active]:text-accent-foreground"
+              className={`flex items-center gap-2 min-w-60 border border-accent rounded-xl ${
+                selectedCompany?._id === company._id && "bg-accent/50"
+              }`}
             >
-              {/* Company name */}
-              <span className="truncate grow">{company.name}</span>
+              {/* TAB */}
+              <TabsTrigger
+                value={company._id}
+                onClick={() => setSelectedCompany(company)}
+                className="px-4 grow data-[state=active]:bg-base data-[state=active]:shadow-none"
+              >
+                <span className="truncate">{company.name}</span>
+              </TabsTrigger>
 
-              {/* Edit icon (NOT a button) */}
-              <Modal
-                key={"edit-company"}
-                title="Edit Company"
-                trigger={
-                  // biome-ignore lint/a11y/useSemanticElements: <>
-                  <span
-                    role="button"
-                    aria-label="Edit company"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className="ml-auto inline-flex items-center justify-center rounded-md p-1
-                   text-muted-foreground hover:text-foreground
-                   hover:bg-accent/50 cursor-pointer"
-                  >
-                    <Pen className="h-4 w-4" />
-                  </span>
-                }
-                content={
-                  <CompanyForm
-                    edit={true}
-                    companyData={company}
-                    key={"edit-company"}
-                  />
-                }
-              />
-            </TabsTrigger>
+              {/* EDIT ACTION (outside tab) */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 border-l border-accent text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditCompany(company);
+                }}
+              >
+                <Pen className="h-4 w-4" />
+              </Button>
+            </div>
           ))}
-
           {/* Add company */}
           <Modal
             key={"add-company"}
             title="Add New Company"
             trigger={
-              <Button className="gap-2">
+              <Button className="gap-2 min-w-60">
                 <Plus className="h-4 w-4" />
                 Add Company
               </Button>
             }
-            content={<CompanyForm edit={false} onSuccess={handleAddSuccess} />}
+            content={
+              <CompanyForm
+                edit={false}
+                onSuccess={() => {
+                  fetchCompanies();
+                  setAddModalOpen(false);
+                }}
+              />
+            }
             open={addModalOpen}
             onOpenChange={setAddModalOpen}
           />
@@ -229,6 +220,26 @@ const ManageInfoPage = () => {
           />
         </TabsContent>
       </Tabs>
+      <Modal
+        trigger={null}
+        title="Edit Company"
+        open={!!editCompany}
+        onOpenChange={(open) => {
+          if (!open) setEditCompany(null);
+        }}
+        content={
+          editCompany && (
+            <CompanyForm
+              edit
+              companyData={editCompany}
+              onSuccess={() => {
+                fetchCompanies();
+                setEditCompany(null);
+              }}
+            />
+          )
+        }
+      />
     </div>
   );
 };

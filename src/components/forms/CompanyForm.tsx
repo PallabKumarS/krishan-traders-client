@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import ButtonLoader from "../shared/ButtonLoader";
+import ToggleButton from "../shared/ToggleButton";
 
 import { TCompany, TMongoose } from "@/types";
 import { createCompany, updateCompany } from "@/services/CompanyService";
@@ -26,6 +27,7 @@ const formSchema = z.object({
     .string()
     .min(1, "Company name is required")
     .min(2, "Company name must be at least 2 characters"),
+  isDisabled: z.boolean().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -45,6 +47,7 @@ export default function CompanyForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: companyData?.name || "",
+      isDisabled: companyData?.isDisabled ?? false,
     },
   });
 
@@ -56,9 +59,11 @@ export default function CompanyForm({
     );
 
     try {
+      const payload = edit ? values : { name: values.name }; // don't send isDisabled on create unless you want to
+
       const res = edit
-        ? await updateCompany(companyData?._id as string, values)
-        : await createCompany(values);
+        ? await updateCompany(companyData?._id as string, payload)
+        : await createCompany(payload);
 
       if (res.success) {
         toast.success(res.message, { id: toastId });
@@ -78,6 +83,7 @@ export default function CompanyForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4">
+        {/* Company name */}
         <FormField
           control={form.control}
           name="name"
@@ -95,6 +101,26 @@ export default function CompanyForm({
             </FormItem>
           )}
         />
+
+        {/* Status toggle (edit only) */}
+        {edit && (
+          <FormField
+            control={form.control}
+            name="isDisabled"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel>Status</FormLabel>
+                <FormControl>
+                  <ToggleButton
+                    size="md"
+                    checked={!field.value}
+                    onCheckedChange={(enabled) => field.onChange(!enabled)}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? <ButtonLoader /> : edit ? "Update Company" : "Add Company"}
