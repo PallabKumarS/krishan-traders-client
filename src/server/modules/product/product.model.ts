@@ -6,7 +6,7 @@ const productSchema = new Schema<TProduct>(
     name: { type: String, required: true },
     company: {
       type: Schema.Types.ObjectId,
-      ref: "Companies",
+      ref: "Company",
       required: true,
     },
     isDisabled: { type: Boolean, default: false },
@@ -17,6 +17,6 @@ const productSchema = new Schema<TProduct>(
 productSchema.index({ name: 1, company: 1 });
 
 const ProductModel =
-  models.Products || model<TProduct>("Products", productSchema);
+  models.Product || model<TProduct>("Product", productSchema);
 
 export default ProductModel;

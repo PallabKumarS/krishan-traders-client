@@ -5,7 +5,7 @@ const stockSchema = new Schema<TStock>(
   {
     size: {
       type: Schema.Types.ObjectId,
-      ref: "Sizes",
+      ref: "Size",
       required: true,
     },
 
@@ -14,7 +14,7 @@ const stockSchema = new Schema<TStock>(
 
     stockedBy: {
       type: Schema.Types.ObjectId,
-      ref: "Users",
+      ref: "User",
       required: true,
     },
     stockedDate: { type: Date, default: Date.now },
@@ -29,8 +29,8 @@ const stockSchema = new Schema<TStock>(
   { timestamps: true }
 );
 
-stockSchema.index({ variant: 1, expiryDate: 1 });
+stockSchema.index({ size: 1, expiryDate: 1 });
 
-export const StockModel = models.Stocks || model<TStock>("Stocks", stockSchema);
+export const StockModel = models.Stock || model<TStock>("Stock", stockSchema);
 
 export default StockModel;

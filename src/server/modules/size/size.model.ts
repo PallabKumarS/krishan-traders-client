@@ -5,7 +5,7 @@ const sizeSchema = new Schema<TSize>(
   {
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Products",
+      ref: "Product",
       required: true,
     },
     label: { type: String, required: true },
@@ -29,6 +29,6 @@ const sizeSchema = new Schema<TSize>(
 );
 
 sizeSchema.index({ product: 1 });
-const SizeModel = models.Sizes || model<TSize>("Sizes", sizeSchema);
+const SizeModel = models.Size || model<TSize>("Size", sizeSchema);
 
 export default SizeModel;

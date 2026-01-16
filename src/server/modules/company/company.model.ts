@@ -11,6 +11,6 @@ const companySchema = new Schema<TCompany>(
 );
 
 const CompanyModel =
-  models.Companies || model<TCompany>("Companies", companySchema);
+  models.Company || model<TCompany>("Company", companySchema);
 
 export default CompanyModel;

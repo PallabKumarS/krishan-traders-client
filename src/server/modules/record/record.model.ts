@@ -5,7 +5,7 @@ const recordSchema = new Schema<TRecord>(
   {
     stock: {
       type: Schema.Types.ObjectId,
-      ref: "Stocks",
+      ref: "Stock",
       required: true,
     },
 
@@ -26,11 +26,11 @@ const recordSchema = new Schema<TRecord>(
     stockedBy: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "Users",
+      ref: "User",
     },
     soldBy: {
       type: Schema.Types.ObjectId,
-      ref: "Users",
+      ref: "User",
     },
     note: String,
   },
@@ -40,6 +40,6 @@ const recordSchema = new Schema<TRecord>(
 recordSchema.index({ stock: 1, type: 1 });
 
 export const RecordModel =
-  models.Records || model<TRecord>("Records", recordSchema);
+  models.Record || model<TRecord>("Record", recordSchema);
 
 export default RecordModel;

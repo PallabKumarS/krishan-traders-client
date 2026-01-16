@@ -67,6 +67,8 @@ const ManageInfoPage = () => {
     window.location.reload();
   };
 
+  console.log(sizes);
+
   type SizeTableData = TSize &
     TMongoose & {
       product: {
