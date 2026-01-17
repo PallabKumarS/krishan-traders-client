@@ -6,17 +6,15 @@ import CompanyForm from "@/components/forms/CompanyForm";
 import ProductForm from "@/components/forms/ProductForm";
 import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import { getAllCompany } from "@/services/CompanyService";
 import { getAllProductsByCompany } from "@/services/ProductService";
-import { getAllSizes } from "@/services/SizeService";
+import { deleteSize, getAllSizes } from "@/services/SizeService";
 import { TCompany, TMongoose, TProduct, TSize } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Pen, Plus } from "lucide-react";
+import { Pen, Plus, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createEmptySize, SizeTableData } from "./utils";
 const ManageInfoPage = () => {
@@ -31,6 +29,7 @@ const ManageInfoPage = () => {
   const [editProduct, setEditProduct] = useState<(TProduct & TMongoose) | null>(
     null
   );
+  const [editSize, setEditSize] = useState<(TSize & TMongoose) | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<
     (TCompany & TMongoose) | null
   >(null);
@@ -154,6 +153,7 @@ const ManageInfoPage = () => {
                 companies={companies}
                 onSuccess={() => {
                   fetchSizes();
+                  fetchProducts();
                 }}
               />
             }
@@ -164,7 +164,11 @@ const ManageInfoPage = () => {
       ),
       cell: ({ row }) => (
         <div className="font-medium flex gap-2 justify-center items-center">
-          <span>{row.original.product.name}</span>
+          <span
+            className={`${row.original.product.isDisabled && "line-through"}`}
+          >
+            {row.original.product.name}
+          </span>
           {/* Edit button */}
           <Button
             size="icon"
@@ -198,10 +202,11 @@ const ManageInfoPage = () => {
         <SortableHeader column={column} title="Unit Quantity" />
       ),
       cell: ({ row }) => {
-        const quantity = row.getValue("unitQuantity") as number;
         return (
           <div>
-            {quantity} {row.original.unit}
+            {row.original._id === "empty"
+              ? "—"
+              : ` ${row.original.unitQuantity} ${row.original.unit}`}
           </div>
         );
       },
@@ -211,6 +216,47 @@ const ManageInfoPage = () => {
       enableSorting: true,
       header: ({ column }) => (
         <SortableHeader column={column} title="Stack Count" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row.original._id === "empty" ? "—" : row.original.stackCount}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "actions",
+      enableSorting: false,
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-center items-center">
+          {/* Edit button */}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-4 w-4 p-3"
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditSize({
+                ...row.original,
+                _id: row.original._id,
+              });
+            }}
+          >
+            <Pen className="h-6 w-6" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-4 w-4 p-3"
+            onClick={async () => {
+              await deleteSize(row.original._id);
+            }}
+          >
+            <Trash className="h-6 w-6 text-destructive" />
+          </Button>
+        </div>
       ),
     },
   ];
@@ -333,6 +379,7 @@ const ManageInfoPage = () => {
               companies={companies}
               onSuccess={() => {
                 fetchSizes();
+                fetchProducts();
                 setEditProduct(null);
               }}
             />

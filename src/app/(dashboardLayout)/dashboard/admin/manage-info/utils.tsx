@@ -13,7 +13,7 @@ export type SizeTableData = TSize &
 export const createEmptySize = (
   product: TProduct & TMongoose
 ): TSize & TMongoose => ({
-  _id: `empty-${product._id}`,
+  _id: `empty`,
   product: {
     ...product,
     _id: product._id,
