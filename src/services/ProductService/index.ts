@@ -9,7 +9,7 @@ import { FieldValues } from "react-hook-form";
 // Get all company
 export const getAllProducts = async (query?: Record<string, unknown>) => {
   const queryString = new URLSearchParams(
-    query as Record<string, string>
+    query as Record<string, string>,
   ).toString();
 
   try {
@@ -71,7 +71,7 @@ export const createProduct = async (productData: FieldValues): Promise<any> => {
 // update product
 export const updateProduct = async (
   productId: string,
-  productData: FieldValues
+  productData: FieldValues,
 ): Promise<any> => {
   const token = await getValidToken();
 
@@ -93,7 +93,7 @@ export const updateProduct = async (
 };
 
 // Delete product
-export const deleteCompany = async (productId: string): Promise<any> => {
+export const deleteProduct = async (productId: string): Promise<any> => {
   const token = await getValidToken();
 
   try {
@@ -123,7 +123,7 @@ export const getAllProductsByCompany = async (companyId: string) => {
           "Content-type": "application/json",
           Authorization: await getValidToken(),
         },
-      }
+      },
     );
     return await res.json();
   } catch (error: any) {

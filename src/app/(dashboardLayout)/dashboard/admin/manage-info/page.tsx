@@ -10,31 +10,43 @@ import { Button } from "@/components/ui/button";
 import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getAllCompany } from "@/services/CompanyService";
-import { getAllProductsByCompany } from "@/services/ProductService";
+import {
+  deleteProduct,
+  getAllProductsByCompany,
+} from "@/services/ProductService";
 import { deleteSize, getAllSizes } from "@/services/SizeService";
 import { TCompany, TMongoose, TProduct, TSize } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pen, Plus, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createEmptySize, SizeTableData } from "./utils";
+import SizeForm from "@/components/forms/SizeForm";
+import ConfirmationBox from "@/components/shared/ConfirmationBox";
+import { toast } from "sonner";
 const ManageInfoPage = () => {
+  // loading states
   const [isLoading, setIsLoading] = useState(true);
   const [isSizeLoading, setIsSizeLoading] = useState(true);
   const [isProductLoading, setIsProductLoading] = useState(true);
+
+  // modal states
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
+  const [addSizeModalOpen, setAddSizeModalOpen] = useState(false);
+
+  // edit data states
   const [editCompany, setEditCompany] = useState<(TCompany & TMongoose) | null>(
-    null
+    null,
   );
   const [editProduct, setEditProduct] = useState<(TProduct & TMongoose) | null>(
-    null
+    null,
   );
   const [editSize, setEditSize] = useState<(TSize & TMongoose) | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<
     (TCompany & TMongoose) | null
   >(null);
 
-  // data states
+  // fetched data states
   const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
   const [sizes, setSizes] = useState<(TSize & TMongoose)[]>([]);
   const [products, setProducts] = useState<(TProduct & TMongoose)[]>([]);
@@ -78,7 +90,7 @@ const ManageInfoPage = () => {
   const fetchProducts = async () => {
     try {
       const data = await getAllProductsByCompany(
-        selectedCompany?._id as string
+        selectedCompany?._id as string,
       );
       if (data?.success) {
         setProducts(data.data);
@@ -131,9 +143,53 @@ const ManageInfoPage = () => {
     });
   }, [products, sizesByProduct]);
 
+  const handleDeleteSize = async (id: string) => {
+    const toastId = toast.loading("Deleting user...");
+
+    try {
+      const res = await deleteSize(id);
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+        });
+        fetchSizes();
+      } else {
+        toast.error(res.message, {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error(error.message, {
+        id: toastId,
+      });
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    const toastId = toast.loading("Deleting product...");
+    try {
+      const res = await deleteProduct(id);
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+        });
+        fetchProducts();
+      } else {
+        toast.error(res.message, {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error(error.message, {
+        id: toastId,
+      });
+    }
+  };
+
+  // columns
   const sizeColumns: ColumnDef<SizeTableData>[] = [
     {
-      accessorKey: "product.name",
+      accessorKey: "product.name", //product name
       enableSorting: true,
       header: ({ column }) => (
         <div className="flex justify-center items-center gap-2">
@@ -143,7 +199,12 @@ const ManageInfoPage = () => {
             key={"add-product-modal"}
             title="Add New Product"
             trigger={
-              <Button size="icon" variant="default" className="h-6 w-6 p-2">
+              <Button
+                title="Add new product."
+                size="icon"
+                variant="default"
+                className="h-6 w-6 p-2"
+              >
                 <Plus className="h-6 w-6" />
               </Button>
             }
@@ -151,6 +212,7 @@ const ManageInfoPage = () => {
               <ProductForm
                 edit={false}
                 companies={companies}
+                selectedCompany={selectedCompany as TCompany & TMongoose}
                 onSuccess={() => {
                   fetchSizes();
                   fetchProducts();
@@ -171,6 +233,7 @@ const ManageInfoPage = () => {
           </span>
           {/* Edit button */}
           <Button
+            title="Edit this product."
             size="icon"
             variant="ghost"
             className="h-4 w-4 p-3"
@@ -184,11 +247,32 @@ const ManageInfoPage = () => {
           >
             <Pen className="h-6 w-6" />
           </Button>
+
+          {/* delete button */}
+          <ConfirmationBox
+            trigger={
+              <Button
+                title="Delete this product."
+                size="icon"
+                variant="ghost"
+                className="h-4 w-4 p-3"
+              >
+                <Trash className="h-6 w-6 text-destructive" />
+              </Button>
+            }
+            onConfirm={() => handleDeleteProduct(row.original.product._id)}
+            title="Delete this product?"
+            description={
+              row.original._id === "empty"
+                ? ""
+                : "This will also delete all sizes associated with this product."
+            }
+          />
         </div>
       ),
     },
     {
-      accessorKey: "label",
+      accessorKey: "label", // size label
       enableSorting: true,
       header: ({ column }) => (
         <SortableHeader column={column} title="Size Label" />
@@ -196,7 +280,7 @@ const ManageInfoPage = () => {
       cell: ({ row }) => (row.original.label ? row.original.label : "—"),
     },
     {
-      accessorKey: "unitQuantity",
+      accessorKey: "unitQuantity", // unit quantity
       enableSorting: true,
       header: ({ column }) => (
         <SortableHeader column={column} title="Unit Quantity" />
@@ -212,7 +296,7 @@ const ManageInfoPage = () => {
       },
     },
     {
-      accessorKey: "stackCount",
+      accessorKey: "stackCount", // stack count
       enableSorting: true,
       header: ({ column }) => (
         <SortableHeader column={column} title="Stack Count" />
@@ -226,16 +310,49 @@ const ManageInfoPage = () => {
       },
     },
     {
-      accessorKey: "actions",
+      accessorKey: "actions", // actions
       enableSorting: false,
-      header: "Actions",
+      header: () => (
+        <div className="flex justify-center items-center gap-2">
+          <span>Actions</span>
+          {/* add size modal */}
+          <Modal
+            key={"add-size-modal"}
+            title="Add New Size"
+            trigger={
+              <Button
+                title="Add New Size."
+                size="icon"
+                variant="default"
+                className="h-6 w-6 p-2"
+              >
+                <Plus className="h-6 w-6" />
+              </Button>
+            }
+            content={
+              <SizeForm
+                edit={false}
+                products={products}
+                onSuccess={() => {
+                  fetchSizes();
+                  fetchProducts();
+                }}
+              />
+            }
+            open={addSizeModalOpen}
+            onOpenChange={setAddSizeModalOpen}
+          />
+        </div>
+      ),
+
       cell: ({ row }) => (
         <div className="flex gap-2 justify-center items-center">
           {/* Edit button */}
           <Button
+            title="Edit this size."
             size="icon"
             variant="ghost"
-            className="h-4 w-4 p-3"
+            className={`h-4 w-4 p-3 ${row.original._id === "empty" && "hidden"}`}
             onClick={(e) => {
               e.stopPropagation();
               setEditSize({
@@ -246,16 +363,21 @@ const ManageInfoPage = () => {
           >
             <Pen className="h-6 w-6" />
           </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-4 w-4 p-3"
-            onClick={async () => {
-              await deleteSize(row.original._id);
-            }}
-          >
-            <Trash className="h-6 w-6 text-destructive" />
-          </Button>
+          {/* delete button */}
+          <ConfirmationBox
+            trigger={
+              <Button
+                title="Delete this size."
+                size="icon"
+                variant="ghost"
+                className={`h-4 w-4 p-3 ${row.original._id === "empty" && "hidden"}`}
+              >
+                <Trash className="h-6 w-6 text-destructive" />
+              </Button>
+            }
+            onConfirm={() => handleDeleteSize(row.original._id as string)}
+            title="Delete this size?"
+          />
         </div>
       ),
     },
@@ -293,6 +415,7 @@ const ManageInfoPage = () => {
 
               {/* Edit button */}
               <Button
+                title="Edit this company."
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 border-l border-accent text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl"
@@ -334,8 +457,6 @@ const ManageInfoPage = () => {
           <DataTable
             columns={processData.length > 0 ? sizeColumns : []}
             data={processData || []}
-            enablePagination={false}
-            enableColumnToggle={false}
             stickyHeader={false}
           />
         </TabsContent>
@@ -381,6 +502,29 @@ const ManageInfoPage = () => {
                 fetchSizes();
                 fetchProducts();
                 setEditProduct(null);
+              }}
+            />
+          )
+        }
+      />
+
+      {/* edit size modal */}
+      <Modal
+        trigger={null}
+        title="Edit Size"
+        open={!!editSize}
+        onOpenChange={(open) => {
+          if (!open) setEditSize(null);
+        }}
+        content={
+          editSize && (
+            <SizeForm
+              edit
+              sizeData={editSize}
+              products={products}
+              onSuccess={() => {
+                fetchSizes();
+                setEditSize(null);
               }}
             />
           )

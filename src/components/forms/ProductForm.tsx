@@ -43,6 +43,7 @@ interface ProductFormProps {
   };
   companies: (TCompany & TMongoose)[];
   onSuccess?: () => void;
+  selectedCompany?: TCompany & TMongoose;
 }
 
 export default function ProductForm({
@@ -50,6 +51,7 @@ export default function ProductForm({
   productData,
   companies,
   onSuccess,
+  selectedCompany,
 }: ProductFormProps) {
   const [loading, setLoading] = useState(false);
 
@@ -57,7 +59,7 @@ export default function ProductForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: productData?.name || "",
-      company: productData?.company?._id || "",
+      company: productData?.company?._id || selectedCompany?._id || "",
       isDisabled: productData?.isDisabled ?? false,
     },
   });

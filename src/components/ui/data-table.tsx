@@ -56,7 +56,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -135,7 +135,7 @@ export function DataTable<T>({
           <TableHeader
             className={cn(
               stickyHeader &&
-                "sticky top-16 z-20 bg-background/80 backdrop-blur border-b"
+                "sticky top-16 z-20 bg-background/80 backdrop-blur border-b",
             )}
           >
             {table.getHeaderGroups().map((headerGroup) => (
@@ -146,7 +146,7 @@ export function DataTable<T>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -167,7 +167,7 @@ export function DataTable<T>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -190,10 +190,10 @@ export function DataTable<T>({
       {/* Pagination */}
       {enablePagination && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
+          {/* <div className="text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} selected
-          </div>
+          </div> */}
 
           <div className="space-x-2">
             <Button
