@@ -25,10 +25,10 @@ export const getAllSizes = async () => {
 };
 
 // Get single size
-export const getSingleSize = async (productId: string) => {
+export const getSingleSize = async (sizeId: string) => {
   const token = await getValidToken();
   try {
-    const res = await fetch(`${process.env.BASE_API}/sizes/${productId}`, {
+    const res = await fetch(`${process.env.BASE_API}/sizes/${sizeId}`, {
       next: {
         tags: ["size"],
       },
@@ -69,7 +69,7 @@ export const createSize = async (sizeData: FieldValues): Promise<any> => {
 // Update size
 export const updateSize = async (
   productId: string,
-  sizeData: FieldValues
+  sizeData: FieldValues,
 ): Promise<any> => {
   const token = await getValidToken();
 
@@ -107,6 +107,27 @@ export const deleteSize = async (productId: string): Promise<any> => {
     updateTag("sizes");
     updateTag("size");
 
+    return await res.json();
+  } catch (error: any) {
+    return error;
+  }
+};
+
+export const getSizesByProduct = async (productId: string) => {
+  const token = await getValidToken();
+  try {
+    const res = await fetch(
+      `${process.env.BASE_API}/sizes/${productId}/product`,
+      {
+        next: {
+          tags: ["product-sizes"],
+        },
+        headers: {
+          "Content-type": "application/json",
+          Authorization: token,
+        },
+      },
+    );
     return await res.json();
   } catch (error: any) {
     return error;

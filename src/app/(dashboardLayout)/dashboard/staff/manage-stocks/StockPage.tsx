@@ -13,6 +13,10 @@ import { getAllStocksByCompany } from "@/services/StockService";
 import { TCompany, TMongoose } from "@/types";
 import { StockTableRow } from "./utils";
 import { ColumnDef } from "@tanstack/react-table";
+import { Modal } from "@/components/shared/Modal";
+import { Button } from "@/components/ui/button";
+import StockAddForm from "@/components/forms/StockAddForm";
+import { Plus } from "lucide-react";
 
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const StockPage = ({ query }: { query: Record<string, unknown> }) => {
@@ -118,7 +122,7 @@ const StockPage = ({ query }: { query: Record<string, unknown> }) => {
         {/* COMPANY TABS */}
         <TabsList
           defaultValue={companies?.[0]?._id}
-          className="flex flex-wrap gap-5 h-full border mb-5"
+          className="flex flex-wrap gap-5 h-full border mb-3"
         >
           {companies.map((company) => (
             <TabsTrigger
@@ -133,6 +137,19 @@ const StockPage = ({ query }: { query: Record<string, unknown> }) => {
             </TabsTrigger>
           ))}
         </TabsList>
+        {/* add stock modal */}
+        <div className="flex justify-end mb-3">
+          <Modal
+            title="Add Stock"
+            trigger={
+              <Button className="w-60">
+                <Plus className="ml-2 h-4 w-4" />
+                <span>Add Stock</span>
+              </Button>
+            }
+            content={<StockAddForm selectedCompany={selectedCompany} />}
+          />
+        </div>
 
         <TabsContent value={selectedCompany?._id as string}>
           <DataTable
