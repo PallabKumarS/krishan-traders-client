@@ -1,15 +1,19 @@
 import type { Types } from "mongoose";
 
 export interface TStock {
+  imgUrl: string;
   size: Types.ObjectId;
-  batchNo?: string;
   quantity: number;
 
   stockedBy: Types.ObjectId;
-  stockedDate?: Date;
-  expiryDate?: Date;
+  stockedDate: Date;
+  expiryDate: Date;
+  sellingPrice: number;
+  buyingPrice: number;
 
-  status?: TStockStatus;
+  status: TStockStatus;
+  batchNo?: string;
+
   createdAt?: Date;
   updatedAt?: Date;
 

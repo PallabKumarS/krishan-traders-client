@@ -40,6 +40,7 @@ interface SizeFormProps {
   sizeData?: TSize & TMongoose;
   products: (TProduct & TMongoose)[];
   onSuccess?: () => void;
+  selectedProduct?: TProduct & TMongoose;
 }
 
 export default function SizeForm({
@@ -47,13 +48,14 @@ export default function SizeForm({
   sizeData,
   products,
   onSuccess,
+  selectedProduct,
 }: SizeFormProps) {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      productId: sizeData?.product?._id || "",
+      productId: sizeData?.product?._id || selectedProduct?._id || "",
       label: sizeData?.label || "",
       unit: sizeData?.unit || "gm",
       unitQuantity: sizeData?.unitQuantity || 1,

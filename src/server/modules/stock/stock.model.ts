@@ -9,7 +9,6 @@ const stockSchema = new Schema<TStock>(
       required: true,
     },
 
-    batchNo: String,
     quantity: { type: Number, required: true },
 
     stockedBy: {
@@ -25,8 +24,12 @@ const stockSchema = new Schema<TStock>(
       enum: ["pending", "available", "sold", "expired", "rejected"],
       default: "pending",
     },
+    sellingPrice: { type: Number, required: true },
+    buyingPrice: { type: Number, required: true },
+    imgUrl: { type: String, default: "" },
+    batchNo: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 stockSchema.index({ size: 1, expiryDate: 1 });

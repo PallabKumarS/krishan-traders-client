@@ -1,6 +1,5 @@
-// import StockManagement from "@/components/modules/StockManagement";
-import StockManagementForDesktop from "@/components/modules/stocks/StockManagementForDesktop";
 import { Metadata } from "next";
+import StockPage from "./StockPage";
 
 export const metadata: Metadata = {
   title: "Add Stock | Krishan Traders",
@@ -14,8 +13,7 @@ const AddStockPage = async ({
 }) => {
   const query = await searchParams;
 
-  // return <StockManagement query={query} />;
-  return <StockManagementForDesktop query={query} />;
+  return <StockPage query={query} />;
 };
 
 export default AddStockPage;

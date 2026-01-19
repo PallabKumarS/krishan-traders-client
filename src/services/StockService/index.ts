@@ -8,7 +8,7 @@ import { FieldValues } from "react-hook-form";
 // Get all stocks
 export const getAllStocks = async (query?: Record<string, unknown>) => {
   const queryString = new URLSearchParams(
-    query as Record<string, string>
+    query as Record<string, string>,
   ).toString();
 
   try {
@@ -47,7 +47,7 @@ export const getSingleStock = async (stockId: string) => {
 // Update stock
 export const updateStock = async (
   stockId: string,
-  stockData: FieldValues
+  stockData: FieldValues,
 ): Promise<any> => {
   const token = await getValidToken();
   try {
@@ -81,6 +81,25 @@ export const deleteStock = async (stockId: string): Promise<any> => {
     });
 
     updateTag("stock");
+    return await res.json();
+  } catch (error: any) {
+    return error;
+  }
+};
+
+export const getAllStocksByCompany = async (companyId: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.BASE_API}/stocks/${companyId}/company`,
+      {
+        next: {
+          tags: ["stocks"],
+        },
+        headers: {
+          Authorization: await getValidToken(),
+        },
+      },
+    );
     return await res.json();
   } catch (error: any) {
     return error;
