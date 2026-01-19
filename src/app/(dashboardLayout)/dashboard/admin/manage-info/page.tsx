@@ -89,9 +89,7 @@ const ManageInfoPage = () => {
   // fetch products
   const fetchProducts = async () => {
     try {
-      const data = await getAllProductsByCompany(
-        selectedCompany?._id as string,
-      );
+      const data = await getAllProductsByCompany(selectedCompany?._id || "");
       if (data?.success) {
         setProducts(data.data);
       }
@@ -310,7 +308,35 @@ const ManageInfoPage = () => {
       },
     },
     {
-      accessorKey: "actions", // actions
+      accessorKey: "buyingPrice", // buying price
+      enableSorting: true,
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Buying Price" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row.original._id === "empty" ? "—" : row.original.buyingPrice}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "sellingPrice", // selling price
+      enableSorting: true,
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Selling Price" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row.original._id === "empty" ? "—" : row.original.sellingPrice}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "actions", // actions column
       enableSorting: false,
       header: () => (
         <div className="flex justify-center items-center gap-2">

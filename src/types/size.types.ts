@@ -8,6 +8,8 @@ export interface TSize {
   unit: "ml" | "gm" | "kg" | "ltr";
   unitQuantity: number;
   stackCount: number;
+  buyingPrice: number;
+  sellingPrice: number;
 
   isActive: boolean;
 }

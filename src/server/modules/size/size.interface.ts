@@ -3,15 +3,17 @@ import { Types } from "mongoose";
 export interface TSize {
   product: Types.ObjectId;
 
-  label?: string;
+  label: string;
   unit: "ml" | "gm" | "kg" | "ltr";
   unitQuantity: number;
   stackCount: number;
+  buyingPrice: number;
+  sellingPrice: number;
 
-  isActive?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 
-  _id?: Types.ObjectId;
-  __v?: number;
+  _id: Types.ObjectId;
+  __v: number;
 }

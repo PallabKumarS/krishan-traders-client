@@ -22,10 +22,12 @@ const sizeSchema = new Schema<TSize>(
       type: Number,
       required: true,
     },
+    buyingPrice: { type: Number, default: 0 },
+    sellingPrice: { type: Number, default: 0 },
 
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 sizeSchema.index({ product: 1 });

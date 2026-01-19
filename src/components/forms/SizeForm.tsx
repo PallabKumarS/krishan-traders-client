@@ -28,6 +28,8 @@ const formSchema = z.object({
   unit: z.enum(["ml", "gm", "kg", "ltr"]),
   unitQuantity: z.coerce.number().min(1, "Quantity must be greater than 0"),
   stackCount: z.coerce.number().min(0, "Stack count cannot be negative"),
+  buyingPrice: z.coerce.number().min(0).optional(),
+  sellingPrice: z.coerce.number().min(0).optional(),
   isActive: z.boolean().optional(),
 });
 
@@ -56,6 +58,8 @@ export default function SizeForm({
       unit: sizeData?.unit || "gm",
       unitQuantity: sizeData?.unitQuantity || 1,
       stackCount: sizeData?.stackCount || 0,
+      buyingPrice: sizeData?.buyingPrice || 0,
+      sellingPrice: sizeData?.sellingPrice || 0,
       isActive: sizeData?.isActive ?? true,
     },
   });
@@ -144,6 +148,19 @@ export default function SizeForm({
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
+            name="unitQuantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Unit Quantity</FormLabel>
+                <FormControl>
+                  <Input type="number" min={1} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="unit"
             render={({ field }) => (
               <FormItem>
@@ -163,20 +180,6 @@ export default function SizeForm({
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="unitQuantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantity</FormLabel>
-                <FormControl>
-                  <Input type="number" min={1} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
 
         {/* Stack Count */}
@@ -186,6 +189,35 @@ export default function SizeForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Stack Count</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Buying Price */}
+        <FormField
+          control={form.control}
+          name="buyingPrice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Buying Price</FormLabel>
+              <FormControl>
+                <Input type="number" min={0} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Selling Price */}
+        <FormField
+          control={form.control}
+          name="sellingPrice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Selling Price</FormLabel>
               <FormControl>
                 <Input type="number" min={0} {...field} />
               </FormControl>
