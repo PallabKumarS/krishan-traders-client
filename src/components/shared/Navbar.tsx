@@ -7,7 +7,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
 import { jwtDecode } from "jwt-decode";
-import { getToken } from "@/lib/verifyToken";
+import { getValidToken } from "@/lib/verifyToken";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
@@ -24,7 +24,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!user) {
       const fetchTempUser = async () => {
-        const tempUser = jwtDecode((await getToken()) as string);
+        const tempUser = jwtDecode((await getValidToken()) as string);
         setTempUser(tempUser);
       };
       fetchTempUser();

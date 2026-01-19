@@ -8,7 +8,7 @@ import {
   removeFromLocalStorage,
   saveToLocalStorage,
 } from "@/lib/localStorage";
-import { getToken } from "@/lib/verifyToken";
+import { getValidToken } from "@/lib/verifyToken";
 import { deleteCookie } from "@/services/AuthService";
 import { getMe } from "@/services/UserService";
 import { TUser } from "@/types";
@@ -118,7 +118,7 @@ export const useUser = () => {
       setIsLoading(true);
 
       // First check if token exists
-      const token = await getToken();
+      const token = await getValidToken();
       if (!token) {
         return null;
       }

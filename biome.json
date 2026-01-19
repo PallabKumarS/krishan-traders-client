@@ -20,7 +20,8 @@
       "style": "off",
       "a11y": {
         "useKeyWithClickEvents": "off",
-        "useKeyWithMouseEvents": "off"
+        "useKeyWithMouseEvents": "off",
+        "noStaticElementInteractions": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off"
