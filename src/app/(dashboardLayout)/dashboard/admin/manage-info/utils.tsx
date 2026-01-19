@@ -11,7 +11,7 @@ export type SizeTableData = TSize &
   };
 
 export const createEmptySize = (
-  product: TProduct & TMongoose
+  product: TProduct & TMongoose,
 ): TSize & TMongoose => ({
   _id: `empty`,
   product: {
@@ -22,6 +22,8 @@ export const createEmptySize = (
   unit: "kg",
   unitQuantity: 0,
   stackCount: 0,
+  buyingPrice: 0,
+  sellingPrice: 0,
   isActive: false,
 
   createdAt: "",
