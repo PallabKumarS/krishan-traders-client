@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TablePagination } from "../shared/TablePagination";
 
 interface DataTableProps<T> {
   data: T[];
@@ -188,33 +189,7 @@ export function DataTable<T>({
       </div>
 
       {/* Pagination */}
-      {enablePagination && (
-        <div className="flex items-center justify-between">
-          {/* <div className="text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} selected
-          </div> */}
-
-          <div className="space-x-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      )}
+      <TablePagination table={table} enablePagination={enablePagination} />
     </div>
   );
 }
