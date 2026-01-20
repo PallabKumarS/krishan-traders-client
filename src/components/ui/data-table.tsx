@@ -51,7 +51,7 @@ export function DataTable<T>({
   data,
   columns,
   searchKey,
-  enableColumnToggle = true,
+  enableColumnToggle = false,
   enablePagination = true,
   stickyHeader = true,
 }: DataTableProps<T>) {
@@ -131,12 +131,12 @@ export function DataTable<T>({
       )}
 
       {/* Table */}
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-auto h-[70vh]">
+        <Table className="">
           <TableHeader
             className={cn(
               stickyHeader &&
-                "sticky top-16 z-20 bg-background/80 backdrop-blur border-b",
+                "sticky top-0 z-30 bg-background/80 backdrop-blur border-b",
             )}
           >
             {table.getHeaderGroups().map((headerGroup) => (

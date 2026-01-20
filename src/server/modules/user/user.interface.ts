@@ -10,7 +10,7 @@ export type TUser = {
   phoneNumber?: string;
   address?: string;
   profileImg?: string;
-  _id?: Types.ObjectId;
+  _id: Types.ObjectId;
   forgotPasswordToken?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -25,6 +25,6 @@ export interface IUser extends Model<TUser> {
 
   isPasswordMatched(
     myPlaintextPassword: string,
-    hashedPassword: string
+    hashedPassword: string,
   ): Promise<boolean>;
 }

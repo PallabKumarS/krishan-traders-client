@@ -20,7 +20,7 @@ const loginUser = async (payload: TLoginUser) => {
       email: 1,
       status: 1,
       isDeleted: 1,
-    }
+    },
   );
 
   if (!user) {
@@ -41,7 +41,7 @@ const loginUser = async (payload: TLoginUser) => {
   if (
     !(await UserModel.isPasswordMatched(
       payload?.password,
-      user?.password as string
+      user?.password as string,
     ))
   ) {
     throw new AppError(httpStatus.FORBIDDEN, "Password do not match");
@@ -57,13 +57,13 @@ const loginUser = async (payload: TLoginUser) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string
+    config.jwt_access_expires_in as string,
   );
 
   const refreshToken = createToken(
     jwtPayload,
     config.jwt_refresh_secret as string,
-    config.jwt_refresh_expires_in as string
+    config.jwt_refresh_expires_in as string,
   );
 
   return {
@@ -81,7 +81,7 @@ const registerUser = async (payload: Partial<TUser>) => {
 // change password here
 const changePassword = async (
   userData: JwtPayload,
-  payload: { oldPassword: string; newPassword: string }
+  payload: { oldPassword: string; newPassword: string },
 ) => {
   // checking if the user is exist
   const user = await UserModel.findOne(
@@ -92,7 +92,7 @@ const changePassword = async (
       email: 1,
       status: 1,
       isDeleted: 1,
-    }
+    },
   );
 
   if (!user) {
@@ -113,7 +113,7 @@ const changePassword = async (
   if (
     !(await UserModel.isPasswordMatched(
       payload.oldPassword,
-      user?.password as string
+      user?.password as string,
     ))
   ) {
     throw new AppError(httpStatus.FORBIDDEN, "Password do not match");
@@ -122,7 +122,7 @@ const changePassword = async (
   //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds),
   );
 
   const result = await UserModel.findOneAndUpdate(
@@ -131,7 +131,7 @@ const changePassword = async (
     },
     {
       password: newHashedPassword,
-    }
+    },
   );
 
   if (!result) {
@@ -173,7 +173,7 @@ const refreshToken = async (token: string) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string
+    config.jwt_access_expires_in as string,
   );
 
   return {
@@ -194,20 +194,20 @@ const forgotPassword = async (email: string) => {
   const info = await sendPasswordResetEmail(
     user?.email as string,
     code,
-    user?.name as string
+    user?.name as string,
   );
 
   if (!info) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
-      "Failed to send email"
+      "Failed to send email",
     );
   }
 
   const updatedUser = await UserModel.findOneAndUpdate(
     { email },
     { forgotPasswordToken: code },
-    { new: true }
+    { new: true },
   );
 
   return updatedUser;
@@ -217,7 +217,7 @@ const forgotPassword = async (email: string) => {
 const resetPassword = async (
   code: number,
   newPassword: string,
-  email: string
+  email: string,
 ) => {
   const user = await UserModel.findOne({ email, forgotPasswordToken: code });
 
@@ -227,13 +227,13 @@ const resetPassword = async (
 
   const newHashedPassword = await bcrypt.hash(
     newPassword,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds),
   );
 
   const updatedUser = await UserModel.findOneAndUpdate(
     { forgotPasswordToken: code },
     { password: newHashedPassword, forgotPasswordToken: null },
-    { new: true }
+    { new: true },
   );
 
   return updatedUser;

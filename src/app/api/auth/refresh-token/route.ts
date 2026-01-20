@@ -20,7 +20,7 @@ export async function POST() {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24,
+      maxAge: 60 * 60 * 24 * 30, // 30 days
       path: "/",
     });
 

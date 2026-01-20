@@ -152,11 +152,7 @@ const StockPage = ({ query }: { query: Record<string, unknown> }) => {
         </div>
 
         <TabsContent value={selectedCompany?._id as string}>
-          <DataTable
-            columns={stockColumns}
-            data={stocks}
-            stickyHeader={false}
-          />
+          <DataTable columns={stockColumns} data={stocks} />
         </TabsContent>
       </Tabs>
     </div>

@@ -476,7 +476,6 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
           <DataTable
             columns={processData.length > 0 ? sizeColumns : []}
             data={processData || []}
-            stickyHeader={false}
           />
         </TabsContent>
       </Tabs>
