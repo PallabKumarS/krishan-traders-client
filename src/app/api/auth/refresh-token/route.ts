@@ -4,11 +4,15 @@ import { handleApiError } from "@/server/errors/handleApiError";
 import { cookies } from "next/headers";
 import { connectDB } from "@/lib/mongodb";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     await connectDB();
     const cookieStore = await cookies();
-    const refreshToken = cookieStore.get("refreshToken")?.value;
+    const authHeader = request.headers.get("authorization");
+
+    const refreshToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : authHeader;
 
     if (!refreshToken) {
       throw new Error("Refresh token missing");

@@ -24,7 +24,8 @@ export default function Navbar() {
   useEffect(() => {
     if (!user) {
       const fetchTempUser = async () => {
-        const tempUser = jwtDecode((await getValidToken()) as string);
+        const accessToken = (await getValidToken()) as string;
+        const tempUser = accessToken ? jwtDecode(accessToken) : null;
         setTempUser(tempUser);
       };
       fetchTempUser();

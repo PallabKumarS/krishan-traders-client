@@ -22,21 +22,22 @@ export const isTokenExpired = async (token: string): Promise<boolean> => {
 export const getValidToken = async (): Promise<string> => {
   const cookieStore = await cookies();
 
-  let token = cookieStore.get("accessToken")!.value;
+  let token = cookieStore.get("accessToken")?.value;
 
   if (!token || (await isTokenExpired(token))) {
     const { data } = await getNewToken();
     token = data?.accessToken;
-    await setAccessToken(token);
+    await setAccessToken(token as string);
   }
 
-  return token;
+  return (token as string) || "";
 };
 
 const getNewToken = async () => {
   try {
     const res = await fetch(`${process.env.BASE_API}/auth/refresh-token`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Authorization: (await cookies()).get("refreshToken")!.value,

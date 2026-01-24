@@ -1,6 +1,6 @@
 import type { Model, Types } from "mongoose";
 
-export type TUser = {
+export interface TUser extends Document {
   name: string;
   email: string;
   password: string;
@@ -14,7 +14,7 @@ export type TUser = {
   forgotPasswordToken?: number;
   createdAt?: Date;
   updatedAt?: Date;
-};
+}
 
 export type TUserRole = "admin" | "staff" | "guest";
 
