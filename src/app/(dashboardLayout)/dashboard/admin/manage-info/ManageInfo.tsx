@@ -23,6 +23,7 @@ import { createEmptySize, SizeTableData } from "./utils";
 import SizeForm from "@/components/forms/SizeForm";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   // loading states
@@ -74,23 +75,6 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
     fetchCompanies();
   }, []);
 
-  // size loading
-  const fetchSizes = async () => {
-    try {
-      const data = await getAllSizes();
-      if (data?.success) {
-        setSizes(data.data);
-      }
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setIsSizeLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchSizes();
-  }, []);
-
   // fetch products
   const fetchProducts = async () => {
     try {
@@ -107,6 +91,23 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   useEffect(() => {
     fetchProducts();
   }, [selectedCompany]);
+
+  // size loading
+  const fetchSizes = async () => {
+    try {
+      const data = await getAllSizes();
+      if (data?.success) {
+        setSizes(data.data);
+      }
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setIsSizeLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchSizes();
+  }, []);
 
   // create sizes map
   const sizesByProduct = useMemo(() => {
@@ -280,7 +281,14 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
       header: ({ column }) => (
         <SortableHeader column={column} title="Size Label" />
       ),
-      cell: ({ row }) => (row.original.label ? row.original.label : "—"),
+      cell: ({ row }) =>
+        row.original.label ? (
+          <Badge className="" variant={"secondary"}>
+            {row.original.label}
+          </Badge>
+        ) : (
+          "—"
+        ),
     },
     {
       accessorKey: "unitQuantity", // unit quantity
