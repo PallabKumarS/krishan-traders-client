@@ -7,7 +7,6 @@ import ProductForm from "@/components/forms/ProductForm";
 import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
-import { DataTable, SortableHeader } from "@/components/ui/data-table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getAllCompany } from "@/services/CompanyService";
 import {
@@ -16,14 +15,14 @@ import {
 } from "@/services/ProductService";
 import { deleteSize, getAllSizes } from "@/services/SizeService";
 import { TCompany, TMongoose, TProduct, TSize } from "@/types";
-import { ColumnDef } from "@tanstack/react-table";
 import { Pen, Plus, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { createEmptySize, SizeTableData } from "./utils";
+import { createEmptySize } from "./utils";
 import SizeForm from "@/components/forms/SizeForm";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { GroupedTable } from "@/components/ui/grouped-table";
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   // loading states
@@ -191,83 +190,33 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   };
 
   // columns
-  const sizeColumns: ColumnDef<SizeTableData>[] = [
+  const tableColumns = [
     {
-      accessorKey: "product.name", //product name
-      enableSorting: true,
-      header: ({ column }) => (
-        <div className="flex justify-center items-center gap-2">
-          <SortableHeader column={column} title="Product Name" />
-          {/* Add product modal */}
-          <Modal
-            key={"add-product-modal"}
-            title="Add New Product"
-            trigger={
-              <Button
-                title="Add new product."
-                size="icon"
-                variant="default"
-                className="h-6 w-6 p-2"
-              >
-                <Plus className="h-6 w-6" />
-              </Button>
-            }
-            content={
-              <ProductForm
-                edit={false}
-                companies={companies}
-                selectedCompany={selectedCompany as TCompany & TMongoose}
-                onSuccess={() => {
-                  fetchSizes();
-                  fetchProducts();
-                }}
-              />
-            }
-            open={addProductModalOpen}
-            onOpenChange={setAddProductModalOpen}
-          />
-        </div>
-      ),
-      cell: ({ row }) => (
-        <div className="font-medium flex gap-2 justify-center items-center">
-          <span
-            className={`${row.original.product.isDisabled && "line-through"}`}
-          >
-            {row.original.product.name}
+      key: "product.name",
+      title: "Product Name",
+      sortable: true,
+      render: (value: any, row: any) => (
+        <div className="flex items-center justify-center gap-2">
+          <span className={`${row.product.isDisabled && "line-through"}`}>
+            {value}
           </span>
-          {/* Edit button */}
           <Button
-            title="Edit this product."
-            size="icon"
+            size="sm"
             variant="ghost"
-            className="h-4 w-4 p-3"
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditProduct({
-                ...row.original.product,
-                _id: row.original.product._id,
-              });
-            }}
+            onClick={() => setEditProduct(row.product)}
           >
-            <Pen className="h-6 w-6" />
+            <Pen className="h-4 w-4" />
           </Button>
-
-          {/* delete button */}
           <ConfirmationBox
             trigger={
-              <Button
-                title="Delete this product."
-                size="icon"
-                variant="ghost"
-                className="h-4 w-4 p-3"
-              >
-                <Trash className="h-6 w-6 text-destructive" />
+              <Button size="sm" variant="ghost">
+                <Trash className="h-4 w-4 text-destructive" />
               </Button>
             }
-            onConfirm={() => handleDeleteProduct(row.original.product._id)}
+            onConfirm={() => handleDeleteProduct(row.product._id)}
             title="Delete this product?"
             description={
-              row.original._id === "empty"
+              row._id === "empty"
                 ? ""
                 : "This will also delete all sizes associated with this product."
             }
@@ -276,135 +225,66 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
       ),
     },
     {
-      accessorKey: "label", // size label
-      enableSorting: true,
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Size Label" />
-      ),
-      cell: ({ row }) =>
-        row.original.label ? (
-          <Badge className="" variant={"secondary"}>
-            {row.original.label}
-          </Badge>
-        ) : (
-          "—"
-        ),
+      key: "label",
+      title: "Size Label",
+      sortable: true,
+      render: (value: any) =>
+        value ? <Badge variant="secondary">{value}</Badge> : "—",
     },
     {
-      accessorKey: "unitQuantity", // unit quantity
-      enableSorting: true,
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Unit Quantity" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row.original._id === "empty"
-              ? "—"
-              : ` ${row.original.unitQuantity} ${row.original.unit}`}
-          </div>
-        );
-      },
+      key: "unitQuantity",
+      title: "Unit Quantity",
+      sortable: true,
+      render: (_value: any, row: any) =>
+        row._id === "empty" ? "—" : `${row.unitQuantity} ${row.unit}`,
     },
     {
-      accessorKey: "stackCount", // stack count
-      enableSorting: true,
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Stack Count" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row.original._id === "empty" ? "—" : row.original.stackCount}
-          </div>
-        );
-      },
+      key: "stackCount",
+      title: "Stack Count",
+      sortable: true,
+      render: (value: any, row: any) => (row._id === "empty" ? "—" : value),
     },
     {
-      accessorKey: "buyingPrice", // buying price
-      enableSorting: true,
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Buying Price" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row.original._id === "empty" ? "—" : row.original.buyingPrice}
-          </div>
-        );
-      },
+      key: "buyingPrice",
+      title: "Buying Price",
+      sortable: true,
+      render: (value: any, row: any) => (row._id === "empty" ? "—" : value),
     },
     {
-      accessorKey: "sellingPrice", // selling price
-      enableSorting: true,
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Selling Price" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row.original._id === "empty" ? "—" : row.original.sellingPrice}
-          </div>
-        );
-      },
+      key: "sellingPrice",
+      title: "Selling Price",
+      sortable: true,
+      render: (value: any, row: any) => (row._id === "empty" ? "—" : value),
     },
     {
-      accessorKey: "actions", // actions column
-      enableSorting: false,
-      header: () => (
-        <div className="flex justify-center items-center gap-2">
-          <span>Actions</span>
-        </div>
-      ),
-
-      cell: ({ row }) => (
-        <div className="flex gap-2 justify-center items-center">
-          {/* Add button */}
-          <Button
-            title="Add New Size."
-            size="icon"
-            variant="default"
-            className="h-6 w-6 p-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedProduct(row.original.product);
-            }}
-          >
-            <Plus className="h-6 w-6" />
+      key: "actions",
+      title: "Actions",
+      sortable: false,
+      render: (_value: any, row: any) => (
+        <div className="flex items-center justify-center gap-2">
+          <Button size="sm" onClick={() => setSelectedProduct(row.product)}>
+            <Plus className="h-4 w-4" />
           </Button>
-
-          {/* Edit button */}
-          <Button
-            title="Edit this size."
-            size="icon"
-            variant="ghost"
-            className={`h-4 w-4 p-3 ${row.original._id === "empty" && "hidden"}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditSize({
-                ...row.original,
-                _id: row.original._id,
-              });
-            }}
-          >
-            <Pen className="h-6 w-6" />
-          </Button>
-
-          {/* delete button */}
-          <ConfirmationBox
-            trigger={
+          {row._id !== "empty" && (
+            <>
               <Button
-                title="Delete this size."
-                size="icon"
+                size="sm"
                 variant="ghost"
-                className={`h-4 w-4 p-3 ${row.original._id === "empty" && "hidden"}`}
+                onClick={() => setEditSize(row)}
               >
-                <Trash className="h-6 w-6 text-destructive" />
+                <Pen className="h-4 w-4" />
               </Button>
-            }
-            onConfirm={() => handleDeleteSize(row.original._id as string)}
-            title="Delete this size?"
-          />
+              <ConfirmationBox
+                trigger={
+                  <Button size="sm" variant="ghost">
+                    <Trash className="h-4 w-4 text-destructive" />
+                  </Button>
+                }
+                onConfirm={() => handleDeleteSize(row._id)}
+                title="Delete this size?"
+              />
+            </>
+          )}
         </div>
       ),
     },
@@ -481,10 +361,41 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
         </TabsList>
 
         <TabsContent value={selectedCompany?._id as string}>
-          <DataTable
-            columns={processData.length > 0 ? sizeColumns : []}
-            data={processData || []}
-          />
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold">Products and Sizes</h2>
+              <Modal
+                title="Add New Product"
+                trigger={
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Product
+                  </Button>
+                }
+                content={
+                  <ProductForm
+                    edit={false}
+                    companies={companies}
+                    selectedCompany={selectedCompany!}
+                    onSuccess={() => {
+                      fetchSizes();
+                      fetchProducts();
+                    }}
+                  />
+                }
+                open={addProductModalOpen}
+                onOpenChange={setAddProductModalOpen}
+              />
+            </div>
+
+            <GroupedTable
+              data={processData}
+              columns={tableColumns}
+              groupBy="product.name"
+              searchKey="label"
+              enableColumnToggle
+            />
+          </div>
         </TabsContent>
       </Tabs>
 
