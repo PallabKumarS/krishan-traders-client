@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowUpDown, ChevronDown } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -23,7 +23,7 @@ interface GroupedTableProps {
   data: any[];
   columns: Column[];
   groupBy: string;
-  searchKey?: string;
+  searchKeys: string[];
   enableColumnToggle?: boolean;
 }
 
@@ -31,7 +31,7 @@ export function GroupedTable({
   data,
   columns,
   groupBy,
-  searchKey,
+  searchKeys = [],
   enableColumnToggle = false,
 }: GroupedTableProps) {
   const [sortConfig, setSortConfig] = useState<{
@@ -54,12 +54,15 @@ export function GroupedTable({
   const { groups, allRows } = useMemo(() => {
     // Filter data
     let filteredData = [...data];
-    if (searchKey && searchTerm) {
+    if (searchKeys?.length > 0 && searchTerm) {
       filteredData = data.filter((item) => {
-        const value = getValue(item, searchKey);
-        return String(value || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        // Check if any of the search keys contain the search term
+        return searchKeys?.some((key) => {
+          const value = getValue(item, key);
+          return String(value || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        });
       });
     }
 
@@ -111,7 +114,7 @@ export function GroupedTable({
     });
 
     return { groups: groupsList, allRows: allRowsList };
-  }, [data, sortConfig, searchTerm, searchKey, groupBy]);
+  }, [data, sortConfig, searchTerm, searchKeys, groupBy]);
 
   const handleSort = (key: string) => {
     setSortConfig((current) => ({
@@ -137,13 +140,16 @@ export function GroupedTable({
     <div className="w-full space-y-4">
       {/* Toolbar */}
       <div className="flex items-center gap-3">
-        {searchKey && (
-          <Input
-            placeholder={`Search ${searchKey}...`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
-          />
+        {searchKeys?.length > 0 && (
+          <div className="relative max-w-sm flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         )}
 
         {enableColumnToggle && (

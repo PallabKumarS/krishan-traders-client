@@ -392,7 +392,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
               data={processData}
               columns={tableColumns}
               groupBy="product.name"
-              searchKey="label"
+              searchKeys={["product.name", "label", "unit"]}
               enableColumnToggle
             />
           </div>
