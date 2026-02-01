@@ -107,6 +107,7 @@ export function GroupedTable({
         allRowsList.push({
           ...row,
           _isFirstInGroup: index === 0,
+          _isLastInGroup: index === rows.length - 1,
           _rowSpan: index === 0 ? rows.length : 0,
           _groupValue: groupValue,
         });
@@ -177,7 +178,7 @@ export function GroupedTable({
 
       {/* Table */}
       <div className="rounded-md border overflow-auto">
-        <table className="w-full">
+        <table className="w-full grouped-table">
           <thead className="sticky top-0 bg-background border-b">
             <tr>
               {columns
@@ -206,7 +207,20 @@ export function GroupedTable({
           <tbody>
             {allRows.length > 0 ? (
               allRows.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-accent/20 border-b ">
+                <tr
+                  key={rowIndex}
+                  className={`hover:bg-accent/20 transition-colors ${
+                    row._isFirstInGroup
+                      ? "border-t-2 border-t-primary/30 border-b-0"
+                      : "border-0"
+                  } ${
+                    row._isLastInGroup
+                      ? "border-b-2 border-b-primary/30 border-t-0"
+                      : ""
+                  }`}
+                  data-first={row._isFirstInGroup ? "true" : "false"}
+                  data-last={row._isLastInGroup ? "true" : "false"}
+                >
                   {columns
                     .filter((col) => visibleColumns.has(col.key))
                     .map((column) => {
@@ -224,7 +238,7 @@ export function GroupedTable({
                           rowSpan={
                             isGroupColumn && isFirstRow ? row._rowSpan : 1
                           }
-                          className={`px-4 py-3 text-center border-r  last:border-r-0 ${
+                          className={`px-4 py-1 text-center border-r last:border-r-0 ${
                             isGroupColumn && isFirstRow
                               ? "align-middle bg-muted/20"
                               : ""

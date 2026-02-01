@@ -196,7 +196,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
       title: "Product Name",
       sortable: true,
       render: (value: any, row: any) => (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1">
           <span className={`${row.product.isDisabled && "line-through"}`}>
             {value}
           </span>

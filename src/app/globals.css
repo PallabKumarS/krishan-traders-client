@@ -126,7 +126,9 @@
 /* Add a custom class for fertilizer-themed cards */
 .fertilizer-card {
   border-left: 4px solid var(--primary);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
 
 .fertilizer-card:hover {
@@ -159,4 +161,23 @@
 
 .animate-shimmer-wave {
   animation: shimmer-wave 1.5s ease-in-out infinite;
+}
+
+/* grouped table styles */
+.grouped-table tbody tr:not([data-first="true"]):not([data-last="true"]) {
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+.grouped-table tbody tr:not([data-first="true"]):not([data-last="true"]) td {
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+.grouped-table td {
+  border-top: none !important;
+  border-bottom: none !important;
+}
+.grouped-table td:not(:last-child) {
+  border-right: 1px solid hsl(var(--border)) !important;
 }
