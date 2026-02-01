@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { DataTable, SortableHeader } from "@/components/ui/data-table";
+import { GroupedTable } from "@/components/ui/grouped-table";
 import LoadingData from "@/components/shared/LoadingData";
 
 import { getAllCompany } from "@/services/CompanyService";
@@ -12,14 +12,14 @@ import { getAllStocksByCompany } from "@/services/StockService";
 
 import { TCompany, TMongoose } from "@/types";
 import { StockTableRow } from "./utils";
-import { ColumnDef } from "@tanstack/react-table";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import StockAddForm from "@/components/forms/StockAddForm";
 import { Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
-const StockPage = ({ query }: { query: Record<string, unknown> }) => {
+const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
   // Main data states
   const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
   const [stocks, setStocks] = useState<StockTableRow[]>([]);
@@ -71,44 +71,62 @@ const StockPage = ({ query }: { query: Record<string, unknown> }) => {
     }
   }, [selectedCompany]);
 
-  useEffect(() => {
-    fetchStocks(selectedCompany?._id as string);
-  }, [selectedCompany]);
-
-  //   stock columns
-  const stockColumns: ColumnDef<StockTableRow>[] = [
+  //   stock columns for GroupedTable
+  const stockColumns = [
     {
-      accessorKey: "productName",
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Product" />
+      key: "productName",
+      title: "Product",
+      sortable: true,
+    },
+    {
+      key: "sizeLabel",
+      title: "Size",
+      sortable: true,
+      render: (value: any) =>
+        value ? (
+          <Badge variant="secondary" className="font-normal">
+            {value}
+          </Badge>
+        ) : (
+          "—"
+        ),
+    },
+    {
+      key: "unitQuantity",
+      title: "Unit",
+      sortable: true,
+      render: (value: any, row: StockTableRow) =>
+        `${row.unitQuantity} ${row.unit}`,
+    },
+    {
+      key: "totalQuantity",
+      title: "Stock Qty",
+      sortable: true,
+      render: (value: any) => (
+        <span
+          className={`font-medium ${
+            Number(value) < 10
+              ? "text-red-500"
+              : Number(value) < 50
+                ? "text-yellow-500"
+                : "text-green-500"
+          }`}
+        >
+          {value}
+        </span>
       ),
     },
     {
-      accessorKey: "sizeLabel",
-      header: ({ column }) => <SortableHeader column={column} title="Size" />,
+      key: "buyingPrice",
+      title: "Buy Price",
+      sortable: true,
+      render: (value: any) => `₹${Number(value).toFixed(2)}`,
     },
     {
-      accessorKey: "unitQuantity",
-      header: ({ column }) => <SortableHeader column={column} title="Unit" />,
-      cell: ({ row }) => `${row.original.unitQuantity} ${row.original.unit}`,
-    },
-    {
-      accessorKey: "totalQuantity",
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Stock Qty" />
-      ),
-    },
-    {
-      accessorKey: "buyingPrice",
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Buy Price" />
-      ),
-    },
-    {
-      accessorKey: "sellingPrice",
-      header: ({ column }) => (
-        <SortableHeader column={column} title="Sell Price" />
-      ),
+      key: "sellingPrice",
+      title: "Sell Price",
+      sortable: true,
+      render: (value: any) => `₹${Number(value).toFixed(2)}`,
     },
   ];
 
@@ -152,11 +170,17 @@ const StockPage = ({ query }: { query: Record<string, unknown> }) => {
         </div>
 
         <TabsContent value={selectedCompany?._id as string}>
-          <DataTable columns={stockColumns} data={stocks} />
+          <GroupedTable
+            data={stocks}
+            columns={stockColumns}
+            groupBy="productName"
+            searchKeys={["productName", "sizeLabel", "unit"]}
+            enableColumnToggle
+          />
         </TabsContent>
       </Tabs>
     </div>
   );
 };
 
-export default StockPage;
+export default ManageStock;

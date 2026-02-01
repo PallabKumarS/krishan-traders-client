@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import StockPage from "./StockPage";
+import ManageStock from "./ManageStock";
 
 export const metadata: Metadata = {
   title: "Add Stock | Krishan Traders",
@@ -13,7 +13,7 @@ const AddStockPage = async ({
 }) => {
   const query = await searchParams;
 
-  return <StockPage query={query} />;
+  return <ManageStock query={query} />;
 };
 
 export default AddStockPage;
