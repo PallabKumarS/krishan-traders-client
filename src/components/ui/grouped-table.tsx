@@ -53,7 +53,6 @@ export function GroupedTable({
   // Process data
   // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   // biome-ignore lint/correctness/noUnusedVariables: <>
-  // Process data
   const { groups, allRows, paginatedRows, totalPages } = useMemo(() => {
     // Filter data
     let filteredData = [...data];
@@ -356,7 +355,7 @@ export function GroupedTable({
             </Button>
             <div className="flex items-center space-x-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNumber;
+                let pageNumber: number;
                 if (totalPages <= 5) {
                   pageNumber = i + 1;
                 } else if (currentPage <= 3) {
