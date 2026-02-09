@@ -26,10 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import DatePicker from "react-datepicker";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-
 import ButtonLoader from "../shared/ButtonLoader";
 import { useAppContext } from "@/providers/ContextProvider";
 
@@ -38,6 +34,7 @@ import { addStock } from "@/services/RecordService";
 import { updateStock } from "@/services/StockService";
 import { getAllProductsByCompany } from "@/services/ProductService";
 import { getSizesByProduct } from "@/services/SizeService";
+import { DatePickerInput } from "../ui/date-picker-input";
 
 const formSchema = z.object({
   productId: z.string().min(1, "Product is required"),
@@ -270,12 +267,7 @@ export default function StockAddForm({
               <FormLabel>Expiry Date</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <DatePicker
-                    selected={field.value}
-                    onChange={(d) => d && field.onChange(d)}
-                    className={cn("w-full h-10 border rounded-md px-3")}
-                  />
-                  <CalendarIcon className="absolute right-3 top-3 h-4 w-4 opacity-50" />
+                  <DatePickerInput field={field} />
                 </div>
               </FormControl>
             </FormItem>

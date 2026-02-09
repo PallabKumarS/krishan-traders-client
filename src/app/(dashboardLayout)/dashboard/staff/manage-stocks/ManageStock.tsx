@@ -95,7 +95,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
       key: "unitQuantity",
       title: "Unit",
       sortable: true,
-      render: (value: any, row: StockTableRow) =>
+      render: (_value: any, row: StockTableRow) =>
         `${row.unitQuantity} ${row.unit}`,
     },
     {
@@ -143,16 +143,20 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
           className="flex flex-wrap gap-5 h-full border mb-3"
         >
           {companies.map((company) => (
-            <TabsTrigger
+            <div
               key={company._id}
-              value={company._id}
               onClick={() => setSelectedCompany(company)}
-              className={`min-w-60 border border-accent rounded-xl ${company.isDisabled && "opacity-50"} ${
+              className={`flex items-center min-w-60 border border-accent rounded-xl ${company.isDisabled && "opacity-50"} ${
                 selectedCompany?._id === company._id && "bg-accent/50"
-              } px-4 data-[state=active]:bg-base data-[state=active]:shadow-none`}
+              }`}
             >
-              {company.name}
-            </TabsTrigger>
+              <TabsTrigger
+                value={company._id}
+                className={`grow px-4 data-[state=active]:bg-bg-accent/50 data-[state=active]:shadow-none`}
+              >
+                {company.name}
+              </TabsTrigger>
+            </div>
           ))}
         </TabsList>
         {/* add stock modal */}
