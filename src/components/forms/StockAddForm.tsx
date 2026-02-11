@@ -31,12 +31,14 @@ import { useAppContext } from "@/providers/ContextProvider";
 
 import { TCompany, TMongoose, TProduct, TSize, TStock } from "@/types";
 import { addStock } from "@/services/RecordService";
-import { updateStock } from "@/services/StockService";
+import { directlyAddStock, updateStock } from "@/services/StockService";
 import { getAllProductsByCompany } from "@/services/ProductService";
 import { getSizesByProduct } from "@/services/SizeService";
 import { DatePickerInput } from "../ui/date-picker-input";
+import { DragDropUploader } from "../shared/DragDropUploader";
 
 const formSchema = z.object({
+  imgUrl: z.string(),
   productId: z.string().min(1, "Product is required"),
   sizeId: z.string().min(1, "Size is required"),
 
@@ -69,8 +71,9 @@ export default function StockAddForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      productId: "",
-      sizeId: "",
+      imgUrl: stockData?.imgUrl ?? "",
+      productId: stockData?.size?.product?._id ?? "",
+      sizeId: stockData?.size?._id ?? "",
       quantity: stockData?.quantity ?? 1,
       buyingPrice: stockData?.buyingPrice ?? 0,
       sellingPrice: stockData?.sellingPrice ?? 0,
@@ -141,7 +144,9 @@ export default function StockAddForm({
     try {
       const res = edit
         ? await updateStock(stockData?._id as string, payload)
-        : await addStock(payload);
+        : user?.role === "admin"
+          ? await directlyAddStock(payload)
+          : await addStock(payload);
 
       if (res.success) {
         toast.success(res.message, { id: toastId });
@@ -160,6 +165,27 @@ export default function StockAddForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-6">
+        {/* Image Url */}
+        <div className="flex flex-col gap-5">
+          <DragDropUploader
+            name="imgUrl"
+            label="Upload your image"
+            multiple={false}
+          />
+          <FormField
+            control={form.control}
+            name="imgUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image Url</FormLabel>
+                <FormControl>
+                  <Input type="string" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           {/* Product */}
           <FormField

@@ -44,6 +44,29 @@ export const getSingleStock = async (stockId: string) => {
   }
 };
 
+export const directlyAddStock = async (
+  stockData: Record<string, any>,
+): Promise<any> => {
+  const token = await getValidToken();
+
+  try {
+    const res = await fetch(`${process.env.BASE_API}/stocks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify(stockData),
+    });
+
+    updateTag("stocks");
+
+    return await res.json();
+  } catch (error: any) {
+    return error;
+  }
+};
+
 // Update stock
 export const updateStock = async (
   stockId: string,

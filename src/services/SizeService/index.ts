@@ -75,7 +75,7 @@ export const updateSize = async (
 
   try {
     const res = await fetch(`${process.env.BASE_API}/sizes/${productId}`, {
-      method: "PUT",
+      method: "PATCH",
       body: JSON.stringify(sizeData),
       headers: {
         "Content-type": "application/json",

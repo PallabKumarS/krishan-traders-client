@@ -1,12 +1,28 @@
-import { TStock } from "./stock.types";
+import { TMongoose } from ".";
+import { TSize } from "./size.types";
 import { TUser } from "./user.types";
 
 export interface TRecord {
-  stock: TStock;
-  type: "stock_in" | "sale";
+  imgUrl: string;
+  size: TSize & TMongoose;
   quantity: number;
-  stockedBy: TUser;
-  status: "pending" | "accepted" | "rejected";
-  soldBy?: TUser;
-  note: string;
+
+  stockedDate: Date;
+  expiryDate: Date;
+  sellingPrice: number;
+  buyingPrice: number;
+
+  status: TRecordStatus;
+  batchNo?: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+
+  _id: string;
+  __v: number;
+
+  interactedBy: TUser & TMongoose;
+  type: "stock_in" | "sale";
 }
+
+export type TRecordStatus = "pending" | "accepted" | "rejected";

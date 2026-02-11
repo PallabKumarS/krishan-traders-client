@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 import httpStatus from "http-status";
 import { AppError } from "../../errors/AppError";
-import { RecordModel } from "./record.model";
-import { StockModel } from "../stock/stock.model";
+import RecordModel from "./record.model";
+import StockModel from "../stock/stock.model";
 import calculateSellPieces from "@/server/utils/calculateQuantity";
+import { TStock } from "../stock/stock.interface";
 
-/* =====================================
-   GET ALL RECORDS
-===================================== */
+//  GET ALL RECORDS
 const getAllRecordFromDB = async (query?: Record<string, unknown>) => {
   const filter: Record<string, unknown> = {};
 
@@ -16,40 +15,27 @@ const getAllRecordFromDB = async (query?: Record<string, unknown>) => {
 
   return RecordModel.find(filter)
     .populate({
-      path: "stock",
+      path: "size",
       populate: {
-        path: "variant",
-        populate: {
-          path: "product",
-          populate: { path: "company" },
-        },
+        path: "product",
+        populate: { path: "company" },
       },
     })
     .populate("stockedBy")
-    .populate("soldBy")
     .sort("-createdAt");
 };
 
-/* =====================================
-   CREATE STOCK REQUEST (PENDING)
-===================================== */
-const requestAddStockToDB = async (payload: {
-  stock: string;
-  quantity: number;
-  stockedBy: string;
-}) => {
-  return RecordModel.create({
-    stock: payload.stock,
-    quantity: payload.quantity,
-    stockedBy: payload.stockedBy,
+//  CREATE STOCK REQUEST (PENDING)
+const requestAddStockToDB = async (payload: Partial<TStock>) => {
+  const record = await RecordModel.create({
+    ...payload,
     type: "stock_in",
-    status: "pending",
+    interactedBy: payload.stockedBy,
   });
+  return record;
 };
 
-/* =====================================
-   CREATE SELL REQUEST (PENDING)
-===================================== */
+//  CREATE SELL REQUEST (PENDING)
 const requestSellStockFromDB = async (payload: {
   stock: string;
   sellType: "piece" | "carton";
@@ -67,7 +53,7 @@ const requestSellStockFromDB = async (payload: {
   const sellPieces = calculateSellPieces(
     payload.sellType,
     payload.quantity,
-    unitsPerPack
+    unitsPerPack,
   );
 
   if (stock.quantity < sellPieces) {
@@ -83,12 +69,10 @@ const requestSellStockFromDB = async (payload: {
   });
 };
 
-/* =====================================
-   ADMIN: ACCEPT / REJECT ADD STOCK
-===================================== */
+//  ADMIN: ACCEPT / REJECT ADD STOCK
 const acceptAddStockInDB = async (
   recordId: string,
-  payload: { status: "accepted" | "rejected" }
+  payload: { status: "accepted" | "rejected" },
 ) => {
   const record = await RecordModel.findById(recordId);
   if (!record) throw new AppError(httpStatus.NOT_FOUND, "Record not found");
@@ -132,12 +116,10 @@ const acceptAddStockInDB = async (
   }
 };
 
-/* =====================================
-   ADMIN: ACCEPT / REJECT SELL STOCK
-===================================== */
+//  ADMIN: ACCEPT / REJECT SELL STOCK
 const acceptSellStockInDB = async (
   recordId: string,
-  payload: { status: "accepted" | "rejected" }
+  payload: { status: "accepted" | "rejected" },
 ) => {
   const record = await RecordModel.findById(recordId);
   if (!record) throw new AppError(httpStatus.NOT_FOUND, "Record not found");
@@ -185,9 +167,7 @@ const acceptSellStockInDB = async (
   }
 };
 
-/* =====================================
-   DELETE RECORD
-===================================== */
+//  DELETE RECORD
 const deleteRecordFromDB = async (id: string) => {
   const record = await RecordModel.findById(id);
   if (!record) throw new AppError(httpStatus.NOT_FOUND, "Record not found");
@@ -199,9 +179,6 @@ const deleteRecordFromDB = async (id: string) => {
   return RecordModel.findByIdAndDelete(id);
 };
 
-/* =====================================
-   EXPORT
-===================================== */
 export const RecordService = {
   getAllRecordFromDB,
 

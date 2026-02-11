@@ -21,8 +21,8 @@ const stockSchema = new Schema<TStock>(
 
     status: {
       type: String,
-      enum: ["pending", "available", "sold", "expired", "rejected"],
-      default: "pending",
+      enum: ["available", "sold", "expired"],
+      default: "available",
     },
     sellingPrice: { type: Number, required: true },
     buyingPrice: { type: Number, required: true },
@@ -34,6 +34,6 @@ const stockSchema = new Schema<TStock>(
 
 stockSchema.index({ size: 1, expiryDate: 1 });
 
-export const StockModel = models.Stock || model<TStock>("Stock", stockSchema);
+const StockModel = models.Stock || model<TStock>("Stock", stockSchema);
 
 export default StockModel;

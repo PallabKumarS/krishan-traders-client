@@ -1,19 +1,24 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 import type { TStock } from "./stock.interface";
-import { StockModel } from "./stock.model";
+import StockModel from "./stock.model";
 import httpStatus from "http-status";
 import { AppError } from "../../errors/AppError";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
+import SizeModel from "../size/size.model";
+import ProductModel from "../product/product.model";
+import CompanyModel from "../company/company.model";
+import RecordModel from "../record/record.model";
 
 // get all stock
 const getAllStockFromDB = async (query?: Record<string, unknown>) => {
   const filter: Record<string, unknown> = {};
 
   if (query?.status) filter.status = query.status;
-  if (query?.variant) filter.variant = query.variant;
+  if (query?.size) filter.size = query.size;
 
   return StockModel.find(filter)
     .populate({
-      path: "variant",
+      path: "size",
       populate: {
         path: "product",
         populate: { path: "company" },
@@ -21,6 +26,79 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
     })
     .populate("stockedBy")
     .sort((query?.sort as string) || "-createdAt");
+};
+
+const addStockInDB = async (payload: Partial<TStock>) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    let stock: TStock = {} as TStock;
+
+    const isStockExists = await StockModel.findOne({
+      size: payload.size,
+      expiryDate: payload.expiryDate,
+    });
+
+    if (isStockExists) {
+      stock = await StockModel.findOneAndUpdate(
+        { size: payload.size, expiryDate: payload.expiryDate },
+        { $inc: { quantity: payload.quantity } },
+        { new: true },
+      ).session(session);
+
+      if (!stock) {
+        throw new AppError(
+          httpStatus.NOT_FOUND,
+          "Failed to add stock to existing.",
+        );
+      }
+    } else {
+      const newStock = await StockModel.create([payload], { session });
+
+      stock = newStock[0];
+
+      if (!stock) {
+        throw new AppError(httpStatus.NOT_FOUND, "Failed to add stock.");
+      }
+    }
+    const newRecord = await RecordModel.create(
+      [
+        {
+          ...payload,
+          type: "stock_in",
+          interactedBy: payload.stockedBy,
+        },
+      ],
+      { session },
+    );
+
+    if (!newRecord[0]) {
+      throw new AppError(httpStatus.NOT_FOUND, "Failed to add record.");
+    }
+    const updatedSize = await SizeModel.findByIdAndUpdate(
+      stock.size,
+      {
+        $set: {
+          buyingPrice: stock.buyingPrice,
+          sellingPrice: stock.sellingPrice,
+        },
+      },
+      { new: true },
+    ).session(session);
+
+    if (!updatedSize) {
+      throw new AppError(httpStatus.NOT_FOUND, "Failed to update size.");
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+    return stock;
+  } catch (err: any) {
+    await session.abortTransaction();
+    session.endSession();
+    throw err;
+  }
 };
 
 // update stock
@@ -44,7 +122,7 @@ const getAggregatedStocksByCompany = async (companyId: string) => {
     // 1️⃣ Join Size
     {
       $lookup: {
-        from: "sizes",
+        from: SizeModel.collection.name,
         localField: "size",
         foreignField: "_id",
         as: "size",
@@ -55,7 +133,7 @@ const getAggregatedStocksByCompany = async (companyId: string) => {
     // 2️⃣ Join Product
     {
       $lookup: {
-        from: "products",
+        from: ProductModel.collection.name,
         localField: "size.product",
         foreignField: "_id",
         as: "product",
@@ -66,7 +144,7 @@ const getAggregatedStocksByCompany = async (companyId: string) => {
     // 3️⃣ Join Company
     {
       $lookup: {
-        from: "companies",
+        from: CompanyModel.collection.name,
         localField: "product.company",
         foreignField: "_id",
         as: "company",
@@ -121,5 +199,6 @@ export const StockService = {
   getAllStockFromDB,
   updateStockInDB,
   deleteStockFromDB,
+  addStockInDB,
   getAggregatedStocksByCompany,
 };

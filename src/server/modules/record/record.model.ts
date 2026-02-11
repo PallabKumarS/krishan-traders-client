@@ -1,45 +1,41 @@
 import { Schema, model, models } from "mongoose";
-import type { TRecord } from "./record.interface";
+import { TRecord } from "./record.interface";
 
 const recordSchema = new Schema<TRecord>(
   {
-    stock: {
+    size: {
       type: Schema.Types.ObjectId,
-      ref: "Stock",
-      required: true,
-    },
-
-    type: {
-      type: String,
-      enum: ["stock_in", "sale"],
+      ref: "Size",
       required: true,
     },
 
     quantity: { type: Number, required: true },
+
+    stockedDate: { type: Date, default: Date.now },
+    expiryDate: { type: Date, required: true },
 
     status: {
       type: String,
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
+    sellingPrice: { type: Number, required: true },
+    buyingPrice: { type: Number, required: true },
+    imgUrl: { type: String, default: "" },
+    batchNo: String,
 
-    stockedBy: {
+    interactedBy: {
       type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
-      ref: "User",
     },
-    soldBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-    note: String,
+    type: { type: String, required: true, enum: ["stock_in", "sale"] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-recordSchema.index({ stock: 1, type: 1 });
+recordSchema.index({ size: 1, expiryDate: 1 });
 
-export const RecordModel =
-  models.Record || model<TRecord>("Record", recordSchema);
+const RecordModel = models.Record || model<TRecord>("Record", recordSchema);
 
 export default RecordModel;

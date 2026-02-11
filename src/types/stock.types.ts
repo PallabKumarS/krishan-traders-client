@@ -17,9 +17,4 @@ export interface TStock {
   buyingPrice: number;
 }
 
-export type TStockStatus =
-  | "pending"
-  | "available"
-  | "sold"
-  | "expired"
-  | "rejected";
+export type TStockStatus = "available" | "sold" | "expired";

@@ -56,5 +56,7 @@ export async function requireAuth(
     throw new AppError(403, "You are not authorized");
   }
 
+  request.user = decoded;
+
   return decoded;
 }
