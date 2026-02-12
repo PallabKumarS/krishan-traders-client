@@ -2,7 +2,7 @@
 import { CompanyService } from "@/server/modules/company/company.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 export async function GET(request: Request) {
   try {
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         message: "Company created successfully",
         data,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error);

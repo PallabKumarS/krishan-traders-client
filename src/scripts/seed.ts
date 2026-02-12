@@ -5,20 +5,20 @@ import path from "path";
 import CompanyModel from "@/server/modules/company/company.model";
 import ProductModel from "@/server/modules/product/product.model";
 import SizeModel from "@/server/modules/size/size.model";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 const dataPath = path.join(process.cwd(), "/src/seed");
 
 const companies = JSON.parse(
-  fs.readFileSync(path.join(dataPath, "companies.json"), "utf-8")
+  fs.readFileSync(path.join(dataPath, "companies.json"), "utf-8"),
 );
 
 const products = JSON.parse(
-  fs.readFileSync(path.join(dataPath, "products.json"), "utf-8")
+  fs.readFileSync(path.join(dataPath, "products.json"), "utf-8"),
 );
 
 const sizes = JSON.parse(
-  fs.readFileSync(path.join(dataPath, "sizes.json"), "utf-8")
+  fs.readFileSync(path.join(dataPath, "sizes.json"), "utf-8"),
 );
 
 async function seed() {

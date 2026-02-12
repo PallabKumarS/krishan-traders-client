@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 import { handleApiError } from "@/server/errors/handleApiError";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { StockService } from "@/server/modules/stock/stock.service";

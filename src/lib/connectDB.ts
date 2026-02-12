@@ -1,7 +1,11 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <> */
+"use server";
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI =
+  process.env.USE_DATABASE === "local"
+    ? process.env.MONGODB_URI_LOCAL!
+    : process.env.MONGODB_URI_PROD!;
 
 let cached = (global as any).mongoose;
 

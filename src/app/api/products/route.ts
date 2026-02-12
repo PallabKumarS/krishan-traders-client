@@ -1,5 +1,5 @@
 import { ProductService } from "@/server/modules/product/product.service";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 // GET all products
 export async function GET(req: Request) {

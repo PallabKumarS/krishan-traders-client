@@ -2,7 +2,7 @@
 import { SizeService } from "@/server/modules/size/size.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 export async function GET(request: Request) {
   try {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         message: "Size created successfully",
         data,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     return handleApiError(error);

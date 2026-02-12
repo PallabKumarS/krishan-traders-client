@@ -2,7 +2,7 @@
 import { AuthService } from "@/server/modules/auth/auth.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 export async function PATCH(request: Request) {
   try {

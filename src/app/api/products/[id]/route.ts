@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/correctness/noUnusedFunctionParameters: <> */
 import { ProductService } from "@/server/modules/product/product.service";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 // GET single product
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await connectDB();
 
@@ -23,16 +23,14 @@ export async function GET(
 // UPDATE product
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await connectDB();
 
   const body = await req.json();
   const updated = await ProductService.updateProductIntoDB(
-    (
-      await params
-    ).id,
-    body
+    (await params).id,
+    body,
   );
 
   return Response.json({
@@ -45,7 +43,7 @@ export async function PATCH(
 // DELETE product
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   await connectDB();
 

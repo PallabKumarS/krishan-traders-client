@@ -2,7 +2,7 @@
 import { AuthService } from "@/server/modules/auth/auth.service";
 import { handleApiError } from "@/server/errors/handleApiError";
 import { cookies } from "next/headers";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 export async function POST(request: Request) {
   try {

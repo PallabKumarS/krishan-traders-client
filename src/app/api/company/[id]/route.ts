@@ -2,11 +2,11 @@
 import { CompanyService } from "@/server/modules/company/company.service";
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/connectDB";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -14,10 +14,8 @@ export async function PATCH(
 
     const body = await request.json();
     const data = await CompanyService.updateCompanyIntoDB(
-      (
-        await params
-      ).id,
-      body
+      (await params).id,
+      body,
     );
 
     return Response.json({
@@ -32,7 +30,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
