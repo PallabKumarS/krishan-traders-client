@@ -1,6 +1,6 @@
-import type { Types } from "mongoose";
+import type { Document, Types } from "mongoose";
 
-export interface TRecord {
+export interface TRecord extends Document {
   imgUrl: string;
   size: Types.ObjectId;
   quantity: number;
@@ -16,8 +16,8 @@ export interface TRecord {
   createdAt?: Date;
   updatedAt?: Date;
 
-  _id?: Types.ObjectId;
-  __v?: number;
+  _id: Types.ObjectId;
+  __v: number;
 
   interactedBy: Types.ObjectId;
   type: "stock_in" | "sale";

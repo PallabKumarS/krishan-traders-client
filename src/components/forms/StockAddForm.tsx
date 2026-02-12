@@ -53,10 +53,12 @@ export default function StockAddForm({
   edit = false,
   stockData,
   selectedCompany,
+  onSuccess,
 }: {
   edit?: boolean;
   stockData?: TStock & TMongoose;
   selectedCompany: (TCompany & TMongoose) | null;
+  onSuccess?: () => void;
 }) {
   const { user } = useAppContext();
 
@@ -138,7 +140,7 @@ export default function StockAddForm({
       sellingPrice: values.sellingPrice,
       stockedBy: user?._id,
       stockedDate: new Date(),
-      expiryDate: values.expiryDate,
+      expiryDate: new Date(values.expiryDate),
     };
 
     try {
@@ -150,6 +152,7 @@ export default function StockAddForm({
 
       if (res.success) {
         toast.success(res.message, { id: toastId });
+        onSuccess?.();
       } else {
         toast.error(res.message, { id: toastId });
       }

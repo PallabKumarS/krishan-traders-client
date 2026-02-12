@@ -11,7 +11,7 @@ export async function GET(
     await connectDB();
     await requireAuth(request, ["admin", "staff"]);
 
-    const data = await StockService.getAggregatedStocksByCompany(
+    const data = await StockService.getAllStockByCompanyFromDB(
       (await params).id,
     );
 

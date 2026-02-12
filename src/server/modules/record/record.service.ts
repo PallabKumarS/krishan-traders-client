@@ -5,6 +5,7 @@ import RecordModel from "./record.model";
 import StockModel from "../stock/stock.model";
 import calculateSellPieces from "@/server/utils/calculateQuantity";
 import { TStock } from "../stock/stock.interface";
+import { TRecord } from "./record.interface";
 
 //  GET ALL RECORDS
 const getAllRecordFromDB = async (query?: Record<string, unknown>) => {
@@ -21,7 +22,7 @@ const getAllRecordFromDB = async (query?: Record<string, unknown>) => {
         populate: { path: "company" },
       },
     })
-    .populate("stockedBy")
+    .populate("interactedBy")
     .sort("-createdAt");
 };
 
@@ -74,7 +75,7 @@ const acceptAddStockInDB = async (
   recordId: string,
   payload: { status: "accepted" | "rejected" },
 ) => {
-  const record = await RecordModel.findById(recordId);
+  const record: TRecord | null = await RecordModel.findById(recordId);
   if (!record) throw new AppError(httpStatus.NOT_FOUND, "Record not found");
 
   if (record.type !== "stock_in")
@@ -96,12 +97,19 @@ const acceptAddStockInDB = async (
       return record;
     }
 
-    const stock = await StockModel.findById(record.stock).session(session);
-    if (!stock) throw new AppError(httpStatus.NOT_FOUND, "Stock not found");
+    let stock = await StockModel.findOne({
+      size: record.size,
+      expiryDate: record.expiryDate,
+    }).session(session);
 
-    stock.quantity += record.quantity;
-    stock.status = "available";
-    await stock.save({ session });
+    if (!stock) {
+      const newStock = await StockModel.create([record], { session });
+      stock = newStock[0];
+    } else {
+      stock.quantity += record.quantity;
+      stock.status = "available";
+      await stock.save({ session });
+    }
 
     record.status = "accepted";
     await record.save({ session });

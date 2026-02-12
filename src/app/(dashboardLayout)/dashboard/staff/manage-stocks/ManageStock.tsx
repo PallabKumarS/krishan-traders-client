@@ -8,25 +8,28 @@ import { GroupedTable } from "@/components/ui/grouped-table";
 import LoadingData from "@/components/shared/LoadingData";
 
 import { getAllCompany } from "@/services/CompanyService";
-import { getAllStocksByCompany } from "@/services/StockService";
+import { deleteStock, getAllStocksByCompany } from "@/services/StockService";
 
-import { TCompany, TMongoose } from "@/types";
-import { StockTableRow } from "./utils";
+import { TCompany, TMongoose, TStock, TStockStatus } from "@/types";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import StockAddForm from "@/components/forms/StockAddForm";
-import { Plus } from "lucide-react";
+import { Pen, Plus, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import ConfirmationBox from "@/components/shared/ConfirmationBox";
+import { toast } from "sonner";
 
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
   // Main data states
   const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
-  const [stocks, setStocks] = useState<StockTableRow[]>([]);
+  const [stocks, setStocks] = useState<(TStock & TMongoose)[]>([]);
 
+  // selected states
   const [selectedCompany, setSelectedCompany] = useState<
     (TCompany & TMongoose) | null
   >(null);
+  const [editStock, setEditStock] = useState<(TStock & TMongoose) | null>(null);
 
   //   loading states
   const [companyLoading, setCompanyLoading] = useState(true);
@@ -71,6 +74,28 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
     }
   }, [selectedCompany]);
 
+  const handleDeleteStock = async (stockId: string) => {
+    const toastId = toast.loading("Deleting user...");
+
+    try {
+      const res = await deleteStock(stockId);
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+        });
+        fetchStocks(selectedCompany?._id as string);
+      } else {
+        toast.error(res.message, {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error(error.message, {
+        id: toastId,
+      });
+    }
+  };
+
   //   stock columns for GroupedTable
   const stockColumns = [
     {
@@ -82,7 +107,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
       key: "sizeLabel",
       title: "Size",
       sortable: true,
-      render: (value: any) =>
+      render: (value: TStock["size"]["label"]) =>
         value ? (
           <Badge variant="secondary" className="font-normal">
             {value}
@@ -92,41 +117,71 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
         ),
     },
     {
-      key: "unitQuantity",
-      title: "Unit",
-      sortable: true,
-      render: (_value: any, row: StockTableRow) =>
-        `${row.unitQuantity} ${row.unit}`,
-    },
-    {
-      key: "totalQuantity",
-      title: "Stock Qty",
-      sortable: true,
-      render: (value: any) => (
-        <span
-          className={`font-medium ${
-            Number(value) < 10
-              ? "text-red-500"
-              : Number(value) < 50
-                ? "text-yellow-500"
-                : "text-green-500"
-          }`}
-        >
-          {value}
-        </span>
-      ),
-    },
-    {
       key: "buyingPrice",
       title: "Buy Price",
       sortable: true,
-      render: (value: any) => `₹${Number(value).toFixed(2)}`,
+      render: (value: TStock["buyingPrice"]) =>
+        `$ ${Number(value).toFixed(2)} BDT`,
     },
     {
       key: "sellingPrice",
       title: "Sell Price",
       sortable: true,
-      render: (value: any) => `₹${Number(value).toFixed(2)}`,
+      render: (value: TStock["sellingPrice"]) =>
+        `$ ${Number(value).toFixed(2)} BDT`,
+    },
+    {
+      key: "expiryDate",
+      title: "Expiry Date",
+      sortable: true,
+      render: (value: TStock["expiryDate"]) =>
+        `${new Date(value).toDateString()}`,
+    },
+    {
+      key: "status",
+      title: "Status",
+      sortable: true,
+      render: (value: TStockStatus) => (
+        <Badge
+          variant={
+            value === "available"
+              ? "default"
+              : value === "sold"
+                ? "secondary"
+                : "destructive"
+          }
+        >
+          {value}
+        </Badge>
+      ),
+    },
+    {
+      key: "actions",
+      title: "Actions",
+      render: (_value: any, row: TStock & TMongoose) => (
+        <div className="flex items-center justify-center gap-2">
+          {row._id !== "empty" && (
+            <>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setEditStock(row)}
+              >
+                <Pen className="h-4 w-4" />
+              </Button>
+              <ConfirmationBox
+                trigger={
+                  <Button size="sm" variant="ghost">
+                    <Trash className="h-4 w-4 text-destructive" />
+                  </Button>
+                }
+                onConfirm={() => handleDeleteStock(row._id)}
+                title="Delete this size?"
+              />
+            </>
+          )}
+        </div>
+      ),
     },
   ];
 
@@ -169,7 +224,14 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
                 <span>Add Stock</span>
               </Button>
             }
-            content={<StockAddForm selectedCompany={selectedCompany} />}
+            content={
+              <StockAddForm
+                selectedCompany={selectedCompany}
+                onSuccess={() => {
+                  fetchStocks(selectedCompany?._id as string);
+                }}
+              />
+            }
           />
         </div>
 
@@ -183,6 +245,29 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* edit size modal */}
+      <Modal
+        trigger={null}
+        title="Edit Size"
+        open={!!editStock}
+        onOpenChange={(open) => {
+          if (!open) setEditStock(null);
+        }}
+        content={
+          editStock && (
+            <StockAddForm
+              edit
+              stockData={editStock}
+              selectedCompany={selectedCompany}
+              onSuccess={() => {
+                fetchStocks(selectedCompany?._id as string);
+                setEditStock(null);
+              }}
+            />
+          )
+        }
+      />
     </div>
   );
 };

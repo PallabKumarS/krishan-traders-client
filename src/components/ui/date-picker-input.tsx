@@ -59,7 +59,7 @@ export function DatePickerInput({
           if (isValidDate(date)) {
             setDate(date);
             setMonth(date);
-            field.value = date;
+            field.onChange(date);
           }
         }}
         onKeyDown={(e) => {
