@@ -22,7 +22,7 @@ const userSchema = new Schema<TUser, IUser>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // hash password
@@ -34,7 +34,7 @@ userSchema.pre("save", async function () {
 
   user.password = await bcrypt.hash(
     user.password,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds),
   );
 });
 
@@ -46,17 +46,18 @@ userSchema.post("save", function (doc, next) {
 
 // check user exists
 userSchema.statics.isUserExists = async function (id: Schema.Types.ObjectId) {
-  return await UserModel.findOne({ _id: id }).select("+password");
+  return await this.findOne({ _id: id }).select("+password");
 };
 
 // check password is matched or not
 userSchema.statics.isPasswordMatched = async function (
   myPlaintextPassword,
-  hashedPassword
+  hashedPassword,
 ) {
   return await bcrypt.compare(myPlaintextPassword, hashedPassword);
 };
 
-const UserModel = models.User || model<TUser, IUser>("User", userSchema);
+const UserModel = (models.User ||
+  model<TUser, IUser>("User", userSchema)) as IUser;
 
 export default UserModel;

@@ -147,7 +147,7 @@ const MainStore = () => {
         ))}
 
         {/* extra add stock for staff */}
-        <div
+        {/* <div
           className="animate-in fade-in-0 slide-in-from-bottom-4"
           style={{
             animationDelay: `${200}ms`,
@@ -173,7 +173,7 @@ const MainStore = () => {
               content={<StockAddForm />}
             />
           )}
-        </div>
+        </div> */}
       </div>
 
       {userRoutes.length === 1 && (
