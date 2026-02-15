@@ -3,6 +3,7 @@
 import {
   BookOpenTextIcon,
   ColumnsSettings,
+  FileBarChart,
   FileClock,
   FilePlus,
   FileSearch,
@@ -25,9 +26,14 @@ export const commonRoutes = [
 // admin routes
 export const adminRoutes = [
   {
-    title: "Transactions",
+    title: "Account & Transactions",
+    icon: FileBarChart,
+    href: "/dashboard/admin/account",
+  },
+  {
+    title: "Records",
     icon: FileSearch,
-    href: "/dashboard/admin/manage-transactions",
+    href: "/dashboard/admin/manage-records",
   },
   {
     title: "Users",

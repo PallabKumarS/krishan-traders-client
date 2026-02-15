@@ -97,7 +97,6 @@ export function AppSidebar() {
   const renderSkeletonMenuItems = (count: number) => (
     <SidebarMenu>
       {Array.from({ length: count }).map((_, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <>
         <SidebarMenuItem key={index}>
           <SidebarMenuButton>
             <div className="flex items-center gap-3 w-full">
@@ -210,6 +209,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
+                  type="button"
                   className="
                     flex w-full items-center gap-3 
                     rounded-lg p-2 
