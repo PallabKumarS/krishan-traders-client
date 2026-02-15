@@ -133,9 +133,12 @@ export default function StockAddForm({
     setLoading(true);
     const toastId = toast.loading("Saving stock...");
 
+    const size = sizes.find((s) => s._id === sizeId);
+    if (!size) return;
+
     const payload = {
       size: values.sizeId,
-      quantity: values.quantity,
+      quantity: values.quantity * size.stackCount,
       buyingPrice: values.buyingPrice,
       sellingPrice: values.sellingPrice,
       stockedBy: user?._id,
@@ -250,7 +253,7 @@ export default function StockAddForm({
           name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantity</FormLabel>
+              <FormLabel>Quantity (Cartoon)</FormLabel>
               <FormControl>
                 <Input type="number" min={1} {...field} />
               </FormControl>

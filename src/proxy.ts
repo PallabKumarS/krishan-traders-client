@@ -3,7 +3,7 @@ import { getCurrentUser } from "./lib/verifyToken";
 
 type Role = keyof typeof roleBasedPrivateRoutes;
 
-const authRoutes = ["/login"];
+const authRoutes = ["/login", "/forgot-password"];
 
 const roleBasedPrivateRoutes = {
   admin: [/^\/dashboard\/admin/, /^\/dashboard\/staff/],

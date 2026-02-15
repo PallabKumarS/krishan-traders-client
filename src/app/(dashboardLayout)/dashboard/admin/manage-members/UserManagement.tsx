@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LucideArrowDownSquare, Trash2 } from "lucide-react";
-import { TUser } from "@/types";
+import {
+  TUser,
+  TUserRole,
+  TUserStatus,
+  USER_ROLE_ENUM,
+  USER_STATUS_ENUM,
+} from "@/types";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
 import {
@@ -21,8 +27,11 @@ import {
 } from "@/services/UserService";
 import { useEffect, useState } from "react";
 import LoadingData from "@/components/shared/LoadingData";
-import EditableCell from "./EditableCell";
-import { DataTable, SortableHeader } from "../ui/data-table";
+import EditableCell from "../../../../../components/modules/EditableCell";
+import {
+  DataTable,
+  SortableHeader,
+} from "../../../../../components/ui/data-table";
 
 const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
   const [users, setUsers] = useState<TUser[]>([]);
@@ -67,7 +76,7 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
     }
   };
 
-  const handleUserRoleChange = async (id: string, role: TUser["role"]) => {
+  const handleUserRoleChange = async (id: string, role: TUserRole) => {
     const toastId = toast.loading("Changing user role...");
     try {
       const res = await updateUserRole(id, role);
@@ -137,7 +146,7 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status") as TUser["status"];
+        const status = row.getValue("status") as TUserStatus;
 
         return (
           <DropdownMenu>
@@ -146,8 +155,8 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
                 {status} <LucideArrowDownSquare className="ml-2 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background/80">
-              {["active", "blocked"].map((s) => (
+            <DropdownMenuContent align="end" className="bg-background/90">
+              {USER_STATUS_ENUM.map((s) => (
                 <DropdownMenuItem
                   className="capitalize"
                   key={s}
@@ -170,7 +179,7 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
       accessorKey: "role",
       header: "Role",
       cell: ({ row }) => {
-        const role = row.getValue("role") as TUser["role"];
+        const role = row.getValue("role") as TUserRole;
 
         return (
           <DropdownMenu>
@@ -179,13 +188,13 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
                 {role} <LucideArrowDownSquare className="ml-2 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background/80">
-              {["admin", "staff", "guest", "subAdmin"].map((r) => (
+            <DropdownMenuContent align="end" className="bg-background/90">
+              {USER_ROLE_ENUM.map((r) => (
                 <DropdownMenuItem
                   className="capitalize"
                   key={r}
                   onSelect={() =>
-                    handleUserRoleChange(row.original._id, r as TUser["role"])
+                    handleUserRoleChange(row.original._id, r as TUserRole)
                   }
                 >
                   {r}

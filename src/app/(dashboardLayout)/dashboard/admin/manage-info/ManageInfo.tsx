@@ -248,13 +248,15 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
       key: "buyingPrice",
       title: "Buying Price",
       sortable: true,
-      render: (value: any, row: any) => (row._id === "empty" ? "—" : value),
+      render: (value: any, row: any) =>
+        row._id === "empty" ? "—" : `${Number(value).toFixed(2)} BDT`,
     },
     {
       key: "sellingPrice",
       title: "Selling Price",
       sortable: true,
-      render: (value: any, row: any) => (row._id === "empty" ? "—" : value),
+      render: (value: any, row: any) =>
+        row._id === "empty" ? "—" : `${Number(value).toFixed(2)} BDT`,
     },
     {
       key: "actions",
@@ -262,7 +264,12 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
       sortable: false,
       render: (_value: any, row: any) => (
         <div className="flex items-center justify-center gap-2">
-          <Button size="sm" onClick={() => setSelectedProduct(row.product)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="hover:"
+            onClick={() => setSelectedProduct(row.product)}
+          >
             <Plus className="h-4 w-4" />
           </Button>
           {row._id !== "empty" && (

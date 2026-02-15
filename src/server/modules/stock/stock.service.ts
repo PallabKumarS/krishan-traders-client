@@ -96,7 +96,7 @@ const getAllStockByCompanyFromDB = async (companyId: string) => {
     // Stage 7: Sort the final results by expiry date, descending
     {
       $sort: {
-        expiryDate: -1,
+        expiryDate: 1,
       },
     },
   ]);

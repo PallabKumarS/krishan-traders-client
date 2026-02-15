@@ -164,15 +164,6 @@
 }
 
 /* grouped table styles */
-.grouped-table tbody tr:not([data-first="true"]):not([data-last="true"]) {
-  border-top: none !important;
-  border-bottom: none !important;
-}
-
-.grouped-table tbody tr:not([data-first="true"]):not([data-last="true"]) td {
-  border-top: none !important;
-  border-bottom: none !important;
-}
 
 .grouped-table td {
   border-top: none !important;

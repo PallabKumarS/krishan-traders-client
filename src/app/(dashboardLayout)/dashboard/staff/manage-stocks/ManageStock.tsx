@@ -14,10 +14,11 @@ import { TCompany, TMongoose, TStock, TStockStatus } from "@/types";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import StockAddForm from "@/components/forms/StockAddForm";
-import { Pen, Plus, Trash } from "lucide-react";
+import { Boxes, Pen, PillBottleIcon, Plus, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
+import Link from "next/link";
 
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
@@ -74,6 +75,8 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
     }
   }, [selectedCompany]);
 
+  console.log(stocks);
+
   const handleDeleteStock = async (stockId: string) => {
     const toastId = toast.loading("Deleting user...");
 
@@ -117,18 +120,38 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
         ),
     },
     {
+      key: "quantity",
+      title: "Quantity",
+      sortable: true,
+      render: (_value: TStock["quantity"], row: TStock & TMongoose) => (
+        <p className="flex gap-2 items-center justify-center">
+          <span className="flex items-center">
+            <Boxes className="mr-2 h-4 w-4" />{" "}
+            {Math.floor(row.quantity / row.size.stackCount)}
+          </span>{" "}
+          |{" "}
+          <span>
+            <span className="flex items-center">
+              <PillBottleIcon className="mr-2 h-4 w-4" />{" "}
+              {row.quantity % row.size.stackCount}
+            </span>
+          </span>
+        </p>
+      ),
+    },
+    {
       key: "buyingPrice",
       title: "Buy Price",
       sortable: true,
       render: (value: TStock["buyingPrice"]) =>
-        `$ ${Number(value).toFixed(2)} BDT`,
+        `${Number(value).toFixed(2)} BDT`,
     },
     {
       key: "sellingPrice",
       title: "Sell Price",
       sortable: true,
       render: (value: TStock["sellingPrice"]) =>
-        `$ ${Number(value).toFixed(2)} BDT`,
+        `${Number(value).toFixed(2)} BDT`,
     },
     {
       key: "expiryDate",
@@ -153,6 +176,24 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
         >
           {value}
         </Badge>
+      ),
+    },
+    {
+      key: "stockedBy.name",
+      title: "Stocked",
+      sortable: false,
+      render: (
+        _value: TStock["stockedBy"]["name"],
+        row: TStock & TMongoose,
+      ) => (
+        <Link href={"/dashboard/admin/manage-members"}>
+          <p className="flex flex-col justify-center">
+            <span className="hover:underline">{row.stockedBy.name}</span>
+            <span className="text-muted-foreground">
+              ({new Date(row.stockedDate).toDateString()})
+            </span>
+          </p>
+        </Link>
       ),
     },
     {
@@ -240,7 +281,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
             data={stocks}
             columns={stockColumns}
             groupBy="productName"
-            searchKeys={["productName", "sizeLabel", "unit"]}
+            searchKeys={["productName", "sizeLabel"]}
             enableColumnToggle
           />
         </TabsContent>

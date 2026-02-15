@@ -247,15 +247,9 @@ export function GroupedTable({
               paginatedRows.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className={`hover:bg-accent/20 transition-colors ${
-                    row._isFirstInGroup
-                      ? "border-t-2 border-t-primary/30 border-b-0"
-                      : "border-0"
-                  } ${
-                    row._isLastInGroup
-                      ? "border-b-2 border-b-primary/30 border-t-0"
-                      : ""
-                  }`}
+                  className={`hover:bg-accent/20 transition-colors border ${
+                    row._isFirstInGroup && "border-t-2 border-t-primary/30"
+                  } ${row._isLastInGroup && "border-b-2 border-b-primary/30"}`}
                   data-first={row._isFirstInGroup ? "true" : "false"}
                   data-last={row._isLastInGroup ? "true" : "false"}
                 >
@@ -277,9 +271,9 @@ export function GroupedTable({
                             isGroupColumn && isFirstRow ? row._rowSpan : 1
                           }
                           className={`px-4 py-1 text-center border-r last:border-r-0 ${
-                            isGroupColumn && isFirstRow
-                              ? "align-middle bg-muted/20"
-                              : ""
+                            isGroupColumn &&
+                            isFirstRow &&
+                            "align-middle bg-muted/20"
                           }`}
                         >
                           {column.render
