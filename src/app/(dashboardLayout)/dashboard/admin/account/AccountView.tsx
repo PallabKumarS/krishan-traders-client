@@ -3,25 +3,54 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, TrashIcon } from "lucide-react";
 import { TAccount } from "@/types/account.type";
 import { Modal } from "@/components/shared/Modal";
 import AccountForm from "@/components/forms/AccountForm";
 import TransactionForm from "@/components/forms/TransactionForm";
+import { useUser } from "@/providers/ContextProvider";
+import ConfirmationBox from "@/components/shared/ConfirmationBox";
+import { toast } from "sonner";
+import { deleteAccount } from "@/services/Account";
 
 export default function AccountView({ accounts }: { accounts: TAccount[] }) {
   const [openCreate, setOpenCreate] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<TAccount | null>(null);
+  const { user } = useUser();
+
+  const handleDeleteAccount = async (id: string) => {
+    const toastId = toast.loading("Deleting user...");
+
+    try {
+      const res = await deleteAccount(id);
+      if (res.success) {
+        toast.success(res.message, {
+          id: toastId,
+        });
+      } else {
+        toast.error(res.message, {
+          id: toastId,
+        });
+      }
+      // biome-ignore lint/suspicious/noExplicitAny: <>
+    } catch (error: any) {
+      toast.error(error.message, {
+        id: toastId,
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Accounts</h2>
 
-        <Button onClick={() => setOpenCreate(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Account
-        </Button>
+        {user?.role === "admin" && (
+          <Button onClick={() => setOpenCreate(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Account
+          </Button>
+        )}
       </div>
 
       {/* card */}
@@ -52,23 +81,36 @@ export default function AccountView({ accounts }: { accounts: TAccount[] }) {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setSelectedAccount(account)}
-                >
-                  Add Transaction
-                </Button>
+              {user?.role === "admin" && (
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setSelectedAccount(account)}
+                  >
+                    Add Transaction
+                  </Button>
 
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setOpenCreate(true)}
-                >
-                  Edit
-                </Button>
-              </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setOpenCreate(true)}
+                  >
+                    Edit
+                  </Button>
+
+                  <ConfirmationBox
+                    trigger={
+                      <Button size="sm" variant="ghost">
+                        <TrashIcon className="w-4 h-4 text-destructive" />
+                      </Button>
+                    }
+                    onConfirm={() => handleDeleteAccount(account._id)}
+                    title="Delete Account"
+                    description="Are you sure you want to delete this account?"
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}

@@ -33,7 +33,7 @@ export const getSingleAccount = async (id: string) => {
 };
 
 // 🔹 Create account
-export const createAccountAction = async (data: FieldValues) => {
+export const createAccount = async (data: FieldValues) => {
   const token = await getValidToken();
 
   const res = await fetch(`${process.env.BASE_API}/accounts`, {
@@ -51,7 +51,7 @@ export const createAccountAction = async (data: FieldValues) => {
 };
 
 // 🔹 Update account
-export const updateAccountAction = async (id: string, data: FieldValues) => {
+export const updateAccount = async (id: string, data: FieldValues) => {
   const token = await getValidToken();
 
   const res = await fetch(`${process.env.BASE_API}/accounts/${id}`, {
@@ -70,7 +70,7 @@ export const updateAccountAction = async (id: string, data: FieldValues) => {
 };
 
 // 🔹 Delete account
-export const deleteAccountAction = async (id: string) => {
+export const deleteAccount = async (id: string) => {
   const token = await getValidToken();
 
   const res = await fetch(`${process.env.BASE_API}/accounts/${id}`, {

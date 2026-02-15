@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ButtonLoader from "@/components/shared/ButtonLoader";
 import { TAccount } from "@/types/account.type";
-import { createAccountAction, updateAccountAction } from "@/services/Account";
+import { createAccount, updateAccount } from "@/services/Account";
 
 const formSchema = z.object({
   name: z.string().min(1, "Account name is required"),
@@ -65,8 +65,8 @@ export default function AccountForm({
     const toastId = toast.loading("Saving account...");
 
     const res = edit
-      ? await updateAccountAction(accountData?._id as string, values)
-      : await createAccountAction(values);
+      ? await updateAccount(accountData?._id as string, values)
+      : await createAccount(values);
 
     if (res.success) {
       toast.success(res.message, { id: toastId });

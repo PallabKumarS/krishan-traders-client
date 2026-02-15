@@ -33,7 +33,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAppContext } from "@/providers/ContextProvider";
 import { config } from "@/proxy";
 import Link from "next/link";
-import { adminRoutes, commonRoutes, staffRoutes } from "../modules/MainStore";
+import {
+  adminRoutes,
+  commonRoutes,
+  staffRoutes,
+  subAdminRoutes,
+} from "../modules/MainStore";
 
 // common routes for all users
 
@@ -164,16 +169,26 @@ export function AppSidebar() {
               {renderSkeletonMenuItems(4)}
             </SidebarGroupContent>
           </SidebarGroup>
+        ) : user?.role === "admin" ? (
+          <SidebarGroup>
+            <SidebarGroupLabel className="flex items-center gap-2">
+              <UserLockIcon className="w-4 h-4 text-muted-foreground" />
+              Admin Panel
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              {renderMenuItems(staffRoutes)}
+              {renderMenuItems(adminRoutes)}
+            </SidebarGroupContent>
+          </SidebarGroup>
         ) : (
-          user?.role === "admin" && (
+          user?.role === "subAdmin" && (
             <SidebarGroup>
               <SidebarGroupLabel className="flex items-center gap-2">
                 <UserLockIcon className="w-4 h-4 text-muted-foreground" />
                 Admin Panel
               </SidebarGroupLabel>
               <SidebarGroupContent>
-                {renderMenuItems(staffRoutes)}
-                {renderMenuItems(adminRoutes)}
+                {renderMenuItems(subAdminRoutes)}
               </SidebarGroupContent>
             </SidebarGroup>
           )

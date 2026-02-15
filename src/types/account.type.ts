@@ -9,7 +9,6 @@ export interface TAccount {
   openingBalance: number;
   currentBalance: number;
   note?: string;
-  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
   __v: number;

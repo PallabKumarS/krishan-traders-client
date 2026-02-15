@@ -66,11 +66,7 @@ const updateAccount = async (id: string, payload: Partial<TAccount>) => {
 };
 
 const deleteAccount = async (id: string) => {
-  return await AccountModel.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true },
-  );
+  return await AccountModel.findByIdAndDelete(id);
 };
 
 export const AccountService = {

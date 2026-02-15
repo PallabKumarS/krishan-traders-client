@@ -19,7 +19,7 @@ export const getAllTransactions = async () => {
 };
 
 // 🔹 Create transaction
-export const createTransactionAction = async (data: FieldValues) => {
+export const createTransaction = async (data: FieldValues) => {
   const token = await getValidToken();
 
   const res = await fetch(`${process.env.BASE_API}/account-transactions`, {
@@ -39,10 +39,7 @@ export const createTransactionAction = async (data: FieldValues) => {
 };
 
 // 🔹 Update transaction
-export const updateTransactionAction = async (
-  id: string,
-  data: FieldValues,
-) => {
+export const updateTransaction = async (id: string, data: FieldValues) => {
   const token = await getValidToken();
 
   const res = await fetch(
@@ -64,7 +61,7 @@ export const updateTransactionAction = async (
 };
 
 // 🔹 Delete transaction
-export const deleteTransactionAction = async (id: string) => {
+export const deleteTransaction = async (id: string) => {
   const token = await getValidToken();
 
   const res = await fetch(

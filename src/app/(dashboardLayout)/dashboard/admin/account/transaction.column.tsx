@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { TAccountTransaction } from "@/types/account-transactions.type";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
-import { deleteTransactionAction } from "@/services/AccountTransactions";
+import { deleteTransaction } from "@/services/AccountTransactions";
 
 const handleDelete = async (id: string) => {
   const toastId = toast.loading("Deleting transaction...");
 
-  const res = await deleteTransactionAction(id);
+  const res = await deleteTransaction(id);
 
   if (res.success) {
     toast.success(res.message, { id: toastId });

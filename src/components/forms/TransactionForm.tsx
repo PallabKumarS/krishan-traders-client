@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ButtonLoader from "@/components/shared/ButtonLoader";
-import { createTransactionAction } from "@/services/AccountTransactions";
+import { createTransaction } from "@/services/AccountTransactions";
 
 const schema = z.object({
   accountId: z.string().min(1),
@@ -49,7 +49,7 @@ export default function TransactionForm({
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const toastId = toast.loading("Processing transaction...");
 
-    const res = await createTransactionAction(values);
+    const res = await createTransaction(values);
 
     if (res.success) {
       toast.success(res.message, { id: toastId });
