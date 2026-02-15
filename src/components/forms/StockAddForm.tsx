@@ -29,7 +29,7 @@ import {
 import ButtonLoader from "../shared/ButtonLoader";
 import { useAppContext } from "@/providers/ContextProvider";
 
-import { TCompany, TMongoose, TProduct, TSize, TStock } from "@/types";
+import { TCompany, TProduct, TSize, TStock } from "@/types";
 import { addStock } from "@/services/RecordService";
 import { directlyAddStock, updateStock } from "@/services/StockService";
 import { getAllProductsByCompany } from "@/services/ProductService";
@@ -56,8 +56,8 @@ export default function StockAddForm({
   onSuccess,
 }: {
   edit?: boolean;
-  stockData?: TStock & TMongoose;
-  selectedCompany: (TCompany & TMongoose) | null;
+  stockData?: TStock;
+  selectedCompany: TCompany | null;
   onSuccess?: () => void;
 }) {
   const { user } = useAppContext();
@@ -67,8 +67,8 @@ export default function StockAddForm({
   const [loading, setLoading] = useState(false);
 
   // main data states
-  const [products, setProducts] = useState<(TProduct & TMongoose)[]>([]);
-  const [sizes, setSizes] = useState<(TSize & TMongoose)[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
+  const [sizes, setSizes] = useState<TSize[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

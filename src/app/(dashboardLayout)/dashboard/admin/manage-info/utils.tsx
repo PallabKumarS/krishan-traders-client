@@ -1,18 +1,15 @@
-import { TMongoose, TProduct, TSize } from "@/types";
+import { TProduct, TSize } from "@/types";
 
-export type SizeTableData = TSize &
-  TMongoose & {
-    product: {
+export type SizeTableData = TSize & {
+  product: {
+    name: string;
+    company: {
       name: string;
-      company: {
-        name: string;
-      };
     };
   };
+};
 
-export const createEmptySize = (
-  product: TProduct & TMongoose,
-): TSize & TMongoose => ({
+export const createEmptySize = (product: TProduct): TSize => ({
   _id: `empty`,
   product: {
     ...product,

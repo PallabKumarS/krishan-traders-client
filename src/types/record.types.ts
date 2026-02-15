@@ -1,10 +1,10 @@
-import { TMongoose } from ".";
+import {} from ".";
 import { TSize } from "./size.types";
 import { TUser } from "./user.types";
 
 export interface TRecord {
   imgUrl: string;
-  size: TSize & TMongoose;
+  size: TSize;
   quantity: number;
 
   stockedDate: Date;
@@ -15,14 +15,13 @@ export interface TRecord {
   status: TRecordStatus;
   batchNo?: string;
 
-  createdAt?: Date;
-  updatedAt?: Date;
+  interactedBy: TUser;
+  type: "stock_in" | "sale";
 
+  createdAt: Date;
+  updatedAt: Date;
   _id: string;
   __v: number;
-
-  interactedBy: TUser & TMongoose;
-  type: "stock_in" | "sale";
 }
 
 export type TRecordStatus = "pending" | "accepted" | "rejected";

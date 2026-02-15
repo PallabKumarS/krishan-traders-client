@@ -10,7 +10,7 @@ import LoadingData from "@/components/shared/LoadingData";
 import { getAllCompany } from "@/services/CompanyService";
 import { deleteStock, getAllStocksByCompany } from "@/services/StockService";
 
-import { TCompany, TMongoose, TStock, TStockStatus } from "@/types";
+import { TCompany, TStock, TStockStatus } from "@/types";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import StockAddForm from "@/components/forms/StockAddForm";
@@ -23,14 +23,12 @@ import Link from "next/link";
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
   // Main data states
-  const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
-  const [stocks, setStocks] = useState<(TStock & TMongoose)[]>([]);
+  const [companies, setCompanies] = useState<TCompany[]>([]);
+  const [stocks, setStocks] = useState<TStock[]>([]);
 
   // selected states
-  const [selectedCompany, setSelectedCompany] = useState<
-    (TCompany & TMongoose) | null
-  >(null);
-  const [editStock, setEditStock] = useState<(TStock & TMongoose) | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
+  const [editStock, setEditStock] = useState<TStock | null>(null);
 
   //   loading states
   const [companyLoading, setCompanyLoading] = useState(true);
@@ -123,7 +121,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
       key: "quantity",
       title: "Quantity",
       sortable: true,
-      render: (_value: TStock["quantity"], row: TStock & TMongoose) => (
+      render: (_value: TStock["quantity"], row: TStock) => (
         <p className="flex gap-2 items-center justify-center">
           <span className="flex items-center">
             <Boxes className="mr-2 h-4 w-4" />{" "}
@@ -182,10 +180,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
       key: "stockedBy.name",
       title: "Stocked",
       sortable: false,
-      render: (
-        _value: TStock["stockedBy"]["name"],
-        row: TStock & TMongoose,
-      ) => (
+      render: (_value: TStock["stockedBy"]["name"], row: TStock) => (
         <Link href={"/dashboard/admin/manage-members"}>
           <p className="flex flex-col justify-center">
             <span className="hover:underline">{row.stockedBy.name}</span>
@@ -199,7 +194,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
     {
       key: "actions",
       title: "Actions",
-      render: (_value: any, row: TStock & TMongoose) => (
+      render: (_value: any, row: TStock) => (
         <div className="flex items-center justify-center gap-2">
           {row._id !== "empty" && (
             <>

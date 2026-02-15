@@ -14,7 +14,7 @@ import {
   getAllProductsByCompany,
 } from "@/services/ProductService";
 import { deleteSize, getAllSizes } from "@/services/SizeService";
-import { TCompany, TMongoose, TProduct, TSize } from "@/types";
+import { TCompany, TProduct, TSize } from "@/types";
 import { Pen, Plus, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createEmptySize } from "./utils";
@@ -35,26 +35,18 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
 
   // edit data states
-  const [editCompany, setEditCompany] = useState<(TCompany & TMongoose) | null>(
-    null,
-  );
-  const [editProduct, setEditProduct] = useState<(TProduct & TMongoose) | null>(
-    null,
-  );
-  const [editSize, setEditSize] = useState<(TSize & TMongoose) | null>(null);
+  const [editCompany, setEditCompany] = useState<TCompany | null>(null);
+  const [editProduct, setEditProduct] = useState<TProduct | null>(null);
+  const [editSize, setEditSize] = useState<TSize | null>(null);
 
   // selected states
-  const [selectedCompany, setSelectedCompany] = useState<
-    (TCompany & TMongoose) | null
-  >(null);
-  const [selectedProduct, setSelectedProduct] = useState<
-    (TProduct & TMongoose) | null
-  >(null);
+  const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
 
   // fetched data states
-  const [companies, setCompanies] = useState<(TCompany & TMongoose)[]>([]);
-  const [sizes, setSizes] = useState<(TSize & TMongoose)[]>([]);
-  const [products, setProducts] = useState<(TProduct & TMongoose)[]>([]);
+  const [companies, setCompanies] = useState<TCompany[]>([]);
+  const [sizes, setSizes] = useState<TSize[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
 
   // load companies
   const fetchCompanies = async () => {
@@ -110,7 +102,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
 
   // create sizes map
   const sizesByProduct = useMemo(() => {
-    const map = new Map<string, (TSize & TMongoose)[]>();
+    const map = new Map<string, TSize[]>();
 
     for (const size of sizes) {
       const productId = size.product._id;

@@ -1,8 +1,13 @@
-import { TMongoose } from ".";
+import {} from ".";
 import { TCompany } from "./company.types";
 
 export interface TProduct {
   name: string;
-  company: TCompany & TMongoose;
+  company: TCompany;
   isDisabled: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  _id: string;
 }

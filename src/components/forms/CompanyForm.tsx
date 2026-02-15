@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import ButtonLoader from "../shared/ButtonLoader";
 import ToggleButton from "../shared/ToggleButton";
 
-import { TCompany, TMongoose } from "@/types";
+import { TCompany } from "@/types";
 import { createCompany, updateCompany } from "@/services/CompanyService";
 
 const formSchema = z.object({
@@ -38,7 +38,7 @@ export default function CompanyForm({
   onSuccess,
 }: {
   edit?: boolean;
-  companyData?: TCompany & TMongoose;
+  companyData?: TCompany;
   onSuccess?: () => void;
 }) {
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,7 @@ export default function CompanyForm({
     setLoading(true);
 
     const toastId = toast.loading(
-      edit ? "Updating company..." : "Adding company..."
+      edit ? "Updating company..." : "Adding company...",
     );
 
     try {

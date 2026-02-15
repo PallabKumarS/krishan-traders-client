@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import ButtonLoader from "../shared/ButtonLoader";
 import ToggleButton from "../shared/ToggleButton";
 
-import { TCompany, TMongoose } from "@/types";
+import { TCompany } from "@/types";
 import { createProduct, updateProduct } from "@/services/ProductService";
 
 const formSchema = z.object({
@@ -38,12 +38,12 @@ interface ProductFormProps {
   productData?: {
     _id: string;
     name: string;
-    company: TCompany & TMongoose;
+    company: TCompany;
     isDisabled: boolean;
   };
-  companies: (TCompany & TMongoose)[];
+  companies: TCompany[];
   onSuccess?: () => void;
-  selectedCompany?: TCompany & TMongoose;
+  selectedCompany?: TCompany;
 }
 
 export default function ProductForm({
@@ -68,7 +68,7 @@ export default function ProductForm({
     setLoading(true);
 
     const toastId = toast.loading(
-      edit ? "Updating product..." : "Adding product..."
+      edit ? "Updating product..." : "Adding product...",
     );
 
     try {

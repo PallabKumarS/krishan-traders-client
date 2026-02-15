@@ -11,6 +11,7 @@ export type TUser = {
   _id: string;
   createdAt: Date;
   updatedAt: Date;
+  __v: number;
 };
 
 export type TUserRole = "admin" | "staff" | "guest" | "subAdmin";

@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import ButtonLoader from "../shared/ButtonLoader";
 import ToggleButton from "../shared/ToggleButton";
 
-import { TProduct, TMongoose, TSize } from "@/types";
+import { TProduct, TSize } from "@/types";
 import { createSize, updateSize } from "@/services/SizeService";
 
 const formSchema = z.object({
@@ -37,10 +37,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface SizeFormProps {
   edit?: boolean;
-  sizeData?: TSize & TMongoose;
-  products: (TProduct & TMongoose)[];
+  sizeData?: TSize;
+  products: TProduct[];
   onSuccess?: () => void;
-  selectedProduct?: TProduct & TMongoose;
+  selectedProduct?: TProduct;
 }
 
 export default function SizeForm({

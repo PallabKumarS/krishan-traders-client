@@ -12,9 +12,13 @@ export type TMeta = {
   totalData: number;
 };
 
-export type TMongoose = {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
+export type Response<T> = {
+  data: T;
+  meta?: TMeta;
+};
+
+export type ErrorResponse = {
+  message: string;
+  statusCode: number;
+  errorSources: { path: string; message: string }[];
 };
