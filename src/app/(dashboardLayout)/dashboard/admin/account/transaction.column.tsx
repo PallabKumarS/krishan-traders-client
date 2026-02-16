@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { TAccountTransaction } from "@/types/account-transactions.type";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { deleteTransaction } from "@/services/AccountTransactions";
+import { useUser } from "@/providers/ContextProvider";
 
 const handleDelete = async (id: string) => {
   const toastId = toast.loading("Deleting transaction...");
@@ -80,19 +81,22 @@ export const transactionColumns: ColumnDef<TAccountTransaction>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const transaction = row.original;
+      const { user } = useUser();
 
       return (
-        <div className="flex items-center justify-center gap-2">
-          <ConfirmationBox
-            trigger={
-              <Button size="sm" variant="ghost">
-                <Trash className="h-4 w-4 text-destructive" />
-              </Button>
-            }
-            onConfirm={() => handleDelete(transaction._id)}
-            title="Delete this transaction?"
-          />
-        </div>
+        user?.role === "admin" && (
+          <div className="flex items-center justify-center gap-2">
+            <ConfirmationBox
+              trigger={
+                <Button size="sm" variant="ghost">
+                  <Trash className="h-4 w-4 text-destructive" />
+                </Button>
+              }
+              onConfirm={() => handleDelete(transaction._id)}
+              title="Delete this transaction?"
+            />
+          </div>
+        )
       );
     },
   },

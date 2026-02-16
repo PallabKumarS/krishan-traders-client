@@ -185,7 +185,12 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="">
               <Button variant="outline" size="sm" className="capitalize">
-                {role} <LucideArrowDownSquare className="ml-2 h-3 w-3" />
+                {role === "admin"
+                  ? "Super Admin"
+                  : role === "subAdmin"
+                    ? "Admin"
+                    : role}
+                <LucideArrowDownSquare className="ml-2 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background/90">
@@ -197,7 +202,11 @@ const UserManagement = ({ query }: { query: Record<string, unknown> }) => {
                     handleUserRoleChange(row.original._id, r as TUserRole)
                   }
                 >
-                  {r}
+                  {r === "admin"
+                    ? "Super Admin"
+                    : r === "subAdmin"
+                      ? "Admin"
+                      : r}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

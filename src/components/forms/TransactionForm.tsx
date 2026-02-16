@@ -17,12 +17,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ButtonLoader from "@/components/shared/ButtonLoader";
 import { createTransaction } from "@/services/AccountTransactions";
+import { accountTransactionReasons } from "@/types/account-transactions.type";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const schema = z.object({
   accountId: z.string().min(1),
   type: z.enum(["credit", "debit"]),
   amount: z.coerce.number().min(1),
-  reason: z.enum(["sale", "purchase", "expense", "adjustment", "transfer"]),
+  reason: z.enum(accountTransactionReasons),
   note: z.string().optional(),
 });
 
@@ -69,10 +78,17 @@ export default function TransactionForm({
             <FormItem>
               <FormLabel>Transaction Type</FormLabel>
               <FormControl>
-                <select className="w-full border rounded-md p-2" {...field}>
-                  <option value="credit">Credit (+)</option>
-                  <option value="debit">Debit (-)</option>
-                </select>
+                <Select onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full max-w-full capitalize">
+                    <SelectValue placeholder="Select a type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="credit">Credit (+)</SelectItem>
+                      <SelectItem value="debit">Debit (-)</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </FormControl>
             </FormItem>
           )}
@@ -86,6 +102,36 @@ export default function TransactionForm({
               <FormLabel>Amount</FormLabel>
               <FormControl>
                 <Input type="number" min={1} {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="reason"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Transaction Reason</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full max-w-full capitalize">
+                    <SelectValue placeholder="Select a reason" />
+                  </SelectTrigger>
+                  <SelectContent className="capitalize">
+                    <SelectGroup>
+                      {accountTransactionReasons.map((reason) => (
+                        <SelectItem
+                          className="capitalize"
+                          key={reason}
+                          value={reason}
+                        >
+                          {reason}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </FormControl>
             </FormItem>
           )}

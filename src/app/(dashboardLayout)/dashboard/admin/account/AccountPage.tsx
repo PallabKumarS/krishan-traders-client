@@ -7,6 +7,7 @@ import { transactionColumns } from "./transaction.column";
 import { TAccountTransaction } from "@/types/account-transactions.type";
 import { TAccount } from "@/types/account.type";
 import AccountView from "./AccountView";
+import { useUser } from "@/providers/ContextProvider";
 
 // 1. Accept the promises as props
 export default function AccountPage({
@@ -16,6 +17,7 @@ export default function AccountPage({
   accountsPromise: Promise<{ data: TAccount[] }>;
   transactionsPromise: Promise<{ data: TAccountTransaction[] }>;
 }) {
+  const { user } = useUser();
   const accountRes = use(accountsPromise);
   const transactionRes = use(transactionsPromise);
 

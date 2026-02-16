@@ -20,3 +20,13 @@ export interface TAccountTransaction {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export const accountTransactionReasons = [
+  "sale",
+  "purchase",
+  "expense",
+  "adjustment",
+  "transfer",
+] as const;
+
+export const accountTransactionTypes = ["credit", "debit"];
