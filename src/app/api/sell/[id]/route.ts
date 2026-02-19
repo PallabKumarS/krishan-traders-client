@@ -5,13 +5,13 @@ import { SellService } from "@/server/modules/sell/sell.service";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin", "staff"]);
 
-    const data = await SellService.getSell(params.id);
+    const data = await SellService.getSell((await params).id);
 
     return Response.json({
       success: true,
@@ -25,14 +25,14 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin", "staff"]);
 
     const body = await request.json();
-    const data = await SellService.updateSell(params.id, body);
+    const data = await SellService.updateSell((await params).id, body);
 
     return Response.json({
       success: true,
@@ -46,13 +46,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
-    const data = await SellService.deleteSell(params.id);
+    const data = await SellService.deleteSell((await params).id);
 
     return Response.json({
       success: true,
