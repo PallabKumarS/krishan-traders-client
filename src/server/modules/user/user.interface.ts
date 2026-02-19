@@ -16,7 +16,7 @@ export interface TUser extends Document {
   updatedAt?: Date;
 }
 
-export type TUserRole = "admin" | "staff" | "guest";
+export type TUserRole = "admin" | "staff" | "guest" | "subAdmin";
 
 export type TUserStatus = "active" | "blocked";
 
