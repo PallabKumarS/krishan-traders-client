@@ -7,7 +7,7 @@ export type TSell = {
   buyingPrice: number;
   profit: number;
 
-  soldTo: Types.ObjectId;
+  soldTo: Types.ObjectId | string;
   soldDate: Date;
 
   createdAt: Date;

@@ -1,4 +1,3 @@
-import {} from ".";
 import { TProduct } from "./product.types";
 
 export interface TSize {

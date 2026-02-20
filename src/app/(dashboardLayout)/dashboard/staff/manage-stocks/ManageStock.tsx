@@ -1,15 +1,12 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: <> */
+/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, use, useState, useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { GroupedTable } from "@/components/ui/grouped-table";
 import LoadingData from "@/components/shared/LoadingData";
-
-import { getAllCompany } from "@/services/CompanyService";
-import { deleteStock, getAllStocksByCompany } from "@/services/StockService";
-
+import { deleteStock } from "@/services/StockService";
 import { TCompany, TStock, TStockStatus } from "@/types";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
@@ -19,62 +16,36 @@ import { Badge } from "@/components/ui/badge";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
 import Link from "next/link";
+import { clearCache, getCompaniesPromise, getStocksPromise } from "./utils";
+
+// TODO Error showing on development mode. Need to fix later.
 
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
   // Main data states
-  const [companies, setCompanies] = useState<TCompany[]>([]);
-  const [stocks, setStocks] = useState<TStock[]>([]);
-
-  // selected states
+  const [refreshKey, setRefreshKey] = useState(0); // Key to force refresh
   const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
   const [editStock, setEditStock] = useState<TStock | null>(null);
 
-  //   loading states
-  const [companyLoading, setCompanyLoading] = useState(true);
-  const [stockLoading, setStockLoading] = useState(true);
+  // Create a new promise each time the refresh key changes
+  const companiesPromise = useMemo(
+    () => getCompaniesPromise(refreshKey),
+    [refreshKey],
+  );
+  const companies = use(companiesPromise);
 
-  // load companies
-  const fetchCompanies = async () => {
-    try {
-      const res = await getAllCompany();
-      if (res?.success) {
-        setCompanies(res.data);
-        setSelectedCompany(res.data[0]);
-      }
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      setCompanyLoading(false);
-    }
-  };
+  // Set the initial selected company if not set
+  if (!selectedCompany && companies.length > 0) {
+    setSelectedCompany(companies[0]);
+  }
 
-  // load stocks
-  const fetchStocks = async (companyId: string) => {
-    try {
-      const res = await getAllStocksByCompany(companyId);
-      if (res?.success) {
-        setStocks(res.data);
-      }
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      setStockLoading(false);
-    }
-  };
+  const stocksPromise = useMemo(() => {
+    if (!selectedCompany) return Promise.resolve([]);
+    return getStocksPromise(selectedCompany._id, refreshKey);
+  }, [selectedCompany, refreshKey]);
+  const stocks = selectedCompany ? use(stocksPromise) : [];
 
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCompany?._id) {
-      fetchStocks(selectedCompany._id);
-    }
-  }, [selectedCompany]);
-
-  console.log(stocks);
-
+  // Function to handle stock deletion
   const handleDeleteStock = async (stockId: string) => {
     const toastId = toast.loading("Deleting user...");
 
@@ -84,7 +55,9 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
         toast.success(res.message, {
           id: toastId,
         });
-        fetchStocks(selectedCompany?._id as string);
+        // Force refresh by clearing cache and incrementing the key
+        clearCache();
+        setRefreshKey((prev) => prev + 1);
       } else {
         toast.error(res.message, {
           id: toastId,
@@ -221,89 +194,93 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
     },
   ];
 
-  if (companyLoading && stockLoading) return <LoadingData />;
-
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Stock Overview</h1>
 
-      <Tabs defaultValue={selectedCompany?._id}>
-        {/* COMPANY TABS */}
-        <TabsList
-          defaultValue={companies?.[0]?._id}
-          className="flex flex-wrap gap-5 h-full border mb-3"
-        >
-          {companies.map((company) => (
-            <div
-              key={company._id}
-              onClick={() => setSelectedCompany(company)}
-              className={`flex items-center min-w-60 border border-accent rounded-xl ${company.isDisabled && "opacity-50"} ${
-                selectedCompany?._id === company._id && "bg-accent/50"
-              }`}
-            >
-              <TabsTrigger
-                value={company._id}
-                className={`grow px-4 data-[state=active]:bg-bg-accent/50 data-[state=active]:shadow-none`}
+      <Suspense fallback={<LoadingData />}>
+        <Tabs defaultValue={selectedCompany?._id}>
+          {/* COMPANY TABS */}
+          <TabsList
+            defaultValue={companies?.[0]?._id}
+            className="flex flex-wrap gap-5 h-full border mb-3"
+          >
+            {companies.map((company: TCompany) => (
+              <div
+                key={company._id}
+                onClick={() => setSelectedCompany(company)}
+                className={`flex items-center min-w-60 border border-accent rounded-xl ${company.isDisabled && "opacity-50"} ${
+                  selectedCompany?._id === company._id && "bg-accent/50"
+                }`}
               >
-                {company.name}
-              </TabsTrigger>
-            </div>
-          ))}
-        </TabsList>
-        {/* add stock modal */}
-        <div className="flex justify-end mb-3">
-          <Modal
-            title="Add Stock"
-            trigger={
-              <Button className="w-60">
-                <Plus className="ml-2 h-4 w-4" />
-                <span>Add Stock</span>
-              </Button>
-            }
-            content={
+                <TabsTrigger
+                  value={company._id}
+                  className={`grow px-4 data-[state=active]:bg-bg-accent/50 data-[state=active]:shadow-none`}
+                >
+                  {company.name}
+                </TabsTrigger>
+              </div>
+            ))}
+          </TabsList>
+          {/* add stock modal */}
+          <div className="flex justify-end mb-3">
+            <Modal
+              title="Add Stock"
+              trigger={
+                <Button className="w-60">
+                  <Plus className="ml-2 h-4 w-4" />
+                  <span>Add Stock</span>
+                </Button>
+              }
+              content={
+                <StockAddForm
+                  selectedCompany={selectedCompany}
+                  onSuccess={() => {
+                    // Force refresh by incrementing the key
+                    clearCache();
+                    setRefreshKey((prev) => prev + 1);
+                  }}
+                />
+              }
+            />
+          </div>
+
+          <TabsContent value={selectedCompany?._id as string}>
+            <GroupedTable
+              data={stocks}
+              columns={stockColumns}
+              groupBy="productName"
+              searchKeys={["productName", "sizeLabel"]}
+              enableColumnToggle
+            />
+          </TabsContent>
+        </Tabs>
+
+        {/* edit stock modal */}
+        <Modal
+          trigger={null}
+          title="Edit Stock"
+          open={!!editStock}
+          onOpenChange={(open) => {
+            if (!open) setEditStock(null);
+          }}
+          content={
+            editStock && (
               <StockAddForm
+                edit
+                stockData={editStock}
                 selectedCompany={selectedCompany}
                 onSuccess={() => {
-                  fetchStocks(selectedCompany?._id as string);
+                  // Force refresh by incrementing the key
+                  clearCache();
+                  setRefreshKey((prev) => prev + 1);
+                  setEditStock(null);
                 }}
               />
-            }
-          />
-        </div>
-
-        <TabsContent value={selectedCompany?._id as string}>
-          <GroupedTable
-            data={stocks}
-            columns={stockColumns}
-            groupBy="productName"
-            searchKeys={["productName", "sizeLabel"]}
-            enableColumnToggle
-          />
-        </TabsContent>
-      </Tabs>
-
-      {/* edit size modal */}
-      <Modal
-        trigger={null}
-        title="Edit Size"
-        open={!!editStock}
-        onOpenChange={(open) => {
-          if (!open) setEditStock(null);
-        }}
-        content={
-          editStock && (
-            <StockAddForm
-              edit
-              stockData={editStock}
-              selectedCompany={selectedCompany}
-              onSuccess={() => {
-                fetchStocks(selectedCompany?._id as string);
-                setEditStock(null);
-              }}
-            />
-          )
-        }
-      />
+            )
+          }
+        />
+      </Suspense>
     </div>
   );
 };

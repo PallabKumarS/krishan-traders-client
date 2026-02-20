@@ -7,7 +7,7 @@ import { connectDB } from "@/lib/connectDB";
 export async function GET(request: Request) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin", "staff"]);
+    // await requireAuth(request, ["admin", "staff"]);
 
     const { searchParams } = new URL(request.url);
     const query = Object.fromEntries(searchParams.entries());

@@ -1,4 +1,3 @@
-import {} from ".";
 import { TCompany } from "./company.types";
 
 export interface TProduct {

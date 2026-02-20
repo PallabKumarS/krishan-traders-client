@@ -1,4 +1,3 @@
-import {} from ".";
 import { TSize } from "./size.types";
 import { TUser } from "./user.types";
 

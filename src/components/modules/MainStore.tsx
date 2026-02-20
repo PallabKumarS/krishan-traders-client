@@ -7,6 +7,7 @@ import {
   FileClock,
   FilePlus,
   FileSearch,
+  HandCoinsIcon,
   Store,
   Users,
 } from "lucide-react";
@@ -26,11 +27,6 @@ export const commonRoutes = [
 // admin routes
 export const adminRoutes = [
   {
-    title: "Account & Transactions",
-    icon: FileBarChart,
-    href: "/dashboard/admin/account",
-  },
-  {
     title: "Records",
     icon: FileSearch,
     href: "/dashboard/admin/manage-records",
@@ -45,6 +41,11 @@ export const adminRoutes = [
     icon: BookOpenTextIcon,
     href: "/dashboard/admin/manage-info",
   },
+  {
+    title: "Account & Transactions",
+    icon: FileBarChart,
+    href: "/dashboard/admin/account",
+  },
 ];
 
 // member routes
@@ -53,6 +54,11 @@ export const staffRoutes = [
     title: "Stocks",
     icon: ColumnsSettings,
     href: "/dashboard/staff/manage-stocks",
+  },
+  {
+    title: "Sell",
+    icon: HandCoinsIcon,
+    href: "/dashboard/staff/sell",
   },
 ];
 

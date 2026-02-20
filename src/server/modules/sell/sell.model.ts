@@ -15,7 +15,7 @@ const sellSchema = new Schema<TSell>(
     buyingPrice: { type: Number, required: true },
 
     soldTo: {
-      type: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId || String,
       ref: "Customer",
       required: true,
     },

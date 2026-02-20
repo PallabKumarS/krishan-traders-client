@@ -14,19 +14,97 @@ import UserModel from "../user/user.model";
 const getAllStockFromDB = async (query?: Record<string, unknown>) => {
   const filter: Record<string, unknown> = {};
 
-  if (query?.status) filter.status = query.status;
-  if (query?.size) filter.size = query.size;
+  if (query?.searchKey) filter.searchKey = query.searchKey as string;
 
-  return StockModel.find(filter)
-    .populate({
-      path: "size",
-      populate: {
-        path: "product",
-        populate: { path: "company" },
+  const pipeline = [];
+
+  pipeline.push(
+    // Stage 1: Join with the 'sizes' collection
+    {
+      $lookup: {
+        from: SizeModel.collection.name,
+        localField: "size",
+        foreignField: "_id",
+        as: "size",
       },
-    })
-    .populate("stockedBy")
-    .sort((query?.sort as string) || "-createdAt");
+    },
+    { $unwind: "$size" },
+
+    // Stage 2: Join with the 'products' collection
+    {
+      $lookup: {
+        from: ProductModel.collection.name,
+        localField: "size.product",
+        foreignField: "_id",
+        as: "size.product",
+      },
+    },
+    { $unwind: "$size.product" },
+
+    // Stage 3: Join with the 'companies' collection
+    {
+      $lookup: {
+        from: CompanyModel.collection.name,
+        localField: "size.product.company",
+        foreignField: "_id",
+        as: "size.product.company",
+      },
+    },
+    { $unwind: "$size.product.company" },
+
+    // Stage 4: Join with the 'users' collection
+    {
+      $lookup: {
+        from: UserModel.collection.name,
+        localField: "stockedBy",
+        foreignField: "_id",
+        as: "stockedBy",
+      },
+    },
+    { $unwind: "$stockedBy" },
+  );
+
+  if (
+    (filter.searchKey as string) &&
+    (filter.searchKey as string).trim() !== ""
+  ) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { "size.product.name": { $regex: filter.searchKey, $options: "i" } },
+          {
+            "size.product.company.name": {
+              $regex: filter.searchKey,
+              $options: "i",
+            },
+          },
+          { "size.label": { $regex: filter.searchKey, $options: "i" } },
+          { "interactedBy.name": { $regex: filter.searchKey, $options: "i" } },
+        ],
+      },
+    });
+  }
+
+  pipeline.push({
+    $project: {
+      size: 1,
+      quantity: 1,
+      interactedBy: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      stockedDate: 1,
+      expiryDate: 1,
+
+      status: 1,
+      imgUrl: 1,
+      sellingPrice: 1,
+      buyingPrice: 1,
+    },
+  });
+
+  console.log(pipeline);
+
+  return await StockModel.aggregate(pipeline);
 };
 
 const getAllStockByCompanyFromDB = async (companyId: string) => {

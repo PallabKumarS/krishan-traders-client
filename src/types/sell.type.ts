@@ -8,7 +8,7 @@ export type TSell = {
   buyingPrice: number;
   profit: number;
 
-  soldTo: TCustomer;
+  soldTo: TCustomer | string;
   soldDate: Date;
 
   createdAt: Date;
