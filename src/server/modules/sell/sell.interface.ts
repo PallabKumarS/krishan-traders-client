@@ -1,17 +1,31 @@
+// sell.interface.ts
+
 import { Types } from "mongoose";
 
-export type TSell = {
-  size: Types.ObjectId;
+export type TSellItem = {
+  stock: Types.ObjectId;
   quantity: number;
   sellingPrice: number;
   buyingPrice: number;
   profit: number;
+};
 
-  soldTo: Types.ObjectId | string;
-  soldDate: Date;
+export type TSell = {
+  stocks: TSellItem[];
 
-  createdAt: Date;
-  updatedAt: Date;
-  _id: Types.ObjectId;
-  __v: number;
+  totalAmount: number;
+  totalProfit: number;
+
+  soldTo:
+    | string
+    | {
+        name?: string;
+        email?: string;
+        address?: string;
+        phoneNumber: string;
+      };
+
+  accountId: Types.ObjectId;
+
+  createdBy: Types.ObjectId;
 };

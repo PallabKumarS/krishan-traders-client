@@ -11,6 +11,7 @@ export interface TUser extends Document {
   address?: string;
   profileImg?: string;
   _id: Types.ObjectId;
+  __v: number;
   forgotPasswordToken?: number;
   createdAt?: Date;
   updatedAt?: Date;

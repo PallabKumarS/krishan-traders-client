@@ -2,20 +2,23 @@ import { TSize } from "./size.types";
 import { TUser } from "./user.types";
 
 export interface TRecord {
-  imgUrl: string;
   size: TSize;
   quantity: number;
 
-  stockedDate: Date;
   expiryDate: Date;
+
   sellingPrice: number;
   buyingPrice: number;
 
-  status: TRecordStatus;
   batchNo?: string;
+  imgUrl?: string;
 
   interactedBy: TUser;
+  interactedDate: Date;
+
   type: "stock_in" | "sale";
+
+  profit: number;
 
   createdAt: Date;
   updatedAt: Date;

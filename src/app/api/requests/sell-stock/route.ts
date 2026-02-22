@@ -1,14 +1,16 @@
-import { connectDB } from "@/lib/connectDB";
-import { handleApiError } from "@/server/errors/handleApiError";
+// src/app/api/requests/sell-stock/route.ts
+
 import { requireAuth } from "@/server/guards/requireAuth";
-import { SellService } from "@/server/modules/sell/sell.service";
+import { handleApiError } from "@/server/errors/handleApiError";
+import { connectDB } from "@/lib/connectDB";
+import { SaleRequestService } from "@/server/modules/sale-requests/sale-requests.service";
 
 export async function GET(request: Request) {
   try {
     await connectDB();
     await requireAuth(request, ["admin"]);
 
-    const result = await SellService.getAllSalesFromDB();
+    const result = await SaleRequestService.getAllSaleRequests();
 
     return Response.json({
       success: true,
@@ -23,11 +25,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin"]);
+    await requireAuth(request, ["staff", "admin"]);
 
     const body = await request.json();
     const user = request.user;
-    const result = await SellService.createSellIntoDB(user, body);
+    const result = await SaleRequestService.createSaleRequest(user, body);
 
     return Response.json({
       success: true,

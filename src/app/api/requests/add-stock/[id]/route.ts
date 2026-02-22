@@ -1,8 +1,9 @@
-// src/app/api/records/[id]/accept-add-stock/route.ts
-import { RecordService } from "@/server/modules/record/record.service";
+// src/app/api/requests/add-stock/[id]/route.ts
+
 import { requireAuth } from "@/server/guards/requireAuth";
 import { handleApiError } from "@/server/errors/handleApiError";
 import { connectDB } from "@/lib/connectDB";
+import { StockAddRequestService } from "@/server/modules/stock-requests/stock-requests.service";
 
 export async function PATCH(
   request: Request,
@@ -13,15 +14,16 @@ export async function PATCH(
     await requireAuth(request, ["admin"]);
 
     const body = await request.json();
-    const data = await RecordService.acceptAddStockInDB(
+
+    const result = await StockAddRequestService.acceptStockAddRequest(
       (await params).id,
-      body,
+      body.status,
     );
 
     return Response.json({
       success: true,
-      message: "Stock accepted successfully",
-      data,
+      message: `Stock add request ${body.status}`,
+      data: result,
     });
   } catch (error) {
     return handleApiError(error);

@@ -30,12 +30,12 @@ import ButtonLoader from "../shared/ButtonLoader";
 import { useAppContext } from "@/providers/ContextProvider";
 
 import { TCompany, TProduct, TSize, TStock } from "@/types";
-import { addStock } from "@/services/RecordService";
 import { directlyAddStock, updateStock } from "@/services/StockService";
 import { getAllProductsByCompany } from "@/services/ProductService";
 import { getSizesByProduct } from "@/services/SizeService";
 import { DatePickerInput } from "../ui/date-picker-input";
 import { DragDropUploader } from "../shared/DragDropUploader";
+import { createSellStockRequest } from "@/services/RequestService";
 
 const formSchema = z.object({
   imgUrl: z.string(),
@@ -151,7 +151,7 @@ export default function StockAddForm({
         ? await updateStock(stockData?._id as string, payload)
         : user?.role === "admin"
           ? await directlyAddStock(payload)
-          : await addStock(payload);
+          : await createSellStockRequest(payload);
 
       if (res.success) {
         toast.success(res.message, { id: toastId });

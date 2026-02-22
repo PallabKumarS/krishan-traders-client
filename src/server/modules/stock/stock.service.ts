@@ -3,7 +3,7 @@ import type { TStock } from "./stock.interface";
 import StockModel from "./stock.model";
 import httpStatus from "http-status";
 import { AppError } from "../../errors/AppError";
-import mongoose, { Types } from "mongoose";
+import mongoose, { PipelineStage, Types } from "mongoose";
 import SizeModel from "../size/size.model";
 import ProductModel from "../product/product.model";
 import CompanyModel from "../company/company.model";
@@ -16,7 +16,7 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
 
   if (query?.searchKey) filter.searchKey = query.searchKey as string;
 
-  const pipeline = [];
+  const pipeline: PipelineStage[] = [];
 
   pipeline.push(
     // Stage 1: Join with the 'sizes' collection
@@ -85,24 +85,25 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
     });
   }
 
-  pipeline.push({
-    $project: {
-      size: 1,
-      quantity: 1,
-      interactedBy: 1,
-      createdAt: 1,
-      updatedAt: 1,
-      stockedDate: 1,
-      expiryDate: 1,
+  pipeline.push(
+    {
+      $project: {
+        size: 1,
+        quantity: 1,
+        interactedBy: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        stockedDate: 1,
+        expiryDate: 1,
 
-      status: 1,
-      imgUrl: 1,
-      sellingPrice: 1,
-      buyingPrice: 1,
+        status: 1,
+        imgUrl: 1,
+        sellingPrice: 1,
+        buyingPrice: 1,
+      },
     },
-  });
-
-  console.log(pipeline);
+    { $sort: { expiryDate: 1 } },
+  );
 
   return await StockModel.aggregate(pipeline);
 };

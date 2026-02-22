@@ -12,7 +12,7 @@ type JwtPayload = {
 
 export async function requireAuth(
   request: Request,
-  roles?: TUserRole[]
+  roles?: TUserRole[],
 ): Promise<JwtPayload> {
   // Read token (Authorization: Bearer <token>)
   const authHeader = request.headers.get("authorization");
@@ -31,7 +31,7 @@ export async function requireAuth(
   // Verify token
   const decoded = verifyToken(
     token,
-    process.env.JWT_ACCESS_SECRET as string
+    process.env.JWT_ACCESS_SECRET as string,
   ) as JwtPayload;
 
   const { userId, role } = decoded;
@@ -56,7 +56,7 @@ export async function requireAuth(
     throw new AppError(403, "You are not authorized");
   }
 
-  request.user = decoded;
+  request.user = user;
 
   return decoded;
 }

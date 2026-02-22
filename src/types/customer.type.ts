@@ -1,9 +1,9 @@
 export interface TCustomer {
   name?: string;
   email?: string;
+  address?: string;
 
   phoneNumber: string;
-  address?: string;
 
   _id: string;
   createdAt: Date;

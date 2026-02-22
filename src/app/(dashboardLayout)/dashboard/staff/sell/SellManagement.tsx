@@ -1,171 +1,212 @@
 "use client";
 
-"use client";
-
-import { useState, use } from "react";
+import { useState, useEffect, use } from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { ShoppingCart, Plus, Trash } from "lucide-react";
+import { ShoppingCart, Plus, Minus } from "lucide-react";
 
 import { TStock } from "@/types";
-
-interface CartItem {
-  stock: TStock;
-  quantity: number; // always items
-}
+import { CartItem, loadCart, saveCart } from "./cart-utils";
+import Cart from "./Cart";
 
 export default function SellManagement({
   stocksPromise,
 }: {
   stocksPromise: Promise<{ data: TStock[] }>;
 }) {
-  const [search, setSearch] = useState("");
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  // 🔹 Filter available stocks
   const stocks = use(stocksPromise);
 
-  // 🔹 Add to cart
-  const addToCart = (stock: TStock) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.stock._id === stock._id);
+  const [search, setSearch] = useState("");
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState("");
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
-      if (existing) {
-        return prev.map((item) =>
-          item.stock._id === stock._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
+  // 🔹 Handle screen size changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1440px)");
+
+    const handleResize = () => setIsLargeScreen(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleResize);
+    return () => mediaQuery.removeEventListener("change", handleResize);
+  }, []);
+
+  // 🔹 Load cart from localStorage
+  useEffect(() => {
+    setCart(loadCart());
+  }, []);
+
+  // 🔹 Persist cart
+  useEffect(() => {
+    if (cart.length > 0) {
+      saveCart(cart);
+    }
+  }, [cart]);
+
+  const getCartQuantity = (id: string) =>
+    cart.find((item) => item.stock._id === id)?.quantity || 0;
+
+  const updateQuantity = (stock: TStock, quantity: number) => {
+    if (quantity < 0) return;
+
+    setCart((prev) => {
+      const exists = prev.find((i) => i.stock._id === stock._id);
+
+      if (!exists && quantity > 0) {
+        return [...prev, { stock, quantity }];
+      }
+
+      if (exists) {
+        if (quantity === 0)
+          return prev.filter((i) => i.stock._id !== stock._id);
+
+        return prev.map((i) =>
+          i.stock._id === stock._id
+            ? { ...i, quantity: Math.min(quantity, stock.quantity) }
+            : i,
         );
       }
 
-      return [...prev, { stock, quantity: 1 }];
+      return prev;
     });
   };
 
-  // 🔹 Remove from cart
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.stock._id !== id));
-  };
-
-  // 🔹 Calculate total
-  const total = cart.reduce(
-    (acc, item) => acc + item.quantity * item.stock.sellingPrice,
-    0,
-  );
-
   return (
     <div className="flex flex-col h-screen">
-      {/* ================= Search Bar ================= */}
-      <div className="p-4 border-b bg-background">
+      {/* Header */}
+      <div className="p-4 border-b flex justify-between items-center gap-3">
         <Input
           placeholder="Search product..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-md"
         />
+
+        <Button onClick={() => setOpen(true)}>
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          Cart ({cart.length})
+        </Button>
       </div>
 
-      {/* ================= Layout ================= */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* ================= Product Grid ================= */}
-        <div className="flex-1 p-4 overflow-y-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {stocks?.data.map((stock) => (
-              <Card key={stock._id} className="hover:shadow-md transition">
-                <CardContent className="p-4 flex flex-col justify-between h-full">
-                  <div className="space-y-1">
-                    <p className="font-semibold text-sm">
-                      {stock.size.product.name}
-                    </p>
+      <div className="flex justify-between h-screen">
+        {/* Products */}
+        <div className="flex-1 p-4 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 overflow-y-auto h-fit">
+          {stocks?.data?.map((stock) => {
+            const quantity = getCartQuantity(stock._id);
 
-                    <p className="text-xs text-muted-foreground">
-                      {stock.size.label} • {stock.size.unitQuantity}
-                      {stock.size.unit}
-                    </p>
+            return (
+              <Card
+                className="h-fit overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border-border/60"
+                key={stock._id}
+              >
+                {/* Top accent bar */}
+                <div className="h-1 w-full bg-linear-to-r from-primary via-accent to-primary/60" />
 
-                    <p className="text-xs text-muted-foreground">
-                      {stock.size.product.company.name}
-                    </p>
+                <CardContent className="p-4 space-y-3.5">
+                  {/* Product name */}
+                  <p className="font-semibold text-sm leading-tight text-foreground group-hover:text-primary transition-colors duration-200">
+                    {stock.size.product.name}
+                  </p>
 
-                    <p className="text-lg font-bold text-primary">
-                      ৳ {stock.sellingPrice}
-                    </p>
+                  {/* Price — most prominent */}
+                  <p className="text-xl font-bold text-primary tracking-tight">
+                    ৳ {stock.sellingPrice}
+                  </p>
 
-                    <p className="text-xs text-muted-foreground">
-                      Available: {stock.quantity}
-                    </p>
+                  {/* Meta row */}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        className={`inline-block w-1.5 h-1.5 rounded-full ${
+                          stock.quantity > 0 ? "bg-primary" : "bg-destructive"
+                        }`}
+                      />
+                      {stock.quantity > 0
+                        ? `${stock.quantity} in stock`
+                        : "Out of stock"}
+                    </span>
+                    <span className="bg-muted px-2 py-0.5 rounded-full text-[10px] font-medium">
+                      Exp: {new Date(stock.expiryDate).toLocaleDateString()}
+                    </span>
                   </div>
 
-                  <Button
-                    size="sm"
-                    className="mt-3"
-                    disabled={stock.quantity <= 0}
-                    onClick={() => addToCart(stock)}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add
-                  </Button>
+                  {/* Divider */}
+                  <div className="border-t border-border/50" />
+
+                  {/* Cart controls */}
+                  {quantity === 0 ? (
+                    <Button
+                      className="w-2/5 h-8 text-xs font-semibold transition-all duration-200"
+                      size="sm"
+                      onClick={() => updateQuantity(stock, 1)}
+                      disabled={stock.quantity <= 0}
+                    >
+                      Add to Cart
+                    </Button>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="h-8 w-8 rounded-md border-border/60 hover:border-primary hover:text-primary transition-colors duration-150"
+                        onClick={() => updateQuantity(stock, quantity - 1)}
+                      >
+                        <Minus className="h-3.5 w-3.5" />
+                      </Button>
+
+                      <Input
+                        type="number"
+                        value={
+                          editingId === stock._id ? editingValue : quantity
+                        }
+                        onFocus={() => {
+                          setEditingId(stock._id);
+                          setEditingValue(String(quantity));
+                        }}
+                        onChange={(e) => {
+                          setEditingValue(e.target.value);
+                        }}
+                        onBlur={() => {
+                          const num = Number(editingValue);
+
+                          if (!editingValue || num <= 0) {
+                            updateQuantity(stock, 0);
+                          } else {
+                            updateQuantity(stock, num);
+                          }
+
+                          setEditingId(null);
+                        }}
+                        min={0}
+                        max={stock.quantity}
+                        className="w-16 text-center"
+                      />
+
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="h-8 w-8 rounded-md border-border/60 hover:border-primary hover:text-primary transition-colors duration-150"
+                        onClick={() => updateQuantity(stock, quantity + 1)}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            );
+          })}
         </div>
 
-        {/* ================= Cart Sidebar ================= */}
-        <div className="w-full md:w-87.5 border-l bg-muted/20 flex flex-col">
-          {/* Header */}
-          <div className="p-4 flex items-center gap-2 border-b">
-            <ShoppingCart className="h-5 w-5" />
-            <h2 className="font-semibold">Cart</h2>
-          </div>
-
-          {/* Cart Items */}
-          <ScrollArea className="flex-1 p-4">
-            {cart.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Cart is empty</p>
-            ) : (
-              cart.map((item) => (
-                <div
-                  key={item.stock._id}
-                  className="flex justify-between items-center mb-4"
-                >
-                  <div>
-                    <p className="text-sm font-medium">
-                      {item.stock.size.product.name}
-                    </p>
-
-                    <p className="text-xs text-muted-foreground">
-                      {item.quantity} × ৳ {item.stock.sellingPrice}
-                    </p>
-                  </div>
-
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => removeFromCart(item.stock._id)}
-                  >
-                    <Trash className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
-              ))
-            )}
-          </ScrollArea>
-
-          <Separator />
-
-          {/* Footer */}
-          <div className="p-4 space-y-4">
-            <div className="flex justify-between font-semibold text-lg">
-              <span>Total</span>
-              <span>৳ {total.toFixed(2)}</span>
-            </div>
-
-            <Button className="w-full">Complete Sale</Button>
-          </div>
-        </div>
+        {/* Cart */}
+        <Cart
+          open={!isLargeScreen && open}
+          onOpenChange={(open) => !isLargeScreen && setOpen(open)}
+          cart={cart}
+          setCart={setCart}
+        />
       </div>
     </div>
   );

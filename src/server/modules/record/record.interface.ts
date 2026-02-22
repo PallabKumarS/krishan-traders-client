@@ -1,26 +1,26 @@
 import type { Document, Types } from "mongoose";
 
 export interface TRecord extends Document {
-  imgUrl: string;
   size: Types.ObjectId;
   quantity: number;
 
-  stockedDate: Date;
   expiryDate: Date;
+
   sellingPrice: number;
   buyingPrice: number;
 
-  status: TRecordStatus;
   batchNo?: string;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-
-  _id: Types.ObjectId;
-  __v: number;
+  imgUrl?: string;
 
   interactedBy: Types.ObjectId;
-  type: "stock_in" | "sale";
-}
+  interactedDate: Date;
 
-export type TRecordStatus = "pending" | "accepted" | "rejected";
+  type: "stock_in" | "sale";
+
+  profit: number;
+
+  createdAt: Date;
+  updatedAt: Date;
+  _id: Types.ObjectId;
+  __v: number;
+}

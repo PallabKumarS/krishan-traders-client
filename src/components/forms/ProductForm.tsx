@@ -21,6 +21,13 @@ import ToggleButton from "../shared/ToggleButton";
 
 import { TCompany } from "@/types";
 import { createProduct, updateProduct } from "@/services/ProductService";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const formSchema = z.object({
   name: z
@@ -123,19 +130,20 @@ export default function ProductForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Company</FormLabel>
-              <FormControl>
-                <select
-                  {...field}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">Select company</option>
+              <Select onValueChange={(value) => field.onChange(value)}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select company" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
                   {companies.map((company) => (
-                    <option key={company._id} value={company._id}>
+                    <SelectItem key={company._id} value={company._id}>
                       {company.name}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-              </FormControl>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

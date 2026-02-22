@@ -11,25 +11,29 @@ const recordSchema = new Schema<TRecord>(
 
     quantity: { type: Number, required: true },
 
-    stockedDate: { type: Date, default: Date.now },
     expiryDate: { type: Date, required: true },
 
-    status: {
-      type: String,
-      enum: ["pending", "accepted", "rejected"],
-      default: "pending",
-    },
     sellingPrice: { type: Number, required: true },
     buyingPrice: { type: Number, required: true },
-    imgUrl: { type: String, default: "" },
+
     batchNo: String,
+    imgUrl: String,
 
     interactedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    type: { type: String, required: true, enum: ["stock_in", "sale"] },
+
+    interactedDate: { type: Date, default: Date.now },
+
+    type: {
+      type: String,
+      enum: ["stock_in", "sale"],
+      required: true,
+    },
+
+    profit: { type: Number, default: 0 },
   },
   { timestamps: true },
 );

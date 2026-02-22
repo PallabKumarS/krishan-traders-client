@@ -1,18 +1,14 @@
-import { TCustomer } from "./customer.type";
-import { TSize } from "./size.types";
-
 export type TSell = {
-  size: TSize;
-  quantity: number;
+  stocks: { quantity: number; stock: string }[] | [];
   sellingPrice: number;
-  buyingPrice: number;
-  profit: number;
+  soldTo:
+    | {
+        name?: string;
+        email?: string;
+        address?: string;
 
-  soldTo: TCustomer | string;
-  soldDate: Date;
-
-  createdAt: Date;
-  updatedAt: Date;
-  _id: string;
-  __v: number;
+        phoneNumber: string;
+      }
+    | string;
+  accountId: string;
 };

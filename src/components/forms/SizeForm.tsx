@@ -21,6 +21,13 @@ import ToggleButton from "../shared/ToggleButton";
 
 import { TProduct, TSize } from "@/types";
 import { createSize, updateSize } from "@/services/SizeService";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const formSchema = z.object({
   productId: z.string().min(1, "Product is required"),
@@ -111,17 +118,18 @@ export default function SizeForm({
             <FormItem>
               <FormLabel>Product</FormLabel>
               <FormControl>
-                <select
-                  {...field}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">Select product</option>
-                  {products.map((product) => (
-                    <option key={product._id} value={product._id}>
-                      {product.name}
-                    </option>
-                  ))}
-                </select>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a product..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((product) => (
+                      <SelectItem key={product._id} value={product._id}>
+                        {product.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -161,6 +169,7 @@ export default function SizeForm({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="unit"
@@ -168,15 +177,17 @@ export default function SizeForm({
               <FormItem>
                 <FormLabel>Unit</FormLabel>
                 <FormControl>
-                  <select
-                    {...field}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="ml">ml</option>
-                    <option value="gm">gm</option>
-                    <option value="kg">kg</option>
-                    <option value="ltr">ltr</option>
-                  </select>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select unit..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ml">ml</SelectItem>
+                      <SelectItem value="gm">gm</SelectItem>
+                      <SelectItem value="kg">kg</SelectItem>
+                      <SelectItem value="ltr">ltr</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
