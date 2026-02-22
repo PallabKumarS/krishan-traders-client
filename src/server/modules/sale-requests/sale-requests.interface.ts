@@ -6,15 +6,22 @@ export interface TSaleRequest extends Document {
     quantity: number;
   }[];
 
-  // biome-ignore lint/suspicious/noExplicitAny: <>
-  soldTo: any;
+  soldTo:
+    | string
+    | {
+        name?: string;
+        email?: string;
+        address?: string;
+        phoneNumber: string;
+      };
 
   accountId: Types.ObjectId;
 
   requestedBy: Types.ObjectId;
 
   status: "pending" | "accepted" | "rejected";
-
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  _id: Types.ObjectId;
+  __v: number;
 }

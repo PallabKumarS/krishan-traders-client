@@ -5,7 +5,10 @@ import { AppError } from "@/server/errors/AppError";
 import { TUser } from "../user/user.interface";
 import { TSaleRequest } from "./sale-requests.interface";
 
-const createSaleRequest = async (user: TUser, payload:TSaleRequest) => {
+const createSaleRequest = async (
+  user: TUser,
+  payload: Partial<TSaleRequest>,
+) => {
   return SaleRequestModel.create({
     ...payload,
     requestedBy: user._id,

@@ -3,6 +3,7 @@ import SellManagement from "./SellManagement";
 import { getAllStocks } from "@/services/StockService";
 import { Suspense } from "react";
 import LoadingData from "@/components/shared/LoadingData";
+import { getAllAccounts } from "@/services/Account";
 
 export const metadata: Metadata = {
   title: "Sell | Krishan Traders",
@@ -16,10 +17,11 @@ const page = async ({
 }) => {
   const query = await searchParams;
   const getAllStocksPromise = getAllStocks(query);
+   const accountPromise = getAllAccounts();
 
   return (
     <Suspense fallback={<LoadingData />}>
-      <SellManagement stocksPromise={getAllStocksPromise} />
+      <SellManagement stocksPromise={getAllStocksPromise} accountPromise={accountPromise} />
     </Suspense>
   );
 };

@@ -1,6 +1,5 @@
 export type TSell = {
   stocks: { quantity: number; stock: string }[] | [];
-  sellingPrice: number;
   soldTo:
     | {
         name?: string;

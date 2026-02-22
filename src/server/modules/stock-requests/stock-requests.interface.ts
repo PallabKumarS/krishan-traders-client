@@ -15,6 +15,8 @@ export interface TStockAddRequest extends Document {
 
   status: "pending" | "accepted" | "rejected";
 
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  _id: Types.ObjectId;
+  __v: number;
 }

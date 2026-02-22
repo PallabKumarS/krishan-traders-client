@@ -9,7 +9,7 @@ import { TUser } from "../user/user.interface";
 
 const createStockAddRequest = async (
   user: TUser,
-  payload: TStockAddRequest,
+  payload: Partial<TStockAddRequest>,
 ) => {
   return StockAddRequestModel.create({
     ...payload,

@@ -9,11 +9,14 @@ import { ShoppingCart, Plus, Minus } from "lucide-react";
 import { TStock } from "@/types";
 import { CartItem, loadCart, saveCart } from "./cart-utils";
 import Cart from "./Cart";
+import { TAccount } from "@/types/account.type";
 
 export default function SellManagement({
   stocksPromise,
+  accountPromise,
 }: {
   stocksPromise: Promise<{ data: TStock[] }>;
+  accountPromise: Promise<{ data: TAccount[] }>;
 }) {
   const stocks = use(stocksPromise);
 
@@ -202,6 +205,7 @@ export default function SellManagement({
 
         {/* Cart */}
         <Cart
+          accountPromise={accountPromise}
           open={!isLargeScreen && open}
           onOpenChange={(open) => !isLargeScreen && setOpen(open)}
           cart={cart}

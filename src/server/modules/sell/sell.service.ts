@@ -1,4 +1,5 @@
 // sell.service.ts
+/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 
 import { startSession } from "mongoose";
 import SellModel from "./sell.model";
@@ -168,7 +169,8 @@ const createSellIntoDB = async (
     session.endSession();
 
     return sale[0];
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error, error.message);
     await session.abortTransaction();
     session.endSession();
     throw error;
@@ -180,7 +182,9 @@ const getAllSalesFromDB = async () => {
 };
 
 const getSingleSaleFromDB = async (id: string) => {
-  return await SellModel.findById(id).populate("accountId").populate("createdBy");
+  return await SellModel.findById(id)
+    .populate("accountId")
+    .populate("createdBy");
 };
 
 const deleteSaleFromDB = async (id: string) => {

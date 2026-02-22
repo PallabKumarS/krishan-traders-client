@@ -47,7 +47,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
 
   // Function to handle stock deletion
   const handleDeleteStock = async (stockId: string) => {
-    const toastId = toast.loading("Deleting user...");
+    const toastId = toast.loading("Deleting stock...");
 
     try {
       const res = await deleteStock(stockId);

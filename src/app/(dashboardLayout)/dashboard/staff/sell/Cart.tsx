@@ -18,29 +18,26 @@ import {
   CustomerForm,
   CustomerFormValues,
 } from "@/components/forms/CustomerForm";
-import { TSell } from "@/types/sell.type";
 import { toast } from "sonner";
-import { useUser } from "@/providers/ContextProvider";
 import { SaleConfirmModal } from "./SaleConfirmDialog";
-import { createSellStockRequest } from "@/services/RequestService";
-import { directlySellStock } from "@/services/SellService";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   cart: CartItem[];
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  accountPromise: Promise<{ data: any[] }>;
 }
 
-function Cart({ open, onOpenChange, cart, setCart }: Props) {
+function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
   const [customer, setCustomer] = useState<CustomerFormValues>({
     customerType: "walk-in",
   });
   const [confirmOpen, setConfirmOpen] = useState(false);
+
   const formRef = useRef<any>(null);
-  const { user } = useUser();
 
   const updateQuantity = (id: string, quantity: number, max: number) => {
     if (quantity < 0) return;
@@ -64,51 +61,6 @@ function Cart({ open, onOpenChange, cart, setCart }: Props) {
     (acc, item) => acc + item.quantity * item.stock.sellingPrice,
     0,
   );
-
-  const handleConfirmSale = async () => {
-    const toastId = toast.loading("Processing sale...");
-    const values = formRef.current.getValues();
-
-    const payload: TSell = {
-      accountId: "ACCOUNT_ID",
-      sellingPrice: cart.reduce(
-        (acc, item) => acc + item.quantity * item.stock.sellingPrice,
-        0,
-      ),
-      stocks: cart.map((item) => ({
-        stock: item.stock._id,
-        quantity: item.quantity,
-      })),
-      soldTo:
-        values.customerType === "walk-in"
-          ? "walk-in"
-          : {
-              phoneNumber: values.phoneNumber!,
-              name: values.name || "",
-              email: values.email || "",
-              address: values.address || "",
-            },
-    };
-
-    try {
-      const res =
-        user?.role === "admin"
-          ? await directlySellStock(payload)
-          : await createSellStockRequest(payload);
-
-      if (res.success) {
-        toast.success("Sale completed successfully", { id: toastId });
-        setCart([]);
-        setConfirmOpen(false);
-      } else {
-        toast.error(res.message || "Failed to complete sale", { id: toastId });
-      }
-    } catch (error: any) {
-      toast.error(error.message, {
-        id: toastId,
-      });
-    }
-  };
 
   const CartContent = (
     <div className="flex flex-col flex-1 h-full">
@@ -272,11 +224,16 @@ function Cart({ open, onOpenChange, cart, setCart }: Props) {
       </div>
 
       <SaleConfirmModal
+        accountPromise={accountPromise}
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         cart={cart}
         customer={customer}
-        onConfirm={handleConfirmSale}
+        onConfirm={() => {
+          setCart([]);
+          localStorage.removeItem("sell-cart");
+          setConfirmOpen(false);
+        }}
       />
     </div>
   );
