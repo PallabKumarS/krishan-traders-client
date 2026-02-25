@@ -24,6 +24,7 @@ interface GroupedTableProps {
   columns: Column[];
   groupBy: string;
   searchKeys: string[];
+  pagination?: boolean;
   enableColumnToggle?: boolean;
 }
 
@@ -33,6 +34,7 @@ export function GroupedTable({
   groupBy,
   searchKeys = [],
   enableColumnToggle = false,
+  pagination = false,
 }: GroupedTableProps) {
   const [sortConfig, setSortConfig] = useState<{
     key: string | null;
@@ -52,7 +54,6 @@ export function GroupedTable({
 
   // Process data
   // biome-ignore lint/correctness/useExhaustiveDependencies: <>
-  // biome-ignore lint/correctness/noUnusedVariables: <>
   const { groups, allRows, paginatedRows, totalPages } = useMemo(() => {
     // Filter data
     let filteredData = [...data];
@@ -243,8 +244,8 @@ export function GroupedTable({
             </tr>
           </thead>
           <tbody>
-            {paginatedRows.length > 0 ? (
-              paginatedRows.map((row, rowIndex) => (
+            {(pagination ? paginatedRows : allRows).length > 0 ? (
+              (pagination ? paginatedRows : allRows).map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
                   className={`hover:bg-accent/20 transition-colors border ${
@@ -299,7 +300,7 @@ export function GroupedTable({
       </div>
 
       {/* Pagination Controls */}
-      {totalPages > 0 && (
+      {pagination && totalPages > 0 && (
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="text-sm text-muted-foreground">
