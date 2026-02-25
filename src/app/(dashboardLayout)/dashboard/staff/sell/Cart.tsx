@@ -13,12 +13,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash, Plus, Minus } from "lucide-react";
 import { CartItem } from "./cart-utils";
-import { useRef, useState } from "react";
-import {
-  CustomerForm,
-  CustomerFormValues,
-} from "@/components/forms/CustomerForm";
-import { toast } from "sonner";
+import { useState } from "react";
 import { SaleConfirmModal } from "./SaleConfirmDialog";
 
 interface Props {
@@ -32,12 +27,7 @@ interface Props {
 function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
-  const [customer, setCustomer] = useState<CustomerFormValues>({
-    customerType: "walk-in",
-  });
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  const formRef = useRef<any>(null);
 
   const updateQuantity = (id: string, quantity: number, max: number) => {
     if (quantity < 0) return;
@@ -75,8 +65,6 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
           )}
         </div>
       </div>
-
-      <CustomerForm formRef={formRef} />
 
       {/* Cart Items */}
       <ScrollArea className="flex-1">
@@ -209,13 +197,6 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
         <Button
           className="w-full h-9 font-semibold text-sm"
           onClick={() => {
-            const values = formRef?.current?.getValues();
-
-            if (values.customerType === "customer" && !values.phoneNumber) {
-              toast.error("Please enter customer's phone number");
-              return;
-            }
-            setCustomer(values);
             setConfirmOpen(true);
           }}
         >
@@ -228,7 +209,6 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         cart={cart}
-        customer={customer}
         onConfirm={() => {
           setCart([]);
           localStorage.removeItem("sell-cart");

@@ -29,7 +29,13 @@ export default function AccountSelect({
       <Label>Selected Account</Label>
 
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="mt-1 w-2/3">
+        <SelectTrigger
+          defaultValue={
+            accounts?.data?.find((acc) => acc.type === "cash")?._id ||
+            accounts?.data?.[0]?._id
+          }
+          className="mt-1 w-2/3"
+        >
           <SelectValue placeholder="Select account" />
         </SelectTrigger>
 

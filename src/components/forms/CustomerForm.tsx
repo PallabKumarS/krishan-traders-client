@@ -35,10 +35,6 @@ export function CustomerForm({ formRef }: Props) {
   return (
     <div className="p-4 border-b space-y-4">
       <div>
-        <Label className="text-sm font-semibold mb-2 block">
-          Customer Type
-        </Label>
-
         <Controller
           control={control}
           name="customerType"

@@ -3,22 +3,25 @@
 
 import { Button } from "@/components/ui/button";
 import { CartItem } from "./cart-utils";
-import { CustomerFormValues } from "@/components/forms/CustomerForm";
+import {
+  CustomerForm,
+  CustomerFormValues,
+} from "@/components/forms/CustomerForm";
 import { Modal } from "@/components/shared/Modal";
 import { toast } from "sonner";
 import { TSell } from "@/types/sell.type";
 import { directlySellStock } from "@/services/SellService";
 import { createSellStockRequest } from "@/services/RequestService";
 import { useUser } from "@/providers/ContextProvider";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AccountSelect from "./AccountSelect";
 import { TAccount } from "@/types/account.type";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   cart: CartItem[];
-  customer: CustomerFormValues;
   onConfirm: () => void;
   accountPromise: Promise<{ data: TAccount[] }>;
 }
@@ -27,15 +30,22 @@ export function SaleConfirmModal({
   open,
   onOpenChange,
   cart,
-  customer,
   onConfirm,
   accountPromise,
 }: Props) {
   const [accountId, setAccountId] = useState<string | null>(null);
   const { user } = useUser();
+  const formRef = useRef<any>(null);
 
   const handleConfirmSale = async () => {
     const toastId = toast.loading("Processing sale...");
+
+    const values: CustomerFormValues = formRef?.current?.getValues();
+
+    if (values.customerType === "customer" && !values.phoneNumber) {
+      toast.error("Please enter customer's phone number");
+      return;
+    }
 
     const payload: TSell = {
       accountId: accountId || "",
@@ -44,13 +54,13 @@ export function SaleConfirmModal({
         quantity: item.quantity,
       })),
       soldTo:
-        customer.customerType === "walk-in"
+        values.customerType === "walk-in"
           ? "walk-in"
           : {
-              phoneNumber: customer.phoneNumber!,
-              name: customer.name || "",
-              email: customer.email || "",
-              address: customer.address || "",
+              phoneNumber: values.phoneNumber!,
+              name: values.name || "",
+              email: values.email || "",
+              address: values.address || "",
             },
     };
 
@@ -109,19 +119,13 @@ export function SaleConfirmModal({
             <span>৳{total.toFixed(2)}</span>
           </div>
 
+          <Separator />
+
           {/* Customer Info */}
           <div className="text-sm space-y-1">
             <p className="font-semibold">Customer Info</p>
-            {customer.customerType === "walk-in" ? (
-              <p>Walk-in Customer</p>
-            ) : (
-              <>
-                <p>Phone: {customer.phoneNumber}</p>
-                <p>Name: {customer.name || "-"}</p>
-                <p>Email: {customer.email || "-"}</p>
-                <p>Address: {customer.address || "-"}</p>
-              </>
-            )}
+
+            <CustomerForm formRef={formRef} />
           </div>
 
           {/* Account select */}
