@@ -4,6 +4,10 @@ export * from "./stock.types";
 export * from "./company.types";
 export * from "./size.types";
 export * from "./product.types";
+export * from "./requests.type";
+export * from "./account.type";
+export * from "./account-transactions.type";
+export * from "./sell.type";
 
 export type TMeta = {
   page: number;

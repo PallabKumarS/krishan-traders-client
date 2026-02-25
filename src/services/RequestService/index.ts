@@ -2,6 +2,7 @@
 "use server";
 
 import { getValidToken } from "@/lib/verifyToken";
+import { TSellBody } from "@/types";
 import { updateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
 
@@ -87,7 +88,7 @@ export const getAllSellStockRequests = async () => {
   }
 };
 
-export const createSellStockRequest = async (data: FieldValues) => {
+export const createSellStockRequest = async (data: TSellBody) => {
   try {
     const res = await fetch(`${process.env.BASE_API}/requests/sell-stock`, {
       method: "POST",
@@ -125,6 +126,24 @@ export const acceptSellStockRequest = async (
     updateTag("sale-requests");
     updateTag("sales");
     updateTag("records");
+
+    return await res.json();
+  } catch (error: any) {
+    return error;
+  }
+};
+
+export const getSingleSellRequest = async (id: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.BASE_API}/requests/sell-stock/${id}`,
+      {
+        next: { tags: ["sale-requests"] },
+        headers: {
+          Authorization: await getValidToken(),
+        },
+      },
+    );
 
     return await res.json();
   } catch (error: any) {

@@ -33,7 +33,7 @@ const sellSchema = new Schema<TSell>(
       required: true,
     },
 
-    createdBy: {
+    soldBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,

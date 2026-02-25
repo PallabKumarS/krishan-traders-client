@@ -9,11 +9,11 @@ import {
 } from "@/components/forms/CustomerForm";
 import { Modal } from "@/components/shared/Modal";
 import { toast } from "sonner";
-import { TSell } from "@/types/sell.type";
+import { TSellBody } from "@/types/sell.type";
 import { directlySellStock } from "@/services/SellService";
 import { createSellStockRequest } from "@/services/RequestService";
 import { useUser } from "@/providers/ContextProvider";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import AccountSelect from "./AccountSelect";
 import { TAccount } from "@/types/account.type";
 import { Separator } from "@/components/ui/separator";
@@ -33,9 +33,9 @@ export function SaleConfirmModal({
   onConfirm,
   accountPromise,
 }: Props) {
-  const [accountId, setAccountId] = useState<string | null>(null);
   const { user } = useUser();
   const formRef = useRef<any>(null);
+  const accountFormRef = useRef<any>(null);
 
   const handleConfirmSale = async () => {
     const toastId = toast.loading("Processing sale...");
@@ -47,8 +47,8 @@ export function SaleConfirmModal({
       return;
     }
 
-    const payload: TSell = {
-      accountId: accountId || "",
+    const payload: TSellBody = {
+      accountId: accountFormRef?.current?.getValues().accountId || "",
       stocks: cart.map((item) => ({
         stock: item.stock._id,
         quantity: item.quantity,
@@ -73,6 +73,10 @@ export function SaleConfirmModal({
       if (res.success) {
         toast.success("Sale completed successfully", { id: toastId });
         onConfirm();
+        window.open(
+          `/dashboard/staff/invoice/${user?.role === "admin" ? "sell" : "request"}/${res.data._id}`,
+          "_blank",
+        );
       } else {
         toast.error(res.message || "Failed to complete sale", { id: toastId });
       }
@@ -132,8 +136,7 @@ export function SaleConfirmModal({
           <div>
             <AccountSelect
               accountsPromise={accountPromise}
-              onChange={setAccountId}
-              value={accountId || ""}
+              formRef={accountFormRef}
             />
           </div>
 

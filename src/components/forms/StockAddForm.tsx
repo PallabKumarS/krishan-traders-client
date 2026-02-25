@@ -35,7 +35,7 @@ import { getAllProductsByCompany } from "@/services/ProductService";
 import { getSizesByProduct } from "@/services/SizeService";
 import { DatePickerInput } from "../ui/date-picker-input";
 import { DragDropUploader } from "../shared/DragDropUploader";
-import { createSellStockRequest } from "@/services/RequestService";
+import { createAddStockRequest } from "@/services/RequestService";
 
 const formSchema = z.object({
   imgUrl: z.string(),
@@ -151,7 +151,7 @@ export default function StockAddForm({
         ? await updateStock(stockData?._id as string, payload)
         : user?.role === "admin"
           ? await directlyAddStock(payload)
-          : await createSellStockRequest(payload);
+          : await createAddStockRequest(payload);
 
       if (res.success) {
         toast.success(res.message, { id: toastId });

@@ -5,6 +5,23 @@ import { handleApiError } from "@/server/errors/handleApiError";
 import { connectDB } from "@/lib/connectDB";
 import { SaleRequestService } from "@/server/modules/sale-requests/sale-requests.service";
 
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    await connectDB();
+    await requireAuth(request, ["admin"]);
+
+    const result = await SaleRequestService.getSingleSaleRequest((await params).id);
+
+    return Response.json({
+      success: true,
+      message: "Sale request retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

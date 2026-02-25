@@ -159,7 +159,7 @@ const createSellIntoDB = async (
           totalProfit,
           soldTo,
           accountId,
-          createdBy: user._id,
+          soldBy: user._id,
         },
       ],
       { session },
@@ -178,13 +178,17 @@ const createSellIntoDB = async (
 };
 
 const getAllSalesFromDB = async () => {
-  return await SellModel.find().populate("accountId").populate("createdBy");
+  return await SellModel.find()
+    .populate("accountId")
+    .populate("soldBy")
+    .populate("stocks.stock");
 };
 
 const getSingleSaleFromDB = async (id: string) => {
   return await SellModel.findById(id)
     .populate("accountId")
-    .populate("createdBy");
+    .populate("soldBy")
+    .populate("stocks.stock");
 };
 
 const deleteSaleFromDB = async (id: string) => {

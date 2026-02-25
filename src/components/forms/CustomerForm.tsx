@@ -4,6 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RefObject } from "react";
 
 export type CustomerFormValues = {
   customerType: "walk-in" | "customer";
@@ -15,7 +16,7 @@ export type CustomerFormValues = {
 
 interface Props {
   // biome-ignore lint/suspicious/noExplicitAny: <>
-  formRef: React.MutableRefObject<any>;
+  formRef: RefObject<any>;
 }
 
 export function CustomerForm({ formRef }: Props) {

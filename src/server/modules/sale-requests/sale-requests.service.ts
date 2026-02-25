@@ -23,7 +23,7 @@ const getAllSaleRequests = async () => {
 };
 
 const acceptSaleRequest = async (id: string, status: string) => {
-  const request = await SaleRequestModel.findById(id);
+  const request = await SaleRequestModel.findById(id).populate("requestedBy");
 
   if (!request) throw new AppError(httpStatus.NOT_FOUND, "Request not found");
 
@@ -48,8 +48,16 @@ const acceptSaleRequest = async (id: string, status: string) => {
   return sale;
 };
 
+const getSingleSaleRequest = async (id: string) => {
+  return SaleRequestModel.findById(id)
+    .populate("requestedBy")
+    .populate("stocks.stock")
+    .sort("-createdAt");
+};
+
 export const SaleRequestService = {
   createSaleRequest,
   getAllSaleRequests,
   acceptSaleRequest,
+  getSingleSaleRequest,
 };

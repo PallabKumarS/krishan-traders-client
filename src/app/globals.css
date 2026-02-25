@@ -172,3 +172,14 @@
 .grouped-table td:not(:last-child) {
   border-right: 1px solid hsl(var(--border)) !important;
 }
+
+/* Print Style */
+@media print {
+  body {
+    background: white;
+  }
+
+  button {
+    display: none !important;
+  }
+}

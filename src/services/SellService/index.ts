@@ -2,7 +2,7 @@
 "use server";
 
 import { getValidToken } from "@/lib/verifyToken";
-import { TSell } from "@/types/sell.type";
+import { TSellBody } from "@/types/sell.type";
 import { updateTag } from "next/cache";
 import { FieldValues } from "react-hook-form";
 
@@ -97,11 +97,11 @@ export const deleteSell = async (id: string) => {
   }
 };
 
-export const directlySellStock = async (payload: TSell) => {
+export const directlySellStock = async (payload: TSellBody) => {
   const token = await getValidToken();
 
   try {
-    const res = await fetch(`${process.env.BASE_API}/sell`, {
+    const res = await fetch(`${process.env.BASE_API}/sells`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

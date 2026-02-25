@@ -26,6 +26,10 @@ export type TSell = {
       };
 
   accountId: Types.ObjectId;
+  soldBy: Types.ObjectId;
 
-  createdBy: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+  _id: Types.ObjectId;
+  __v: number;
 };
