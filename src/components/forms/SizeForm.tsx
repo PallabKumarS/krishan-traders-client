@@ -30,8 +30,8 @@ import {
 } from "../ui/select";
 
 const formSchema = z.object({
-  productId: z.string().min(1, "Product is required"),
-  label: z.string().min(1, "Size label is required"),
+  product: z.string().min(1, "Product is required"),
+  label: z.string().optional(),
   unit: z.enum(["ml", "gm", "kg", "ltr"]),
   unitQuantity: z.coerce.number().min(1, "Quantity must be greater than 0"),
   stackCount: z.coerce.number().min(0, "Stack count cannot be negative"),
@@ -62,7 +62,7 @@ export default function SizeForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      productId: sizeData?.product?._id || selectedProduct?._id || "",
+      product: sizeData?.product?._id || selectedProduct?._id || "",
       label: sizeData?.label || "",
       unit: sizeData?.unit || "gm",
       unitQuantity: sizeData?.unitQuantity || 1,
@@ -74,6 +74,7 @@ export default function SizeForm({
   });
 
   async function onSubmit(values: FormValues) {
+    console.log("hit");
     setLoading(true);
 
     const toastId = toast.loading(edit ? "Updating size..." : "Adding size...");
@@ -82,7 +83,7 @@ export default function SizeForm({
       const payload = edit
         ? values
         : {
-            productId: values.productId,
+            product: values.product,
             unit: values.unit,
             unitQuantity: values.unitQuantity,
             stackCount: values.stackCount,
@@ -113,7 +114,7 @@ export default function SizeForm({
         {/* Product */}
         <FormField
           control={form.control}
-          name="productId"
+          name="product"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Product</FormLabel>
@@ -259,7 +260,12 @@ export default function SizeForm({
           />
         )}
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={loading}
+          onClick={() => console.log("hit in the button")}
+        >
           {loading ? <ButtonLoader /> : edit ? "Update Size" : "Add Size"}
         </Button>
       </form>

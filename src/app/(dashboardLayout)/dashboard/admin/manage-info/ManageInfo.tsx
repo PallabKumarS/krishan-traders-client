@@ -139,7 +139,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   }, [products, sizesByProduct]);
 
   const handleDeleteSize = async (id: string) => {
-    const toastId = toast.loading("Deleting user...");
+    const toastId = toast.loading("Deleting size...");
 
     try {
       const res = await deleteSize(id);
@@ -480,6 +480,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
               selectedProduct={selectedProduct}
               onSuccess={() => {
                 fetchSizes();
+                setSelectedProduct(null);
               }}
             />
           )
