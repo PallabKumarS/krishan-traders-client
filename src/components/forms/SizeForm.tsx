@@ -155,7 +155,7 @@ export default function SizeForm({
             name="unitQuantity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Unit Quantity</FormLabel>
+                <FormLabel>Pack Size</FormLabel>
                 <FormControl>
                   <Input type="number" min={1} {...field} />
                 </FormControl>
