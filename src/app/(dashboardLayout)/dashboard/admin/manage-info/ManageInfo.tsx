@@ -225,7 +225,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
     },
     {
       key: "unitQuantity",
-      title: "Unit Quantity",
+      title: "Pack Size",
       sortable: true,
       render: (_value: any, row: any) =>
         row._id === "empty" ? "—" : `${row.unitQuantity} ${row.unit}`,
