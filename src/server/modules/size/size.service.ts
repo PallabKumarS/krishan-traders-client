@@ -26,6 +26,7 @@ const getSizeByProductFromDB = async (productId: string) => {
 // create size
 const createSizeIntoDB = async (payload: Partial<TSize>) => {
   const label = `${payload.unitQuantity} ${payload.unit} X ${payload.stackCount}`;
+
   return SizeModel.create({
     ...payload,
     label,
@@ -46,7 +47,7 @@ const updateSizeIntoDB = async (id: string, payload: Partial<TSize>) => {
       ...payload,
       ...(label ? { label } : {}),
     },
-    { new: true }
+    { new: true },
   );
 };
 

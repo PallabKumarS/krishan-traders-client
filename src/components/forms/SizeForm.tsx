@@ -34,9 +34,9 @@ const formSchema = z.object({
   label: z.string().optional(),
   unit: z.enum(["ml", "gm", "kg", "ltr"]),
   unitQuantity: z.coerce.number().min(1, "Quantity must be greater than 0"),
-  stackCount: z.coerce.number().min(0, "Stack count cannot be negative"),
-  buyingPrice: z.coerce.number().min(0).optional(),
-  sellingPrice: z.coerce.number().min(0).optional(),
+  stackCount: z.coerce.number().min(1, "Stack must be greater than 0"),
+  buyingPrice: z.coerce.number().min(1),
+  sellingPrice: z.coerce.number().min(1),
   isActive: z.boolean().optional(),
 });
 
@@ -80,14 +80,7 @@ export default function SizeForm({
     const toastId = toast.loading(edit ? "Updating size..." : "Adding size...");
 
     try {
-      const payload = edit
-        ? values
-        : {
-            product: values.product,
-            unit: values.unit,
-            unitQuantity: values.unitQuantity,
-            stackCount: values.stackCount,
-          };
+      const payload = values;
 
       const res = edit
         ? await updateSize(sizeData!._id, payload)
@@ -260,11 +253,7 @@ export default function SizeForm({
           />
         )}
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={loading}
-        >
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading ? <ButtonLoader /> : edit ? "Update Size" : "Add Size"}
         </Button>
       </form>
