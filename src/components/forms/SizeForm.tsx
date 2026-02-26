@@ -264,7 +264,6 @@ export default function SizeForm({
           type="submit"
           className="w-full"
           disabled={loading}
-          onClick={() => console.log("hit in the button")}
         >
           {loading ? <ButtonLoader /> : edit ? "Update Size" : "Add Size"}
         </Button>
