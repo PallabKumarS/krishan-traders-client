@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash, Plus, Minus } from "lucide-react";
-import { CartItem } from "./cart-utils";
+import { CartItem, saveCart } from "./cart-utils";
 import { useState } from "react";
 import { SaleConfirmModal } from "./SaleConfirmDialog";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +53,7 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
 
   const removeItem = (id: string) => {
     setCart((prev) => prev.filter((item) => item.stock._id !== id));
+    saveCart(cart.filter((item) => item.stock._id !== id));
   };
 
   const total = cart.reduce(
@@ -185,6 +186,7 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
                     </Button>
                   </div>
 
+                  {/* Price Input */}
                   <Input
                     className="w-32 h-8 text-center text-sm font-semibold border-border/50 focus-visible:ring-primary/30 rounded"
                     type="number"
