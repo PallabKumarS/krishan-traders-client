@@ -17,6 +17,7 @@ import { useRef } from "react";
 import AccountSelect from "./AccountSelect";
 import { TAccount } from "@/types/account.type";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   open: boolean;
@@ -108,9 +109,12 @@ export function SaleConfirmModal({
                 key={item.stock._id}
                 className="flex justify-between text-sm"
               >
-                <span>
-                  {item.stock.size.product.name} × {item.quantity}
-                </span>
+                <p className="flex justify-between gap-5">
+                  <span>
+                    {item.stock.size.product.name} × {item.quantity}
+                  </span>
+                  <Badge variant={"outline"}>{item.stock.size.label}</Badge>
+                </p>
                 <span>
                   ৳{(item.quantity * item.newSellingPrice).toFixed(2)}
                 </span>

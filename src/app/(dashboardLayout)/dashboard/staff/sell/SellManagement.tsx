@@ -120,6 +120,11 @@ export default function SellManagement({
                     {stock.size.product.name}
                   </p>
 
+                  {/* Product Company name */}
+                  <p className="font-semibold text-sm leading-tight text-muted-foreground group-hover:text-primary/50 transition-colors duration-200">
+                    {stock.size.product.company.name}
+                  </p>
+
                   {/* Price — most prominent */}
                   <p className="text-xl font-bold text-primary tracking-tight">
                     ৳ {stock.sellingPrice}

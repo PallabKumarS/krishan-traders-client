@@ -101,7 +101,7 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
                     <span className="text-sm text-muted-foreground">
                       {item.stock.size.product.company.name}
                     </span>
-                    <Badge>{item.stock.size.label}</Badge>
+                    <Badge variant={"outline"}>{item.stock.size.label}</Badge>
                   </p>
                   <Button
                     size="icon"
