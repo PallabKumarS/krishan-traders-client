@@ -4,6 +4,7 @@ export interface TSaleRequest extends Document {
   stocks: {
     stock: Types.ObjectId;
     quantity: number;
+    sellingPrice: number;
   }[];
 
   soldTo:

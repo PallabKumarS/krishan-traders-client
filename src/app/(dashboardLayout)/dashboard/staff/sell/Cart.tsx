@@ -15,6 +15,7 @@ import { Trash, Plus, Minus } from "lucide-react";
 import { CartItem } from "./cart-utils";
 import { useState } from "react";
 import { SaleConfirmModal } from "./SaleConfirmDialog";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   open: boolean;
@@ -26,17 +27,24 @@ interface Props {
 
 function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingValue, setEditingValue] = useState("");
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [editingValue, setEditingValue] = useState<string>("");
+  const [editingPriceId, setEditingPriceId] = useState<string>("");
+  const [editingPriceValue, setEditingPriceValue] = useState<number>(0);
+  const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
 
-  const updateQuantity = (id: string, quantity: number, max: number) => {
+  const updateQuantity = (
+    id: string,
+    quantity: number,
+    max: number,
+    newSellingPrice: number,
+  ) => {
     if (quantity < 0) return;
 
     setCart((prev) =>
       prev
         .map((item) =>
           item.stock._id === id
-            ? { ...item, quantity: Math.min(quantity, max) }
+            ? { ...item, quantity: Math.min(quantity, max), newSellingPrice }
             : item,
         )
         .filter((item) => item.quantity > 0),
@@ -48,7 +56,7 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
   };
 
   const total = cart.reduce(
-    (acc, item) => acc + item.quantity * item.stock.sellingPrice,
+    (acc, item) => acc + item.quantity * item.newSellingPrice,
     0,
   );
 
@@ -76,7 +84,7 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
           )}
 
           {cart.map((item) => {
-            const lineTotal = item.stock.sellingPrice * item.quantity;
+            const lineTotal = item.newSellingPrice * item.quantity;
 
             return (
               <div
@@ -85,8 +93,14 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
               >
                 {/* Name + Remove */}
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium leading-snug text-foreground flex-1">
-                    {item.stock.size.product.name}
+                  <p className=" flex flex-col gap-1 justify-start">
+                    <span className="text-sm font-medium leading-snug text-foreground">
+                      {item.stock.size.product.name}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {item.stock.size.product.company.name}
+                    </span>
+                    <Badge>{item.stock.size.label}</Badge>
                   </p>
                   <Button
                     size="icon"
@@ -111,6 +125,7 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
                           item.stock._id,
                           item.quantity - 1,
                           item.stock.quantity,
+                          item.newSellingPrice,
                         )
                       }
                     >
@@ -136,12 +151,14 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
                             item.stock._id,
                             0,
                             item.stock.quantity,
+                            item.newSellingPrice,
                           );
                         } else {
                           updateQuantity(
                             item.stock._id,
                             num,
                             item.stock.quantity,
+                            item.newSellingPrice,
                           );
                         }
                         setEditingId(null);
@@ -160,12 +177,51 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
                           item.stock._id,
                           item.quantity + 1,
                           item.stock.quantity,
+                          item.newSellingPrice,
                         )
                       }
                     >
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
+
+                  <Input
+                    className="w-32 h-8 text-center text-sm font-semibold border-border/50 focus-visible:ring-primary/30 rounded"
+                    type="number"
+                    value={
+                      editingPriceId === item.stock._id
+                        ? editingPriceValue
+                        : item.newSellingPrice
+                    }
+                    onFocus={() => {
+                      setEditingPriceId(item.stock._id);
+                      setEditingPriceValue(item.newSellingPrice);
+                    }}
+                    onChange={(e) =>
+                      setEditingPriceValue(Number(e.target.value))
+                    }
+                    onBlur={() => {
+                      const num = Number(editingPriceValue);
+                      if (!editingPriceValue || num <= 0) {
+                        updateQuantity(
+                          item.stock._id,
+                          0,
+                          item.stock.quantity,
+                          0,
+                        );
+                      } else {
+                        updateQuantity(
+                          item.stock._id,
+                          item.quantity,
+                          item.stock.quantity,
+                          num,
+                        );
+                      }
+                      setEditingId(null);
+                    }}
+                    min={0}
+                    max={item.stock.quantity}
+                  />
 
                   {/* Per-unit + line total */}
                   <div className="text-right">

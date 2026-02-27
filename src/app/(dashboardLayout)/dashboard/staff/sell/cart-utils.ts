@@ -5,6 +5,7 @@ import { TStock } from "@/types";
 export interface CartItem {
   stock: TStock;
   quantity: number;
+  newSellingPrice: number;
 }
 
 const CART_KEY = "sell-cart";

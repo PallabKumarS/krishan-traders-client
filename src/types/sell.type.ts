@@ -34,7 +34,7 @@ export type TSell = {
 };
 
 export type TSellBody = {
-  stocks: { quantity: number; stock: string }[] | [];
+  stocks: { quantity: number; stock: string; sellingPrice: number }[] | [];
   soldTo:
     | {
         name?: string;

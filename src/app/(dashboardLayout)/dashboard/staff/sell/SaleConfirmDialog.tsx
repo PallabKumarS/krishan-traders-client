@@ -52,6 +52,7 @@ export function SaleConfirmModal({
       stocks: cart.map((item) => ({
         stock: item.stock._id,
         quantity: item.quantity,
+        sellingPrice: item.newSellingPrice,
       })),
       soldTo:
         values.customerType === "walk-in"
@@ -88,7 +89,7 @@ export function SaleConfirmModal({
   };
 
   const total = cart.reduce(
-    (acc, item) => acc + item.quantity * item.stock.sellingPrice,
+    (acc, item) => acc + item.quantity * item.newSellingPrice,
     0,
   );
 
@@ -111,7 +112,7 @@ export function SaleConfirmModal({
                   {item.stock.size.product.name} × {item.quantity}
                 </span>
                 <span>
-                  ৳{(item.quantity * item.stock.sellingPrice).toFixed(2)}
+                  ৳{(item.quantity * item.newSellingPrice).toFixed(2)}
                 </span>
               </div>
             ))}

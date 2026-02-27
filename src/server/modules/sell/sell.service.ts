@@ -15,7 +15,7 @@ import AccountTransactionModel from "../accountTransactions/transactions.model";
 const createSellIntoDB = async (
   user: TUser,
   payload: {
-    stocks: { stock: string; quantity: number }[];
+    stocks: { stock: string; quantity: number, sellingPrice: number }[];
     soldTo:
       | string
       | {
@@ -65,7 +65,7 @@ const createSellIntoDB = async (
         );
       }
 
-      const sellingPrice = stockData.sellingPrice;
+      const sellingPrice = item.sellingPrice;
       const buyingPrice = stockData.buyingPrice;
 
       const profit = (sellingPrice - buyingPrice) * item.quantity;

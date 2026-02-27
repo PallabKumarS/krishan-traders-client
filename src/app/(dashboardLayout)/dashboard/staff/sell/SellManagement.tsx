@@ -58,7 +58,10 @@ export default function SellManagement({
       const exists = prev.find((i) => i.stock._id === stock._id);
 
       if (!exists && quantity > 0) {
-        return [...prev, { stock, quantity }];
+        return [
+          ...prev,
+          { stock, quantity, newSellingPrice: stock.sellingPrice },
+        ];
       }
 
       if (exists) {
@@ -67,7 +70,11 @@ export default function SellManagement({
 
         return prev.map((i) =>
           i.stock._id === stock._id
-            ? { ...i, quantity: Math.min(quantity, stock.quantity) }
+            ? {
+                ...i,
+                quantity: Math.min(quantity, stock.quantity),
+                newSellingPrice: i.newSellingPrice,
+              }
             : i,
         );
       }
