@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 const formSchema = z.object({
   name: z
@@ -127,26 +128,38 @@ export default function ProductForm({
         <FormField
           control={form.control}
           name="company"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company</FormLabel>
-              <Select onValueChange={(value) => field.onChange(value)}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select company" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {companies.map((company) => (
-                    <SelectItem key={company._id} value={company._id}>
-                      {company.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            // biome-ignore lint/correctness/useHookAtTopLevel: <>
+            const wheelProps = useWheelSelectRHF({
+              options: companies.map((c) => c._id),
+              value: field.value,
+              onChange: field.onChange,
+            });
+
+            return (
+              <FormItem>
+                <FormLabel>Company</FormLabel>
+                <Select
+                  onValueChange={(value) => field.onChange(value)}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full" {...wheelProps}>
+                      <SelectValue placeholder="Select company" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {companies.map((company) => (
+                      <SelectItem key={company._id} value={company._id}>
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         {/* Status toggle (edit only) */}

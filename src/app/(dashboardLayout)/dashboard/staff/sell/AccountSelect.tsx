@@ -11,6 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { TAccount } from "@/types/account.type";
 import { Controller, useForm } from "react-hook-form";
+import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 interface Props {
   accountsPromise: Promise<{ data: TAccount[] }>;
@@ -41,36 +42,45 @@ export default function AccountSelect({ accountsPromise, formRef }: Props) {
       <Controller
         control={control}
         name="accountId"
-        render={({ field }) => (
-          <Select
-            onValueChange={field.onChange}
-            defaultValue={field.value}
-            {...register("accountId")}
-          >
-            <SelectTrigger className="mt-1 w-2/3">
-              <SelectValue placeholder="Select account" />
-            </SelectTrigger>
+        render={({ field }) => {
+          // biome-ignore lint/correctness/useHookAtTopLevel: <>
+          const wheelProps = useWheelSelectRHF({
+            options: accounts?.data?.map((acc) => acc._id) || [],
+            value: field.value,
+            onChange: field.onChange,
+          });
 
-            <SelectContent>
-              {accounts?.data?.map((acc) => (
-                <SelectItem
-                  defaultChecked={acc.type === "cash"}
-                  key={acc._id}
-                  value={acc._id}
-                >
-                  <div className="flex justify-between w-full gap-4">
-                    <span>
-                      {acc.name} ({acc.type})
-                    </span>
-                    <span className="text-muted-foreground">
-                      ৳{acc.currentBalance}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+          return (
+            <Select
+              onValueChange={field.onChange}
+              value={field.value}
+              {...register("accountId")}
+            >
+              <SelectTrigger className="mt-1 w-2/3" {...wheelProps}>
+                <SelectValue placeholder="Select account" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {accounts?.data?.map((acc) => (
+                  <SelectItem
+                    defaultChecked={acc.type === "cash"}
+                    key={acc._id}
+                    value={acc._id}
+                  >
+                    <div className="flex justify-between w-full gap-4">
+                      <span>
+                        {acc.name} ({acc.type})
+                      </span>
+                      <span className="text-muted-foreground">
+                        ৳{acc.currentBalance}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        }}
       />
     </div>
   );

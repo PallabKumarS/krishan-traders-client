@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useHookAtTopLevel: <> */
 "use client";
 
 import { useState } from "react";
@@ -28,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 const formSchema = z.object({
   product: z.string().min(1, "Product is required"),
@@ -41,6 +43,8 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+const units = ["ml", "gm", "kg", "ltr"];
 
 interface SizeFormProps {
   edit?: boolean;
@@ -74,7 +78,6 @@ export default function SizeForm({
   });
 
   async function onSubmit(values: FormValues) {
-    console.log("hit");
     setLoading(true);
 
     const toastId = toast.loading(edit ? "Updating size..." : "Adding size...");
@@ -108,26 +111,36 @@ export default function SizeForm({
         <FormField
           control={form.control}
           name="product"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product</FormLabel>
-              <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a product..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((product) => (
-                      <SelectItem key={product._id} value={product._id}>
-                        {product.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const productIds = products.map((p) => p._id);
+
+            const wheelProps = useWheelSelectRHF({
+              options: productIds,
+              value: field.value,
+              onChange: field.onChange,
+              loop: true,
+            });
+            return (
+              <FormItem>
+                <FormLabel>Product</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full" {...wheelProps}>
+                      <SelectValue placeholder="Select a product..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products.map((product) => (
+                        <SelectItem key={product._id} value={product._id}>
+                          {product.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         {/* Label */}
@@ -167,25 +180,35 @@ export default function SizeForm({
           <FormField
             control={form.control}
             name="unit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Unit</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select unit..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ml">ml</SelectItem>
-                      <SelectItem value="gm">gm</SelectItem>
-                      <SelectItem value="kg">kg</SelectItem>
-                      <SelectItem value="ltr">ltr</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const wheelProps = useWheelSelectRHF({
+                options: units,
+                value: field.value,
+                onChange: field.onChange,
+              });
+
+              return (
+                <FormItem>
+                  <FormLabel>Unit</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full" {...wheelProps}>
+                        <SelectValue placeholder="Select unit..." />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {units.map((unit) => (
+                          <SelectItem key={unit} value={unit}>
+                            {unit}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </div>
 

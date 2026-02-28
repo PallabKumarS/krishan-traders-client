@@ -36,11 +36,12 @@ import { getSizesByProduct } from "@/services/SizeService";
 import { DatePickerInput } from "../ui/date-picker-input";
 import { DragDropUploader } from "../shared/DragDropUploader";
 import { createAddStockRequest } from "@/services/RequestService";
+import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 const formSchema = z.object({
   imgUrl: z.string(),
-  productId: z.string().min(1, "Product is required"),
-  sizeId: z.string().min(1, "Size is required"),
+  product: z.string().min(1, "Product is required"),
+  size: z.string().min(1, "Size is required"),
 
   quantity: z.coerce.number().min(1),
   buyingPrice: z.coerce.number().min(0),
@@ -74,8 +75,8 @@ export default function StockAddForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       imgUrl: stockData?.imgUrl ?? "",
-      productId: stockData?.size?.product?._id ?? "",
-      sizeId: stockData?.size?._id ?? "",
+      product: stockData?.size?.product?._id ?? "",
+      size: stockData?.size?._id ?? "",
       quantity: stockData?.quantity ?? 1,
       buyingPrice: stockData?.buyingPrice ?? 0,
       sellingPrice: stockData?.sellingPrice ?? 0,
@@ -85,8 +86,8 @@ export default function StockAddForm({
     },
   });
 
-  const productId = form.watch("productId");
-  const sizeId = form.watch("sizeId");
+  const productId = form.watch("product");
+  const sizeId = form.watch("size");
 
   // fetch products by company
   const fetchProducts = async () => {
@@ -99,6 +100,7 @@ export default function StockAddForm({
       console.error(err);
     }
   };
+
   useEffect(() => {
     fetchProducts();
   }, [selectedCompany]);
@@ -137,7 +139,7 @@ export default function StockAddForm({
     if (!size) return;
 
     const payload = {
-      size: values.sizeId,
+      size: values.size,
       quantity: values.quantity * size.stackCount,
       buyingPrice: values.buyingPrice,
       sellingPrice: values.sellingPrice,
@@ -196,53 +198,75 @@ export default function StockAddForm({
           {/* Product */}
           <FormField
             control={form.control}
-            name="productId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Product</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl className="w-full">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select product" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {products.map((p) => (
-                      <SelectItem key={p._id} value={p._id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            name="product"
+            render={({ field }) => {
+              // biome-ignore lint/correctness/useHookAtTopLevel: <>
+              const wheelProps = useWheelSelectRHF({
+                options: products.map((p) => p._id),
+                value: field.value,
+                onChange: field.onChange,
+              });
+
+              return (
+                <FormItem>
+                  <FormLabel>Product</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl className="w-full">
+                      <SelectTrigger className="" {...wheelProps}>
+                        <SelectValue placeholder="Select product" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {products.map((p) => (
+                        <SelectItem key={p._id} value={p._id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           {/* Size */}
           <FormField
             control={form.control}
-            name="sizeId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Size</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl className="w-full">
-                    <SelectTrigger disabled={!productId || isSizeLoading}>
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {sizes.map((s) => (
-                      <SelectItem key={s._id} value={s._id}>
-                        {s.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
+            name="size"
+            render={({ field }) => {
+              // biome-ignore lint/correctness/useHookAtTopLevel: <>
+              const wheelProps = useWheelSelectRHF({
+                options: sizes.map((s) => s._id),
+                value: field.value,
+                onChange: field.onChange,
+              });
+
+              return (
+                <FormItem>
+                  <FormLabel>Size</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl className="w-full">
+                      <SelectTrigger
+                        disabled={!productId || isSizeLoading}
+                        className=""
+                        {...wheelProps}
+                      >
+                        <SelectValue placeholder="Select size" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {sizes.map((s) => (
+                        <SelectItem key={s._id} value={s._id}>
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </div>
 

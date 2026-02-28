@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 const schema = z.object({
   accountId: z.string().min(1),
@@ -74,24 +75,36 @@ export default function TransactionForm({
         <FormField
           control={form.control}
           name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Transaction Type</FormLabel>
-              <FormControl>
-                <Select onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full max-w-full capitalize">
-                    <SelectValue placeholder="Select a type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="credit">Credit (+)</SelectItem>
-                      <SelectItem value="debit">Debit (-)</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-            </FormItem>
-          )}
+          render={({ field }) => {
+            // biome-ignore lint/correctness/useHookAtTopLevel: <>
+            const wheelProps = useWheelSelectRHF({
+              options: ["credit", "debit"],
+              value: field.value,
+              onChange: field.onChange,
+            });
+
+            return (
+              <FormItem>
+                <FormLabel>Transaction Type</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className="w-full max-w-full capitalize"
+                      {...wheelProps}
+                    >
+                      <SelectValue placeholder="Select a type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="credit">Credit (+)</SelectItem>
+                        <SelectItem value="debit">Debit (-)</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
@@ -110,31 +123,42 @@ export default function TransactionForm({
         <FormField
           control={form.control}
           name="reason"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Transaction Reason</FormLabel>
-              <FormControl>
-                <Select onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full max-w-full capitalize">
-                    <SelectValue placeholder="Select a reason" />
-                  </SelectTrigger>
-                  <SelectContent className="capitalize">
-                    <SelectGroup>
-                      {accountTransactionReasons.map((reason) => (
-                        <SelectItem
-                          className="capitalize"
-                          key={reason}
-                          value={reason}
-                        >
-                          {reason}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-            </FormItem>
-          )}
+          render={({ field }) => {
+            // biome-ignore lint/correctness/useHookAtTopLevel: <>
+            const wheelProps = useWheelSelectRHF({
+              options: [...accountTransactionReasons],
+              value: field.value,
+              onChange: field.onChange,
+            });
+            return (
+              <FormItem>
+                <FormLabel>Transaction Reason</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      className="w-full max-w-full capitalize"
+                      {...wheelProps}
+                    >
+                      <SelectValue placeholder="Select a reason" />
+                    </SelectTrigger>
+                    <SelectContent className="capitalize">
+                      <SelectGroup>
+                        {accountTransactionReasons.map((reason) => (
+                          <SelectItem
+                            className="capitalize"
+                            key={reason}
+                            value={reason}
+                          >
+                            {reason}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            );
+          }}
         />
 
         <Button className="w-full" disabled={loading}>

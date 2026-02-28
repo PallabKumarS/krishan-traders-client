@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import ButtonLoader from "@/components/shared/ButtonLoader";
 import { TAccount } from "@/types/account.type";
 import { createAccount, updateAccount } from "@/services/Account";
+import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 const formSchema = z.object({
   name: z.string().min(1, "Account name is required"),
@@ -96,23 +97,31 @@ export default function AccountForm({
         <FormField
           control={form.control}
           name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Account Type</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="mobile-bank">Mobile Bank</SelectItem>
-                  <SelectItem value="bank">Bank</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
+          render={({ field }) => {
+            // biome-ignore lint/correctness/useHookAtTopLevel: <>
+            const wheelProps = useWheelSelectRHF({
+              options: ["cash", "mobile-bank", "bank"],
+              value: field.value,
+              onChange: field.onChange,
+            });
+            return (
+              <FormItem>
+                <FormLabel>Account Type</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="" {...wheelProps}>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="mobile-bank">Mobile Bank</SelectItem>
+                    <SelectItem value="bank">Bank</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            );
+          }}
         />
 
         {(type === "mobile-bank" || type === "bank") && (
