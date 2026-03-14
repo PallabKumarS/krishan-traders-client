@@ -12,12 +12,12 @@ import { Button } from "@/components/ui/button";
 
 const layout = ({ children }: { children: ReactNode }) => {
 	return (
-		<SidebarProvider className="flex min-h-screen print:min-h-0 overflow-x-hidden">
+		<SidebarProvider className="flex min-h-screen print:min-h-0 print:h-auto overflow-x-hidden">
 			{/* Add overflow-x-hidden */}
 			<div className="no-print">
 				<AppSidebar />
 			</div>
-			<SidebarInset className="overflow-x-hidden print:min-h-0">
+			<SidebarInset className="overflow-x-hidden print:min-h-0 print:m-0 print:p-0 print:border-none print:shadow-none">
 				{/* Add overflow-x-hidden */}
 				<div className="flex items-center justify-between border-b px-4 py-2 no-print">
 					<SidebarTrigger />
