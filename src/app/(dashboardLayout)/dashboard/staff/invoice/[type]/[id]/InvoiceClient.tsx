@@ -4,6 +4,7 @@ import { TSell, TStock, TStockSellRequest } from "@/types";
 import { use } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 const InvoiceClient = ({
   promise,
@@ -45,49 +46,10 @@ const InvoiceClient = ({
   };
 
   return (
-    <div className="bg-white min-h-screen print:min-h-0 print:h-auto p-10 print:p-0 print:bg-white">
-      <style jsx global>{`
-        @media print {
-          @page {
-            margin: 0;
-            size: auto;
-          }
-          body {
-            background-color: white !important;
-            print-color-adjust: exact;
-          }
-          * {
-            box-shadow: none !important;
-            border-color: transparent !important;
-          }
-          .thermal-content {
-            width: 80mm !important;
-            padding: 5mm !important;
-            margin: 0 auto !important;
-            border: none !important;
-            font-size: 10px !important;
-            min-height: 0 !important;
-            background: white !important;
-          }
-          .thermal-content h1 { font-size: 16px !important; margin: 0 !important; }
-          .thermal-content h2 { font-size: 14px !important; margin: 0 !important; }
-          .thermal-content p { margin: 2px 0 !important; }
-          .thermal-table, .thermal-table * {
-            border-color: #000 !important;
-          }
-          .thermal-table { border-bottom: 1px dashed #ccc !important; margin-bottom: 10px !important; }
-          .thermal-table th { border-bottom: 1px solid #000 !important; }
-          .print-header {
-          display:flex !important;
-          flex-direction:column-reverse !important;
-          align-items:start !important;
-          gap:5px !important;
-          }
+    <div className="min-h-screen print:min-h-0 print:h-auto p-10 print:p-0 print:bg-white print:text-black print:p-0">
 
-          .no-print { display: none !important; }
-        }
-      `}</style>
-      <div className="max-w-4xl mx-auto border p-8 print:border-none thermal-content">
+  {/* 🔹 Invoice Container */}
+      <div className="max-w-4xl mx-auto border p-8 print:border-none thermal-content print:p-0">
         {/* 🔹 Pending Badge */}
         {isRequest && (
           <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm inline-block mb-4 no-print">
@@ -142,7 +104,7 @@ const InvoiceClient = ({
           <tbody>
             {items.map((item, index) => (
               <tr key={index} className="">
-                <td className="p-2 align-top print:text-xs  whitespace-nowrap">{item.name} <Badge variant={"outline"} className="text-xs print:text-[10px] h-4 px-1">{item.label}</Badge></td>
+                <td className="p-2 align-top print:text-xs  whitespace-nowrap">{item.name} <Badge variant={"outline"} className="text-xs print:text-[9px] h-4 px-1 print:bg-transparent print:text-black">{item.label}</Badge></td>
                 <td className="text-center p-2 w-[1%] whitespace-nowrap align-top print:text-xs">{item.quantity}</td>
                 <td className="text-right p-2 w-[1%] whitespace-nowrap align-top print:text-xs">৳{item.price}</td>
                 <td className="text-right p-2 w-[1%] whitespace-nowrap align-top print:text-xs">৳{item.total.toFixed(2)}</td>
@@ -151,9 +113,11 @@ const InvoiceClient = ({
           </tbody>
         </table>
 
+      <Separator className="mb-2" />
+
         {/* 🔹 Summary */}
         <div className="flex justify-end">
-          <div className="w-64 space-y-2">
+          <div className="w-64">
             <div className="flex justify-between font-semibold">
               <span>Total</span>
               <span>৳{totalAmount.toFixed(2)}</span>

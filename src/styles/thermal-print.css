@@ -1,0 +1,108 @@
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  body, html {
+    background-color: white !important;
+    color: black !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Global Suppressions for Dark Mode Print */
+  *, *:before, *:after {
+    background-color: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #eee !important; /* Default for separators/borders */
+  }
+
+  /* Specific containers that MUST be white */
+  body, 
+  html, 
+  [data-slot="sidebar-wrapper"], 
+  [data-slot="sidebar-inset"],
+  .thermal-content {
+    background-color: white !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  /* Thermal Receipt Specifics */
+  .thermal-content {
+    width: 80mm !important;
+    padding: 5mm !important;
+    margin: 0 auto !important;
+    border: none !important;
+    font-size: 10px !important;
+    min-height: 0 !important;
+    background: white !important;
+  }
+
+  .thermal-content h1 {
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  .thermal-content h2 {
+    font-size: 14px !important;
+    margin: 0 !important;
+  }
+
+  .thermal-content p {
+    margin: 2px 0 !important;
+  }
+
+  .thermal-table,
+  .thermal-table * {
+    border-color: #000 !important;
+  }
+
+  .thermal-table {
+    border-bottom: 1px dashed #ccc !important;
+    margin-bottom: 10px !important;
+  }
+
+  .thermal-table th {
+    border-bottom: 1px solid #000 !important;
+  }
+
+  .thermal-table,
+  .thermal-table th,
+  .thermal-table td,
+  .thermal-table tr {
+    border: none !important;
+    border-color: #000 !important;
+  }
+
+  /* Force separator visibility */
+  [data-slot="separator"], 
+  hr,
+  .border-b,
+  .border-t {
+    border-color: #000 !important;
+    background-color: #000 !important;
+    opacity: 1 !important;
+  }
+
+  .print-header {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    align-items: start !important;
+    gap: 5px !important;
+  }
+}

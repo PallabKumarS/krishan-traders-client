@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../styles/thermal-print.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -173,27 +174,3 @@
   border-right: 1px solid hsl(var(--border)) !important;
 }
 
-/* Print Style */
-@media print {
-  body, html {
-    background: white !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-
-  * {
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  .no-print {
-    display: none !important;
-  }
-
-  button {
-    display: none !important;
-  }
-}
