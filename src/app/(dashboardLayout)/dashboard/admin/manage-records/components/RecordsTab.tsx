@@ -46,6 +46,7 @@ export default function RecordsTab({ recordsPromise }: RecordsTabProps) {
     {
       accessorKey: "type",
       header: "Type",
+      enableSorting: false,
       cell: ({ row }) => {
         const type = row.original.type;
         return (
@@ -62,6 +63,7 @@ export default function RecordsTab({ recordsPromise }: RecordsTabProps) {
       accessorKey: "size.product.name",
       id: "product_name",
       header: "Product",
+      enableSorting: false,
       cell: ({ row }) => (
         <div className="flex flex-col items-center">
           <span className="font-medium text-center">{row.original.size.product.name}</span>
@@ -74,20 +76,24 @@ export default function RecordsTab({ recordsPromise }: RecordsTabProps) {
     {
       accessorKey: "quantity",
       header: "Qty",
+      enableSorting: false,
     },
     {
       accessorKey: "buyingPrice",
       header: "Buy Price",
+      enableSorting: false,
       cell: ({ row }) => <span>৳{row.original.buyingPrice}</span>,
     },
     {
       accessorKey: "sellingPrice",
       header: "Sell Price",
+      enableSorting: false,
       cell: ({ row }) => <span>৳{row.original.sellingPrice}</span>,
     },
     {
       accessorKey: "profit",
       header: "Profit",
+      enableSorting: false,
       cell: ({ row }) => (
         <span className={row.original.profit >= 0 ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
           ৳{row.original.profit.toFixed(2)}
@@ -96,14 +102,18 @@ export default function RecordsTab({ recordsPromise }: RecordsTabProps) {
     },
     {
       accessorKey: "interactedBy.name",
+      id: "By",
       header: "By",
+      enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => (
         <span className="text-xs">{row.original.interactedBy?.name || "N/A"}</span>
       ),
     },
     {
-      id: "actions",
+      id: "Actions",
       header: "Actions",
+      enableHiding: false,
       cell: ({ row }) => (
         <ConfirmationBox
           trigger={
@@ -123,6 +133,7 @@ export default function RecordsTab({ recordsPromise }: RecordsTabProps) {
         columns={columns}
         data={records}
         searchKey="product_name"
+        enableColumnToggle
         enablePagination
       />
     </div>

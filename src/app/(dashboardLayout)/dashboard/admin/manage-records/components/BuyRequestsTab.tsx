@@ -46,6 +46,7 @@ export default function BuyRequestsTab({ buyRequestsPromise }: BuyRequestsTabPro
       accessorKey: "size.product.name",
       id: "product_name",
       header: "Product",
+      enableSorting: false,
       cell: ({ row }) => (
         <div className="flex flex-col items-center">
           <span className="font-medium text-center">{row.original.size.product.name}</span>
@@ -58,20 +59,24 @@ export default function BuyRequestsTab({ buyRequestsPromise }: BuyRequestsTabPro
     {
       accessorKey: "quantity",
       header: "Qty",
+      enableSorting: false,
     },
     {
       accessorKey: "buyingPrice",
       header: "Buy Price",
+      enableSorting: false,
       cell: ({ row }) => <span>৳{row.original.buyingPrice}</span>,
     },
     {
       accessorKey: "sellingPrice",
       header: "Sell Price",
+      enableSorting: false,
       cell: ({ row }) => <span>৳{row.original.sellingPrice}</span>,
     },
     {
       accessorKey: "status",
       header: "Status",
+      enableSorting: false,
       cell: ({ row }) => {
         const status = row.original.status;
         return (
@@ -86,12 +91,16 @@ export default function BuyRequestsTab({ buyRequestsPromise }: BuyRequestsTabPro
     },
     {
       accessorKey: "requestedBy.name",
+      id: "By",
       header: "Requested By",
+      enableHiding: false,
+      enableSorting: false,
       cell: ({ row }) => <span className="text-xs">{row.original.requestedBy?.name || "N/A"}</span>,
     },
     {
-      id: "actions",
+      id: "Actions",
       header: "Actions",
+      enableHiding: false,
       cell: ({ row }) => {
         if (row.original.status !== "pending") return null;
         return (
@@ -124,6 +133,7 @@ export default function BuyRequestsTab({ buyRequestsPromise }: BuyRequestsTabPro
         columns={columns}
         data={requests}
         searchKey="product_name"
+        enableColumnToggle
         enablePagination
       />
     </div>

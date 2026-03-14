@@ -2,7 +2,8 @@
 
 import { use } from "react";
 import { TStockSellRequest } from "@/types";
-import { GroupedTable } from "@/components/ui/grouped-table";
+import { DataTable, SortableHeader } from "@/components/ui/data-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -31,72 +32,96 @@ export default function SaleRequestsTab({ saleRequestsPromise }: SaleRequestsTab
     }
   };
 
-  // Flatten data for GroupedTable if necessary, but GroupedTable seems to expect a flat array and handles grouping
-  // Looking at SaleRequest, it has an array of 'stocks'. GroupedTable might need one row per stock item.
+  // Flatten data for DataTable - since we're not using GroupedTable anymore, 
+  // we follow the user's request to make it look like Buy Requests tab.
+  // We'll show each individual stock item as a row, but grouped by Request Date/ID if needed manually or just listed.
+  // The user said "make sure the table is showing like the buy requests tab table"
   
   const flattenedData = requests.flatMap(req => 
     req.stocks.map(item => ({
       ...req,
-      _requestId: req._id, // Keep original ID for actions
+      _requestId: req._id,
       stockItem: item.stock,
-      quantity: item.quantity,
-      // Create a unique key for grouping that includes metadata
-      groupKey: `${req._id}_${req.createdAt}`
+      itemQuantity: item.quantity,
     }))
   );
 
-  const columns = [
+  const columns: ColumnDef<any>[] = [
     {
-      key: "groupKey",
-      title: "Request Info",
-      render: (_: any, row: any) => (
+      accessorKey: "createdAt",
+      header: ({ column }) => <SortableHeader column={column} title="Date" />,
+      cell: ({ row }) => (
+        <span className="text-xs">
+          {format(new Date(row.original.createdAt), "dd MMM HH:mm")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "stockItem.size.product.name",
+      id: "product_name",
+      header: "Product",
+      enableSorting: false,
+      cell: ({ row }) => (
         <div className="flex flex-col items-center">
-          <span className="text-xs font-bold">
-            {format(new Date(row.createdAt), "dd MMM HH:mm")}
-          </span>
-          <span className="text-[10px]">{row.requestedBy?.name}</span>
-          <Badge className="mt-1 scale-75 capitalize" variant={row.status === "pending" ? "outline" : row.status === "accepted" ? "default" : "destructive"}>
-            {row.status}
-          </Badge>
-        </div>
-      )
-    },
-    {
-      key: "stockItem.size.product.name",
-      title: "Product",
-      render: (_: any, row: any) => (
-        <div className="flex flex-col">
-          <span className="font-medium">{row.stockItem?.size?.product?.name}</span>
+          <span className="font-medium text-center">{row.original.stockItem?.size?.product?.name}</span>
           <span className="text-[10px] text-muted-foreground">
-            {row.stockItem?.size?.label} {row.stockItem?.size?.unit}
+            {row.original.stockItem?.size?.label} {row.original.stockItem?.size?.unit}
           </span>
         </div>
       )
     },
     {
-      key: "quantity",
-      title: "Qty"
+      accessorKey: "itemQuantity",
+      header: "Qty",
+      enableSorting: false,
     },
     {
-      key: "soldTo",
-      title: "Customer",
-      render: (val: any) => {
+      accessorKey: "soldTo",
+      header: "Customer",
+      enableSorting: false,
+      cell: ({ row }) => {
+          const val = row.original.soldTo;
           if(typeof val === 'string') return val;
           return val?.name || val?.phoneNumber || "Walk-in";
       }
     },
     {
-      key: "actions",
-      title: "Actions",
-      render: (_: any, row: any) => {
-        if (row.status !== "pending") return null;
+      accessorKey: "status",
+      header: "Status",
+      enableSorting: false,
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return (
+          <Badge
+            variant={status === "pending" ? "outline" : status === "accepted" ? "default" : "destructive"}
+            className="capitalize"
+          >
+            {status}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "requestedBy.name",
+      id: "By",
+      header: "By",
+      enableHiding: false,
+      enableSorting: false,
+      cell: ({ row }) => <span className="text-xs">{row.original.requestedBy?.name || "N/A"}</span>,
+    },
+    {
+      id: "Actions",
+      header: "Actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        if (row.original.status !== "pending") return null;
         return (
           <div className="flex items-center gap-2 justify-center">
             <Button
               variant="outline"
               size="sm"
               className="h-8 px-2 text-green-600 border-green-200"
-              onClick={() => handleAction(row._requestId, "accepted")}
+              onClick={() => handleAction(row.original._requestId, "accepted")}
             >
               <Check className="h-4 w-4 mr-1" /> Accept
             </Button>
@@ -104,7 +129,7 @@ export default function SaleRequestsTab({ saleRequestsPromise }: SaleRequestsTab
               variant="outline"
               size="sm"
               className="h-8 px-2 text-destructive border-destructive/20"
-              onClick={() => handleAction(row._requestId, "rejected")}
+              onClick={() => handleAction(row.original._requestId, "rejected")}
             >
               <X className="h-4 w-4 mr-1" /> Reject
             </Button>
@@ -116,11 +141,12 @@ export default function SaleRequestsTab({ saleRequestsPromise }: SaleRequestsTab
 
   return (
     <div className="space-y-4">
-      <GroupedTable
-        data={flattenedData}
+      <DataTable
         columns={columns}
-        groupBy="groupKey"
-        searchKeys={["stockItem.size.product.name", "requestedBy.name", "soldTo.name"]}
+        data={flattenedData}
+        searchKey="product_name"
+        enableColumnToggle
+        enablePagination
       />
     </div>
   );
