@@ -43,11 +43,11 @@
 
   /* Thermal Receipt Specifics */
   .thermal-content {
-    width: 80mm !important;
-    padding: 5mm !important;
+    width: 57mm !important;
+    padding: 2mm !important;
     margin: 0 auto !important;
     border: none !important;
-    font-size: 10px !important;
+    font-size: 9px !important;
     min-height: 0 !important;
     background: white !important;
   }

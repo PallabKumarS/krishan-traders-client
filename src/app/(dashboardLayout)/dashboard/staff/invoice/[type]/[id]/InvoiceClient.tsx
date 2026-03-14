@@ -60,7 +60,7 @@ const InvoiceClient = ({
         {/* 🔹 Header */}
         <div className="flex justify-between mb-8 print-header">
           <div className="text-left">
-            <h2 className="text-xl font-semibold">Invoice</h2>
+            <h2 className="text-lg font-semibold">Invoice</h2>
             <p className="text-sm text-muted-foreground whitespace-nowrap">
               Invoice ID: {data._id}
             </p>
@@ -70,7 +70,7 @@ const InvoiceClient = ({
           </div>
 
           <div className="text-right print:text-left">
-            <h1 className="text-2xl font-bold">Krishan Traders</h1>
+            <h1 className="text-xl font-bold">Krishan Traders</h1>
             <p className="text-sm text-muted-foreground no-print">Sales Invoice</p>
           </div>
         </div>
@@ -94,31 +94,36 @@ const InvoiceClient = ({
         <table className="w-full text-sm mb-6 thermal-table">
           <thead>
             <tr className="">
-              <th className="text-left p-2 w-full">Item</th>
-              <th className="text-center p-2 w-[1%] whitespace-nowrap">Qty</th>
-              <th className="text-right p-2 w-[1%] whitespace-nowrap">Price</th>
-              <th className="text-right p-2 w-[1%] whitespace-nowrap">Total</th>
+              <th className="text-left p-1 w-full">Item</th>
+              <th className="text-center p-1 w-[1%] whitespace-nowrap">Qty</th>
+              <th className="text-right p-1 w-[1%] whitespace-nowrap">Price</th>
+              <th className="text-right p-1 w-[1%] whitespace-nowrap">Total</th>
             </tr>
           </thead>
 
           <tbody>
             {items.map((item, index) => (
               <tr key={index} className="">
-                <td className="p-2 align-top print:text-xs  whitespace-nowrap">{item.name} <Badge variant={"outline"} className="text-xs print:text-[9px] h-4 px-1 print:bg-transparent print:text-black">{item.label}</Badge></td>
-                <td className="text-center p-2 w-[1%] whitespace-nowrap align-top print:text-xs">{item.quantity}</td>
-                <td className="text-right p-2 w-[1%] whitespace-nowrap align-top print:text-xs">৳{item.price}</td>
-                <td className="text-right p-2 w-[1%] whitespace-nowrap align-top print:text-xs">৳{item.total.toFixed(2)}</td>
+                <td className="p-1 align-top print:text-[8px] leading-tight whitespace-nowrap">
+                    <span>{item.name}</span>
+                    <Badge variant={"outline"} className="text-xs w-fit h-4 px-1 print:bg-transparent print:text-black border-black ml-1 print:text-[7px] print:h-3 print:mt-0.5">
+                      {item.label}
+                    </Badge>
+                </td>
+                <td className="text-center p-1 w-[1%] whitespace-nowrap align-top print:text-[8px]">{item.quantity}</td>
+                <td className="text-right p-1 w-[1%] whitespace-nowrap align-top print:text-[8px]">৳{item.price}</td>
+                <td className="text-right p-1 w-[1%] whitespace-nowrap align-top print:text-[8px]">৳{item.total.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-      <Separator className="mb-2" />
+      <Separator className="mb-2 print:mb-1" />
 
         {/* 🔹 Summary */}
         <div className="flex justify-end">
-          <div className="w-64">
-            <p className="flex justify-between font-semibold print:text-xs">
+          <div className="w-32">
+            <p className="flex justify-between font-semibold print:text-[9px]">
               <span>Total</span>
               <span>৳{totalAmount.toFixed(2)}</span>
             </p>
