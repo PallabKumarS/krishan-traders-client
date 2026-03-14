@@ -13,7 +13,7 @@ import { TSellBody } from "@/types/sell.type";
 import { directlySellStock } from "@/services/SellService";
 import { createSellStockRequest } from "@/services/RequestService";
 import { useUser } from "@/providers/ContextProvider";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import AccountSelect from "./AccountSelect";
 import { TAccount } from "@/types/account.type";
 import { Separator } from "@/components/ui/separator";
@@ -89,6 +89,20 @@ export function SaleConfirmModal({
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && open) {
+        e.preventDefault();
+        handleConfirmSale();
+      }
+    };
+
+    if (open) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, handleConfirmSale]);
+
   const total = cart.reduce(
     (acc, item) => acc + item.quantity * item.newSellingPrice,
     0,
@@ -101,7 +115,13 @@ export function SaleConfirmModal({
       onOpenChange={onOpenChange}
       trigger={null}
       content={
-        <div className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleConfirmSale();
+          }}
+          className="space-y-4"
+        >
           {/* Cart */}
           <div className="space-y-1">
             {cart.map((item) => (
@@ -109,12 +129,12 @@ export function SaleConfirmModal({
                 key={item.stock._id}
                 className="flex justify-between text-sm"
               >
-                <p className="flex justify-between gap-5">
+                <div className="flex justify-between gap-5">
                   <span>
                     {item.stock.size.product.name} × {item.quantity}
                   </span>
                   <Badge variant={"outline"}>{item.stock.size.label}</Badge>
-                </p>
+                </div>
                 <span>
                   ৳{(item.quantity * item.newSellingPrice).toFixed(2)}
                 </span>
@@ -145,10 +165,10 @@ export function SaleConfirmModal({
             />
           </div>
 
-          <Button className="w-full" onClick={handleConfirmSale}>
+          <Button type="submit" className="w-full">
             Confirm & Complete Sale
           </Button>
-        </div>
+        </form>
       }
     />
   );

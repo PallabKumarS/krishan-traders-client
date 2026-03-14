@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash, Plus, Minus } from "lucide-react";
-import { CartItem, saveCart } from "./cart-utils";
-import { useState } from "react";
+import { saveCart, type CartItem } from "./cart-utils";
+import { useEffect, useState } from "react";
 import { SaleConfirmModal } from "./SaleConfirmDialog";
 import { Badge } from "@/components/ui/badge";
 
@@ -31,6 +31,23 @@ function Cart({ open, onOpenChange, cart, setCart, accountPromise }: Props) {
   const [editingPriceId, setEditingPriceId] = useState<string>("");
   const [editingPriceValue, setEditingPriceValue] = useState<number>(0);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "Enter" &&
+        cart.length > 0 &&
+        !confirmOpen &&
+        (open || window.innerWidth >= 1280)
+      ) {
+        e.preventDefault();
+        setConfirmOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [cart, confirmOpen, open]);
 
   const updateQuantity = (
     id: string,
