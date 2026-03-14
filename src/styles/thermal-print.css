@@ -22,7 +22,6 @@
     color: black !important;
     box-shadow: none !important;
     text-shadow: none !important;
-    border-color: #eee !important; /* Default for separators/borders */
   }
 
   /* Specific containers that MUST be white */
@@ -90,7 +89,7 @@
   }
 
   /* Force separator visibility */
-  [data-slot="separator"], 
+  [data-slot="separator-root"], 
   hr,
   .border-b,
   .border-t {

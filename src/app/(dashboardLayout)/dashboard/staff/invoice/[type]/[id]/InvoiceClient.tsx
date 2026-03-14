@@ -118,10 +118,10 @@ const InvoiceClient = ({
         {/* 🔹 Summary */}
         <div className="flex justify-end">
           <div className="w-64">
-            <div className="flex justify-between font-semibold">
+            <p className="flex justify-between font-semibold print:text-xs">
               <span>Total</span>
               <span>৳{totalAmount.toFixed(2)}</span>
-            </div>
+            </p>
           </div>
         </div>
 
