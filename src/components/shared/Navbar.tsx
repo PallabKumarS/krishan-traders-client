@@ -33,7 +33,7 @@ export default function Navbar() {
   }, [user]);
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-30 py-2 shadow-sm">
+    <header className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-30 py-2 shadow-sm no-print">
       <nav className="max-w-[90%] min-h-[10vh] md:min-h-[7vh] mx-auto px-4 md:flex items-center justify-between gap-4">
         {/* Logo with hover effect */}
         <div

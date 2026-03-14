@@ -181,14 +181,36 @@ const getAllSalesFromDB = async () => {
   return await SellModel.find()
     .populate("accountId")
     .populate("soldBy")
-    .populate("stocks.stock");
+     .populate({
+      path: "stocks.stocks",
+      populate: {
+        path: "size",
+        populate: {
+          path: "product",
+           populate: {
+            path: "company",
+          },
+        },
+      },
+    });
 };
 
 const getSingleSaleFromDB = async (id: string) => {
   return await SellModel.findById(id)
     .populate("accountId")
     .populate("soldBy")
-    .populate("stocks.stock");
+     .populate({
+      path: "stocks.stock",
+      populate: {
+        path: "size",
+        populate: {
+          path: "product",
+           populate: {
+            path: "company",
+          },
+        },
+      },
+    });
 };
 
 const deleteSaleFromDB = async (id: string) => {

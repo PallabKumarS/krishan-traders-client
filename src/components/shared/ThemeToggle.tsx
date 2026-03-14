@@ -12,7 +12,7 @@ export function ThemeToggle() {
 
 	return (
 		<div
-			className="relative w-[1.5rem] h-[1.5rem] flex items-center justify-center overflow-hidden border-2 p-4 rounded-full"
+			className="relative w-[1.5rem] h-[1.5rem] flex items-center justify-center overflow-hidden border-2 p-4 rounded-full no-print"
 			onClick={() => setTheme(isDark ? "light" : "dark")}
 		>
 			<AnimatePresence mode="wait">

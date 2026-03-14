@@ -18,7 +18,18 @@ const createSaleRequest = async (
 const getAllSaleRequests = async () => {
   return SaleRequestModel.find()
     .populate("requestedBy")
-    .populate("stocks.stock")
+     .populate({
+      path: "stocks.stocks",
+      populate: {
+        path: "size",
+        populate: {
+          path: "product",
+           populate: {
+            path: "company",
+          },
+        },
+      },
+    })
     .sort("-createdAt");
 };
 
@@ -51,7 +62,18 @@ const acceptSaleRequest = async (id: string, status: string) => {
 const getSingleSaleRequest = async (id: string) => {
   return SaleRequestModel.findById(id)
     .populate("requestedBy")
-    .populate("stocks.stock")
+    .populate({
+      path: "stocks.stock",
+      populate: {
+        path: "size",
+        populate: {
+          path: "product",
+           populate: {
+            path: "company",
+          },
+        },
+      },
+    })
     .sort("-createdAt");
 };
 

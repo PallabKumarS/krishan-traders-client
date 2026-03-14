@@ -12,12 +12,14 @@ import { Button } from "@/components/ui/button";
 
 const layout = ({ children }: { children: ReactNode }) => {
 	return (
-		<SidebarProvider className="flex min-h-screen overflow-x-hidden">
+		<SidebarProvider className="flex min-h-screen print:min-h-0 overflow-x-hidden">
 			{/* Add overflow-x-hidden */}
-			<AppSidebar />
-			<SidebarInset className="overflow-x-hidden">
+			<div className="no-print">
+				<AppSidebar />
+			</div>
+			<SidebarInset className="overflow-x-hidden print:min-h-0">
 				{/* Add overflow-x-hidden */}
-				<div className="flex items-center justify-between border-b px-4 py-2">
+				<div className="flex items-center justify-between border-b px-4 py-2 no-print">
 					<SidebarTrigger />
 					<Link href="/">
 						<Button variant={"link"} size={"sm"}>
@@ -26,7 +28,7 @@ const layout = ({ children }: { children: ReactNode }) => {
 					</Link>
 					<ThemeToggle />
 				</div>
-				<div className="flex-1 p-4 min-h-screen overflow-x-hidden">
+				<div className="flex-1 p-4 min-h-screen print:min-h-0 overflow-x-hidden">
 					{/* Add overflow-x-hidden */}
 					{children}
 				</div>

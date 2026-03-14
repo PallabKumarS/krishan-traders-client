@@ -10,6 +10,7 @@ import { TStock } from "@/types";
 import { CartItem, loadCart, saveCart } from "./cart-utils";
 import Cart from "./Cart";
 import { TAccount } from "@/types/account.type";
+import { Badge } from "@/components/ui/badge";
 
 export default function SellManagement({
   stocksPromise,
@@ -124,6 +125,9 @@ export default function SellManagement({
                   <p className="font-semibold text-sm leading-tight text-muted-foreground group-hover:text-primary/50 transition-colors duration-200">
                     {stock.size.product.company.name}
                   </p>
+
+                  {/* Product Size */}
+                  <Badge className="text-xs leading-tight group-hover:text-primary transition-colors duration-200" variant="outline">{stock.size.label}</Badge>
 
                   {/* Price — most prominent */}
                   <p className="text-xl font-bold text-primary tracking-tight">
