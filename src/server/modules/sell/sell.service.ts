@@ -18,7 +18,7 @@ import CompanyModel from "../company/company.model";
 const createSellIntoDB = async (
   user: TUser,
   payload: {
-    stocks: { stock: string; quantity: number, sellingPrice: number }[];
+    stocks: { stock: string; quantity: number; sellingPrice: number }[];
     soldTo:
       | string
       | {
@@ -191,7 +191,7 @@ const getAllSalesFromDB = async () => {
   return await SellModel.find()
     .populate({ path: "accountId", model: AccountModel })
     .populate({ path: "soldBy", model: "User" })
-     .populate({
+    .populate({
       path: "stocks.stock",
       model: StockModel,
       populate: {
@@ -200,20 +200,21 @@ const getAllSalesFromDB = async () => {
         populate: {
           path: "product",
           model: ProductModel,
-           populate: {
+          populate: {
             path: "company",
             model: CompanyModel,
           },
         },
       },
-    });
+    })
+    .sort({ createdAt: -1 });
 };
 
 const getSingleSaleFromDB = async (id: string) => {
   return await SellModel.findById(id)
     .populate({ path: "accountId", model: AccountModel })
     .populate({ path: "soldBy", model: "User" })
-     .populate({
+    .populate({
       path: "stocks.stock",
       model: StockModel,
       populate: {
@@ -222,7 +223,7 @@ const getSingleSaleFromDB = async (id: string) => {
         populate: {
           path: "product",
           model: ProductModel,
-           populate: {
+          populate: {
             path: "company",
             model: CompanyModel,
           },
