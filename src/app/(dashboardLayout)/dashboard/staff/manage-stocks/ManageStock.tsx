@@ -23,8 +23,8 @@ import { clearCache, getCompaniesPromise, getStocksPromise } from "./utils";
 
 const ALL_COMPANY_ID = "all";
 
-// biome-ignore lint/correctness/noUnusedFunctionParameters: <>
 const ManageStock = ({
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
   query,
   initialCompaniesPromise,
   initialStocksPromise,
@@ -46,12 +46,10 @@ const ManageStock = ({
   const [stocksPromise, setStocksPromise] = useState(initialStocksPromise);
 
   // Update promises when dependencies change
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     setCompaniesPromise(getCompaniesPromise(refreshKey));
   }, [refreshKey]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
   useEffect(() => {
     setStocksPromise(getStocksPromise(selectedCompanyId, refreshKey));
   }, [selectedCompanyId, refreshKey]);
