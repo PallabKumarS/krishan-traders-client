@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
 import Link from "next/link";
-import { clearCache, getCompaniesPromise, getStocksPromise } from "./utils";
+import { clearCache, getCompaniesPromise, getStocksPromise, getStatsPromise } from "./utils";
 
 // TODO Error showing on development mode. Need to fix later.
 
@@ -28,10 +28,19 @@ const ManageStock = ({
   query,
   initialCompaniesPromise,
   initialStocksPromise,
+  initialStatsPromise,
 }: {
   query: Record<string, unknown>;
   initialCompaniesPromise: Promise<TCompany[]>;
   initialStocksPromise: Promise<TStock[]>;
+  initialStatsPromise: Promise<{
+    totalProducts: number;
+    itemsSold: number;
+    lowStockCount: number;
+    expiringSoonCount: number;
+    inventoryValue: number;
+    potentialRevenue: number;
+  }>;
 }) => {
   // Main data states
   const [refreshKey, setRefreshKey] = useState(0); // Key to force refresh
@@ -44,6 +53,7 @@ const ManageStock = ({
     initialCompaniesPromise,
   );
   const [stocksPromise, setStocksPromise] = useState(initialStocksPromise);
+  const [statsPromise, setStatsPromise] = useState(initialStatsPromise);
 
   // Update promises when dependencies change
   useEffect(() => {
@@ -52,10 +62,12 @@ const ManageStock = ({
 
   useEffect(() => {
     setStocksPromise(getStocksPromise(selectedCompanyId, refreshKey));
+    setStatsPromise(getStatsPromise(selectedCompanyId, refreshKey));
   }, [selectedCompanyId, refreshKey]);
 
   const companies = use(companiesPromise);
   const stocks = use(stocksPromise);
+  const stats = use(statsPromise);
 
   const selectedCompany = useMemo(() => {
     if (selectedCompanyId === ALL_COMPANY_ID) return null;
@@ -253,6 +265,53 @@ const ManageStock = ({
               </div>
             ))}
           </TabsList>
+          
+          {/* STATISTICS SUMMARY */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+            <div className="bg-accent/10 p-4 rounded-xl border border-accent/50 flex flex-col gap-1">
+              <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                <PillBottleIcon className="h-4 w-4" /> Products
+              </span>
+              <span className="text-2xl font-bold">{stats.totalProducts}</span>
+            </div>
+            
+            <div className="bg-accent/10 p-4 rounded-xl border border-accent/50 flex flex-col gap-1">
+              <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                <Boxes className="h-4 w-4" /> Items Sold
+              </span>
+              <span className="text-2xl font-bold">{stats.itemsSold}</span>
+            </div>
+
+            <div className={`p-4 rounded-xl border flex flex-col gap-1 ${stats.lowStockCount > 0 ? "bg-destructive/10 border-destructive/50" : "bg-accent/10 border-accent/50"}`}>
+              <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                <Plus className="h-4 w-4 rotate-45" /> Low Stock
+              </span>
+              <span className={`text-2xl font-bold ${stats.lowStockCount > 0 ? "text-destructive" : ""}`}>{stats.lowStockCount}</span>
+            </div>
+
+            <div className={`p-4 rounded-xl border flex flex-col gap-1 ${stats.expiringSoonCount > 0 ? "bg-orange-500/10 border-orange-500/50" : "bg-accent/10 border-accent/50"}`}>
+              <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                <Trash className="h-4 w-4" /> Expiring Soon
+              </span>
+              <span className={`text-2xl font-bold ${stats.expiringSoonCount > 0 ? "text-orange-500" : ""}`}>{stats.expiringSoonCount}</span>
+            </div>
+
+            <div className="bg-accent/10 p-4 rounded-xl border border-accent/50 flex flex-col gap-1">
+              <span className="text-sm text-muted-foreground font-medium flex items-center gap-2 text-green-600">
+                 Inventory Value
+              </span>
+              <span className="text-2xl font-bold font-mono">৳{stats.inventoryValue.toLocaleString()}</span>
+            </div>
+
+            <div className="bg-primary/10 p-4 rounded-xl border border-primary/50 flex flex-col gap-1">
+              <span className="text-sm text-muted-foreground font-medium flex items-center gap-2 text-primary">
+                 Est. Profit
+              </span>
+              <span className="text-2xl font-bold font-mono text-primary">
+                ৳{(stats.potentialRevenue - stats.inventoryValue).toLocaleString()}
+              </span>
+            </div>
+          </div>
 
           {/* add stock modal */}
           <div className="flex justify-end mb-3">

@@ -18,6 +18,12 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
 
   const pipeline: PipelineStage[] = [];
 
+  pipeline.push({
+    $match: {
+      quantity: { $gt: 0 },
+    },
+  });
+
   pipeline.push(
     // Stage 1: Join with the 'sizes' collection
     {
