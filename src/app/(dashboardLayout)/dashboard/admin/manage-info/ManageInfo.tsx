@@ -105,7 +105,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
     const map = new Map<string, TSize[]>();
 
     for (const size of sizes) {
-      const productId = size.product._id;
+      const productId = size.product?._id;
+      if (!productId) continue;
       if (!map.has(productId)) {
         map.set(productId, []);
       }
@@ -120,7 +121,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
     if (!products.length) return [];
 
     return products.flatMap((product) => {
-      const productSizes = sizesByProduct.get(product._id) ?? [];
+      const productSizes = sizesByProduct.get(product?._id) ?? [];
 
       // 🟡 No sizes → return ONE empty row
       if (productSizes.length === 0) {
