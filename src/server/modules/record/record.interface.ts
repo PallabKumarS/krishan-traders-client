@@ -19,6 +19,7 @@ export interface TRecord extends Document {
 
   profit: number;
   saleId?: Types.ObjectId;
+  transactionId?: Types.ObjectId;
 
   createdAt: Date;
   updatedAt: Date;

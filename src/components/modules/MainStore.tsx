@@ -12,7 +12,7 @@ import {
   TrendingUp,
   TrendingDown,
   DollarSign,
-  Package,
+  // Package,
   ShoppingBag,
 } from "lucide-react";
 import Link from "next/link";

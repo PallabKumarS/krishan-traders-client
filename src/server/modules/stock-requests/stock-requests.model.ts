@@ -12,7 +12,10 @@ const stockAddRequestSchema = new Schema<TStockAddRequest>(
 
     batchNo: String,
     imgUrl: String,
-
+    accountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+    },
     requestedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

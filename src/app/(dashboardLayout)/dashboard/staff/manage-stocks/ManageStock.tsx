@@ -17,7 +17,12 @@ import { Badge } from "@/components/ui/badge";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
 import Link from "next/link";
-import { clearCache, getCompaniesPromise, getStocksPromise, getStatsPromise } from "./utils";
+import {
+  clearCache,
+  getCompaniesPromise,
+  getStocksPromise,
+  getStatsPromise,
+} from "./utils";
 
 // TODO Error showing on development mode. Need to fix later.
 
@@ -48,6 +53,9 @@ const ManageStock = ({
     useState<string>(ALL_COMPANY_ID);
   const [editStock, setEditStock] = useState<TStock | null>(null);
 
+  // modal states
+  const [addStockModalOpen, setAddStockModalOpen] = useState(false);
+
   // Active promises state
   const [companiesPromise, setCompaniesPromise] = useState(
     initialCompaniesPromise,
@@ -73,8 +81,6 @@ const ManageStock = ({
     if (selectedCompanyId === ALL_COMPANY_ID) return null;
     return companies.find((c: TCompany) => c._id === selectedCompanyId) || null;
   }, [companies, selectedCompanyId]);
-
-
 
   // Function to handle stock deletion
   const handleDeleteStock = async (stockId: string) => {
@@ -129,7 +135,9 @@ const ManageStock = ({
         <p className="flex gap-2 items-center justify-center">
           <span className="flex items-center">
             <Boxes className="mr-2 h-4 w-4" />{" "}
-            {row.size?.stackCount ? Math.floor(row.quantity / row.size.stackCount) : row.quantity}
+            {row.size?.stackCount
+              ? Math.floor(row.quantity / row.size.stackCount)
+              : row.quantity}
           </span>{" "}
           |{" "}
           <span>
@@ -187,7 +195,9 @@ const ManageStock = ({
       render: (_value: TStock["stockedBy"]["name"], row: TStock) => (
         <Link href={"/dashboard/admin/manage-members"}>
           <p className="flex flex-col justify-center">
-            <span className="hover:underline">{row.stockedBy?.name ?? "Unknown"}</span>
+            <span className="hover:underline">
+              {row.stockedBy?.name ?? "Unknown"}
+            </span>
             <span className="text-muted-foreground">
               ({new Date(row.stockedDate).toDateString()})
             </span>
@@ -232,9 +242,7 @@ const ManageStock = ({
       <Suspense fallback={<LoadingData />}>
         <Tabs value={selectedCompanyId} onValueChange={setSelectedCompanyId}>
           {/* COMPANY TABS */}
-          <TabsList
-            className="flex flex-wrap gap-5 h-full border mb-3"
-          >
+          <TabsList className="flex flex-wrap gap-5 h-full border mb-3">
             {/* ALL COMPANIES TAB */}
             <div
               className={`flex items-center min-w-60 border border-accent rounded-xl ${
@@ -265,50 +273,71 @@ const ManageStock = ({
               </div>
             ))}
           </TabsList>
-          
+
           {/* STATISTICS SUMMARY */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
             <div className="bg-accent/10 p-4 rounded-xl border border-accent/50 flex flex-col gap-1">
               <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
                 <PillBottleIcon className="h-4 w-4" /> Products
               </span>
-              <span className="text-2xl font-bold">{stats?.totalProducts ?? 0}</span>
+              <span className="text-2xl font-bold">
+                {stats?.totalProducts ?? 0}
+              </span>
             </div>
-            
+
             <div className="bg-accent/10 p-4 rounded-xl border border-accent/50 flex flex-col gap-1">
               <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
                 <Boxes className="h-4 w-4" /> Items Sold
               </span>
-              <span className="text-2xl font-bold">{stats?.itemsSold ?? 0}</span>
+              <span className="text-2xl font-bold">
+                {stats?.itemsSold ?? 0}
+              </span>
             </div>
 
-            <div className={`p-4 rounded-xl border flex flex-col gap-1 ${(stats?.lowStockCount ?? 0) > 0 ? "bg-destructive/10 border-destructive/50" : "bg-accent/10 border-accent/50"}`}>
+            <div
+              className={`p-4 rounded-xl border flex flex-col gap-1 ${(stats?.lowStockCount ?? 0) > 0 ? "bg-destructive/10 border-destructive/50" : "bg-accent/10 border-accent/50"}`}
+            >
               <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
                 <Plus className="h-4 w-4 rotate-45" /> Low Stock
               </span>
-              <span className={`text-2xl font-bold ${(stats?.lowStockCount ?? 0) > 0 ? "text-destructive" : ""}`}>{stats?.lowStockCount ?? 0}</span>
+              <span
+                className={`text-2xl font-bold ${(stats?.lowStockCount ?? 0) > 0 ? "text-destructive" : ""}`}
+              >
+                {stats?.lowStockCount ?? 0}
+              </span>
             </div>
 
-            <div className={`p-4 rounded-xl border flex flex-col gap-1 ${(stats?.expiringSoonCount ?? 0) > 0 ? "bg-orange-500/10 border-orange-500/50" : "bg-accent/10 border-accent/50"}`}>
+            <div
+              className={`p-4 rounded-xl border flex flex-col gap-1 ${(stats?.expiringSoonCount ?? 0) > 0 ? "bg-orange-500/10 border-orange-500/50" : "bg-accent/10 border-accent/50"}`}
+            >
               <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
                 <Trash className="h-4 w-4" /> Expiring Soon
               </span>
-              <span className={`text-2xl font-bold ${(stats?.expiringSoonCount ?? 0) > 0 ? "text-orange-500" : ""}`}>{stats?.expiringSoonCount ?? 0}</span>
+              <span
+                className={`text-2xl font-bold ${(stats?.expiringSoonCount ?? 0) > 0 ? "text-orange-500" : ""}`}
+              >
+                {stats?.expiringSoonCount ?? 0}
+              </span>
             </div>
 
             <div className="bg-accent/10 p-4 rounded-xl border border-accent/50 flex flex-col gap-1">
               <span className="text-sm text-muted-foreground font-medium flex items-center gap-2 text-green-600">
-                 Inventory Value
+                Inventory Value
               </span>
-              <span className="text-2xl font-bold font-mono">৳{(stats?.inventoryValue ?? 0).toLocaleString()}</span>
+              <span className="text-2xl font-bold font-mono">
+                ৳{(stats?.inventoryValue ?? 0).toLocaleString()}
+              </span>
             </div>
 
             <div className="bg-primary/10 p-4 rounded-xl border border-primary/50 flex flex-col gap-1">
               <span className="text-sm text-muted-foreground font-medium flex items-center gap-2 text-primary">
-                 Est. Profit
+                Est. Profit
               </span>
               <span className="text-2xl font-bold font-mono text-primary">
-                ৳{((stats?.potentialRevenue ?? 0) - (stats?.inventoryValue ?? 0)).toLocaleString()}
+                ৳
+                {(
+                  (stats?.potentialRevenue ?? 0) - (stats?.inventoryValue ?? 0)
+                ).toLocaleString()}
               </span>
             </div>
           </div>
@@ -316,6 +345,8 @@ const ManageStock = ({
           {/* add stock modal */}
           <div className="flex justify-end mb-3">
             <Modal
+              open={addStockModalOpen}
+              onOpenChange={setAddStockModalOpen}
               title="Add Stock"
               trigger={
                 <Button className="w-60">
@@ -327,7 +358,7 @@ const ManageStock = ({
                 <StockAddForm
                   selectedCompany={selectedCompany}
                   onSuccess={() => {
-                    // Force refresh by incrementing the key
+                    setAddStockModalOpen(false);
                     clearCache();
                     setRefreshKey((prev) => prev + 1);
                   }}
@@ -337,7 +368,6 @@ const ManageStock = ({
           </div>
 
           <TabsContent value={selectedCompanyId}>
-
             <GroupedTable
               data={stocks}
               columns={stockColumns}

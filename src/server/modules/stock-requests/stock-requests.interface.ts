@@ -10,6 +10,7 @@ export interface TStockAddRequest extends Document {
 
   batchNo?: string;
   imgUrl?: string;
+  accountId?: Types.ObjectId;
 
   requestedBy: Types.ObjectId;
 

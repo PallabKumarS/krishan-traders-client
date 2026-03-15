@@ -37,11 +37,11 @@ const ManageInfo = ({
   // Main data states
   const [refreshKey, setRefreshKey] = useState(0); // Key to force refresh
   const [selectedCompanyId, setSelectedCompanyId] =
-    useState<string>(ALL_COMPANY_ID);
+  useState<string>(ALL_COMPANY_ID);
   const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
-
+  
   // modal states
-  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addCompanyModalOpen, setAddCompanyModalOpen] = useState(false);
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
 
   // edit data states
@@ -345,12 +345,12 @@ const ManageInfo = ({
                   onSuccess={() => {
                     clearCache();
                     setRefreshKey((prev) => prev + 1);
-                    setAddModalOpen(false);
+                    setAddCompanyModalOpen(false);
                   }}
                 />
               }
-              open={addModalOpen}
-              onOpenChange={setAddModalOpen}
+              open={addCompanyModalOpen}
+              onOpenChange={setAddCompanyModalOpen}
             />
           </TabsList>
 
@@ -372,6 +372,7 @@ const ManageInfo = ({
                       companies={companies}
                       selectedCompany={selectedCompany!}
                       onSuccess={() => {
+                        setAddProductModalOpen(false);
                         clearCache();
                         setRefreshKey((prev) => prev + 1);
                       }}

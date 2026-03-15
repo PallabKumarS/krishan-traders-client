@@ -4,6 +4,8 @@ import StockModel from "../stock/stock.model";
 import RecordModel from "../record/record.model";
 import StockAddRequestModel from "./stock-requests.model";
 import { TStockAddRequest } from "./stock-requests.interface";
+import AccountModel from "../account/account.model";
+import AccountTransactionModel from "../accountTransactions/transactions.model";
 import { AppError } from "@/server/errors/AppError";
 import { TUser } from "../user/user.interface";
 
@@ -56,6 +58,34 @@ const acceptStockAddRequest = async (id: string, status: string) => {
       await stock.save({ session });
     }
 
+    const totalAmount = request.buyingPrice * request.quantity;
+    const transactionId = new mongoose.Types.ObjectId();
+
+    if (request.accountId) {
+      const account = await AccountModel.findById(request.accountId).session(
+        session,
+      );
+      if (!account)
+        throw new AppError(httpStatus.NOT_FOUND, "Account not found");
+
+      account.currentBalance -= totalAmount;
+      await account.save({ session });
+
+      await AccountTransactionModel.create(
+        [
+          {
+            _id: transactionId,
+            accountId: request.accountId,
+            type: "debit",
+            amount: totalAmount,
+            reason: "purchase",
+            note: `Stock add request accepted: ${request.batchNo || "N/A"}`,
+          },
+        ],
+        { session },
+      );
+    }
+
     await RecordModel.create(
       [
         {
@@ -69,6 +99,7 @@ const acceptStockAddRequest = async (id: string, status: string) => {
           interactedBy: request.requestedBy,
           type: "stock_in",
           profit: 0,
+          transactionId: request.accountId ? transactionId : undefined,
         },
       ],
       { session },

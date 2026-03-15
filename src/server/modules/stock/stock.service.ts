@@ -9,6 +9,8 @@ import ProductModel from "../product/product.model";
 import CompanyModel from "../company/company.model";
 import RecordModel from "../record/record.model";
 import UserModel from "../user/user.model";
+import AccountModel from "../account/account.model";
+import AccountTransactionModel from "../accountTransactions/transactions.model";
 
 // get all stock
 const getAllStockFromDB = async (query?: Record<string, unknown>) => {
@@ -203,7 +205,7 @@ const getAllStockByCompanyFromDB = async (companyId: string) => {
   ]);
 };
 
-const addStockInDB = async (payload: Partial<TStock>) => {
+const addStockInDB = async (payload: any) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -237,12 +239,44 @@ const addStockInDB = async (payload: Partial<TStock>) => {
         throw new AppError(httpStatus.NOT_FOUND, "Failed to add stock.");
       }
     }
+
+    const totalAmount = (payload.buyingPrice ?? 0) * (payload.quantity ?? 0);
+    const transactionId = new mongoose.Types.ObjectId();
+
+    if (payload.accountId) {
+      const account = await AccountModel.findById(payload.accountId).session(
+        session,
+      );
+      if (!account)
+        throw new AppError(httpStatus.NOT_FOUND, "Account not found");
+
+      account.currentBalance -= totalAmount;
+      await account.save({ session });
+
+      await AccountTransactionModel.create(
+        [
+          {
+            _id: transactionId,
+            accountId: payload.accountId,
+            type: "debit",
+            amount: totalAmount,
+            reason: "purchase",
+            note: `Direct stock add: ${payload.batchNo || "N/A"}`,
+          },
+        ],
+        { session },
+      );
+    }
+
+    const { accountId, ...stockPayload } = payload;
+
     const newRecord = await RecordModel.create(
       [
         {
-          ...payload,
+          ...stockPayload,
           type: "stock_in",
           interactedBy: payload.stockedBy,
+          transactionId: payload.accountId ? transactionId : undefined,
         },
       ],
       { session },

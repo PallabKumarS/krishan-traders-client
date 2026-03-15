@@ -6,7 +6,7 @@ import { SellService } from "@/server/modules/sell/sell.service";
 export async function GET(request: Request) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin"]);
+    await requireAuth(request, ["admin","subAdmin"]);
 
     const result = await SellService.getAllSalesFromDB();
 
@@ -16,6 +16,7 @@ export async function GET(request: Request) {
       data: result,
     });
   } catch (error) {
+    console.log(error);
     return handleApiError(error);
   }
 }
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin"]);
+    await requireAuth(request, ["admin","subAdmin"]);
 
     const body = await request.json();
     const user = request.user;

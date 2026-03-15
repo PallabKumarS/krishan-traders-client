@@ -10,7 +10,7 @@ export async function GET(
 ) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin"]);
+    await requireAuth(request, ["admin","subAdmin"]);
 
     const data = await SellService.getSingleSaleFromDB((await params).id);
 
@@ -30,7 +30,7 @@ export async function DELETE(
 ) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin"]);
+    await requireAuth(request, ["admin","subAdmin"]);
 
     await SellService.deleteSaleFromDB((await params).id);
 

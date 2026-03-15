@@ -38,6 +38,10 @@ const recordSchema = new Schema<TRecord>(
       type: Schema.Types.ObjectId,
       ref: "Sell",
     },
+    transactionId: {
+      type: Schema.Types.ObjectId,
+      ref: "AccountTransaction",
+    },
   },
   { timestamps: true },
 );

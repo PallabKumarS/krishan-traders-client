@@ -4,6 +4,10 @@ import SaleRequestModel from "./sale-requests.model";
 import { AppError } from "@/server/errors/AppError";
 import { TUser } from "../user/user.interface";
 import { TSaleRequest } from "./sale-requests.interface";
+import StockModel from "../stock/stock.model";
+import SizeModel from "../size/size.model";
+import ProductModel from "../product/product.model";
+import CompanyModel from "../company/company.model";
 
 const createSaleRequest = async (
   user: TUser,
@@ -18,14 +22,18 @@ const createSaleRequest = async (
 const getAllSaleRequests = async () => {
   return SaleRequestModel.find()
     .populate("requestedBy")
-     .populate({
-      path: "stocks.stocks",
+    .populate({
+      path: "stocks.stock",
+      model: StockModel,
       populate: {
         path: "size",
+        model: SizeModel,
         populate: {
           path: "product",
-           populate: {
+          model: ProductModel,
+          populate: {
             path: "company",
+            model: CompanyModel,
           },
         },
       },
@@ -64,12 +72,16 @@ const getSingleSaleRequest = async (id: string) => {
     .populate("requestedBy")
     .populate({
       path: "stocks.stock",
+      model: StockModel,
       populate: {
         path: "size",
+        model: SizeModel,
         populate: {
           path: "product",
-           populate: {
+          model: ProductModel,
+          populate: {
             path: "company",
+            model: CompanyModel,
           },
         },
       },

@@ -11,6 +11,9 @@ import { TUser } from "../user/user.interface";
 import status from "http-status";
 import { AppError } from "@/server/errors/AppError";
 import AccountTransactionModel from "../accountTransactions/transactions.model";
+import SizeModel from "../size/size.model";
+import ProductModel from "../product/product.model";
+import CompanyModel from "../company/company.model";
 
 const createSellIntoDB = async (
   user: TUser,
@@ -33,6 +36,7 @@ const createSellIntoDB = async (
   try {
     const { stocks, soldTo, accountId } = payload;
     const saleId = new Types.ObjectId();
+    const transactionId = new Types.ObjectId();
 
     if (!stocks.length) {
       throw new AppError(status.BAD_REQUEST, "No stocks provided.");
@@ -97,6 +101,7 @@ const createSellIntoDB = async (
             status: "accepted",
             soldTo: typeof soldTo === "string" ? soldTo : soldTo.phoneNumber,
             saleId,
+            transactionId,
           },
         ],
         { session },
@@ -142,6 +147,7 @@ const createSellIntoDB = async (
     await AccountTransactionModel.create(
       [
         {
+          _id: transactionId,
           accountId,
           type: "credit",
           amount: totalAmount,
@@ -183,16 +189,20 @@ const createSellIntoDB = async (
 
 const getAllSalesFromDB = async () => {
   return await SellModel.find()
-    .populate("accountId")
-    .populate("soldBy")
+    .populate({ path: "accountId", model: AccountModel })
+    .populate({ path: "soldBy", model: "User" })
      .populate({
       path: "stocks.stock",
+      model: StockModel,
       populate: {
         path: "size",
+        model: SizeModel,
         populate: {
           path: "product",
+          model: ProductModel,
            populate: {
             path: "company",
+            model: CompanyModel,
           },
         },
       },
@@ -201,16 +211,20 @@ const getAllSalesFromDB = async () => {
 
 const getSingleSaleFromDB = async (id: string) => {
   return await SellModel.findById(id)
-    .populate("accountId")
-    .populate("soldBy")
+    .populate({ path: "accountId", model: AccountModel })
+    .populate({ path: "soldBy", model: "User" })
      .populate({
       path: "stocks.stock",
+      model: StockModel,
       populate: {
         path: "size",
+        model: SizeModel,
         populate: {
           path: "product",
+          model: ProductModel,
            populate: {
             path: "company",
+            model: CompanyModel,
           },
         },
       },
