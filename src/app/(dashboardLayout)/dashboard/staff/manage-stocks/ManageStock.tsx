@@ -2,7 +2,8 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 "use client";
 
-import { Suspense, use, useState, useMemo } from "react";
+import { Suspense, use, useState, useMemo, useEffect } from "react";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { GroupedTable } from "@/components/ui/grouped-table";
 import LoadingData from "@/components/shared/LoadingData";
@@ -20,30 +21,50 @@ import { clearCache, getCompaniesPromise, getStocksPromise } from "./utils";
 
 // TODO Error showing on development mode. Need to fix later.
 
+const ALL_COMPANY_ID = "all";
+
 // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
-const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
+const ManageStock = ({
+  query,
+  initialCompaniesPromise,
+  initialStocksPromise,
+}: {
+  query: Record<string, unknown>;
+  initialCompaniesPromise: Promise<TCompany[]>;
+  initialStocksPromise: Promise<TStock[]>;
+}) => {
   // Main data states
   const [refreshKey, setRefreshKey] = useState(0); // Key to force refresh
-  const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
+  const [selectedCompanyId, setSelectedCompanyId] =
+    useState<string>(ALL_COMPANY_ID);
   const [editStock, setEditStock] = useState<TStock | null>(null);
 
-  // Create a new promise each time the refresh key changes
-  const companiesPromise = useMemo(
-    () => getCompaniesPromise(refreshKey),
-    [refreshKey],
+  // Active promises state
+  const [companiesPromise, setCompaniesPromise] = useState(
+    initialCompaniesPromise,
   );
+  const [stocksPromise, setStocksPromise] = useState(initialStocksPromise);
+
+  // Update promises when dependencies change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+  useEffect(() => {
+    setCompaniesPromise(getCompaniesPromise(refreshKey));
+  }, [refreshKey]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+  useEffect(() => {
+    setStocksPromise(getStocksPromise(selectedCompanyId, refreshKey));
+  }, [selectedCompanyId, refreshKey]);
+
   const companies = use(companiesPromise);
+  const stocks = use(stocksPromise);
 
-  // Set the initial selected company if not set
-  if (!selectedCompany && companies.length > 0) {
-    setSelectedCompany(companies[0]);
-  }
+  const selectedCompany = useMemo(() => {
+    if (selectedCompanyId === ALL_COMPANY_ID) return null;
+    return companies.find((c: TCompany) => c._id === selectedCompanyId) || null;
+  }, [companies, selectedCompanyId]);
 
-  const stocksPromise = useMemo(() => {
-    if (!selectedCompany) return Promise.resolve([]);
-    return getStocksPromise(selectedCompany._id, refreshKey);
-  }, [selectedCompany, refreshKey]);
-  const stocks = selectedCompany ? use(stocksPromise) : [];
+
 
   // Function to handle stock deletion
   const handleDeleteStock = async (stockId: string) => {
@@ -98,13 +119,13 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
         <p className="flex gap-2 items-center justify-center">
           <span className="flex items-center">
             <Boxes className="mr-2 h-4 w-4" />{" "}
-            {Math.floor(row.quantity / row.size.stackCount)}
+            {row.size?.stackCount ? Math.floor(row.quantity / row.size.stackCount) : row.quantity}
           </span>{" "}
           |{" "}
           <span>
             <span className="flex items-center">
               <PillBottleIcon className="mr-2 h-4 w-4" />{" "}
-              {row.quantity % row.size.stackCount}
+              {row.size?.stackCount ? row.quantity % row.size.stackCount : 0}
             </span>
           </span>
         </p>
@@ -156,7 +177,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
       render: (_value: TStock["stockedBy"]["name"], row: TStock) => (
         <Link href={"/dashboard/admin/manage-members"}>
           <p className="flex flex-col justify-center">
-            <span className="hover:underline">{row.stockedBy.name}</span>
+            <span className="hover:underline">{row.stockedBy?.name ?? "Unknown"}</span>
             <span className="text-muted-foreground">
               ({new Date(row.stockedDate).toDateString()})
             </span>
@@ -199,18 +220,30 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
       <h1 className="text-2xl font-semibold">Stock Overview</h1>
 
       <Suspense fallback={<LoadingData />}>
-        <Tabs defaultValue={selectedCompany?._id}>
+        <Tabs value={selectedCompanyId} onValueChange={setSelectedCompanyId}>
           {/* COMPANY TABS */}
           <TabsList
-            defaultValue={companies?.[0]?._id}
             className="flex flex-wrap gap-5 h-full border mb-3"
           >
+            {/* ALL COMPANIES TAB */}
+            <div
+              className={`flex items-center min-w-60 border border-accent rounded-xl ${
+                selectedCompanyId === ALL_COMPANY_ID && "bg-accent/50"
+              }`}
+            >
+              <TabsTrigger
+                value={ALL_COMPANY_ID}
+                className={`grow px-4 data-[state=active]:bg-bg-accent/50 data-[state=active]:shadow-none`}
+              >
+                All Companies
+              </TabsTrigger>
+            </div>
+
             {companies.map((company: TCompany) => (
               <div
                 key={company._id}
-                onClick={() => setSelectedCompany(company)}
                 className={`flex items-center min-w-60 border border-accent rounded-xl ${company.isDisabled && "opacity-50"} ${
-                  selectedCompany?._id === company._id && "bg-accent/50"
+                  selectedCompanyId === company._id && "bg-accent/50"
                 }`}
               >
                 <TabsTrigger
@@ -222,6 +255,7 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
               </div>
             ))}
           </TabsList>
+
           {/* add stock modal */}
           <div className="flex justify-end mb-3">
             <Modal
@@ -245,7 +279,8 @@ const ManageStock = ({ query }: { query: Record<string, unknown> }) => {
             />
           </div>
 
-          <TabsContent value={selectedCompany?._id as string}>
+          <TabsContent value={selectedCompanyId}>
+
             <GroupedTable
               data={stocks}
               columns={stockColumns}

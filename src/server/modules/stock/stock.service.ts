@@ -62,6 +62,15 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
       },
     },
     { $unwind: "$stockedBy" },
+
+    // Stage 5: Add fields for UI
+    {
+      $addFields: {
+        companyName: "$size.product.company.name",
+        productName: "$size.product.name",
+        sizeLabel: "$size.label",
+      },
+    },
   );
 
   if (
@@ -79,6 +88,7 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
             },
           },
           { "size.label": { $regex: filter.searchKey, $options: "i" } },
+          { "stockedBy.name": { $regex: filter.searchKey, $options: "i" } },
           { "interactedBy.name": { $regex: filter.searchKey, $options: "i" } },
         ],
       },
@@ -90,6 +100,7 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
       $project: {
         size: 1,
         quantity: 1,
+        stockedBy: 1,
         interactedBy: 1,
         createdAt: 1,
         updatedAt: 1,
@@ -100,6 +111,11 @@ const getAllStockFromDB = async (query?: Record<string, unknown>) => {
         imgUrl: 1,
         sellingPrice: 1,
         buyingPrice: 1,
+
+        // added fields
+        companyName: 1,
+        productName: 1,
+        sizeLabel: 1,
       },
     },
     { $sort: { expiryDate: 1 } },

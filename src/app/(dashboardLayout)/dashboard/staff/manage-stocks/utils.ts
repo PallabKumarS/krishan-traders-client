@@ -1,6 +1,5 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 import { getAllCompany } from "@/services/CompanyService";
-import { getAllStocksByCompany } from "@/services/StockService";
+import { getAllStocks, getAllStocksByCompany } from "@/services/StockService";
 
 const promiseCache = new Map<string, Promise<any>>();
 
@@ -25,9 +24,13 @@ export function getCompaniesPromise(refreshKey: number = 0) {
 }
 
 export function getStocksPromise(companyId: string, refreshKey: number = 0) {
-  return getCachedPromise(`stocks-${companyId}-${refreshKey}`, () =>
-    getAllStocksByCompany(companyId).then((res) =>
+  return getCachedPromise(`stocks-${companyId}-${refreshKey}`, () => {
+    if (companyId === "all") {
+      return getAllStocks().then((res) => (res?.success ? res.data : []));
+    }
+    return getAllStocksByCompany(companyId).then((res) =>
       res?.success ? res.data : [],
-    ),
-  );
+    );
+  });
 }
+

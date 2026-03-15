@@ -1,34 +1,44 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <> */
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <> */
 "use client";
-
 import CompanyForm from "@/components/forms/CompanyForm";
+
 import ProductForm from "@/components/forms/ProductForm";
 import LoadingData from "@/components/shared/LoadingData";
 import { Modal } from "@/components/shared/Modal";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { getAllCompany } from "@/services/CompanyService";
-import {
-  deleteProduct,
-  getAllProductsByCompany,
-} from "@/services/ProductService";
-import { deleteSize, getAllSizes } from "@/services/SizeService";
 import { TCompany, TProduct, TSize } from "@/types";
 import { Pen, Plus, Trash } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { createEmptySize } from "./utils";
+import { Suspense, use, useMemo, useState, useEffect } from "react";
+
+import { clearCache, createEmptySize, getCompaniesPromise, getProductsPromise, getSizesPromise } from "./utils";
 import SizeForm from "@/components/forms/SizeForm";
 import ConfirmationBox from "@/components/shared/ConfirmationBox";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { GroupedTable } from "@/components/ui/grouped-table";
-// biome-ignore lint/correctness/noUnusedFunctionParameters: <>
-const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
-  // loading states
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSizeLoading, setIsSizeLoading] = useState(true);
-  const [isProductLoading, setIsProductLoading] = useState(true);
+import { deleteSize } from "@/services/SizeService";
+import { deleteProduct } from "@/services/ProductService";
+
+const ALL_COMPANY_ID = "all";
+
+const ManageInfo = ({
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: <>
+  query,
+  initialCompaniesPromise,
+  initialProductsPromise,
+  initialSizesPromise,
+}: {
+  query: Record<string, unknown>;
+  initialCompaniesPromise: Promise<TCompany[]>;
+  initialProductsPromise: Promise<TProduct[]>;
+  initialSizesPromise: Promise<TSize[]>;
+}) => {
+  // Main data states
+  const [refreshKey, setRefreshKey] = useState(0); // Key to force refresh
+  const [selectedCompanyId, setSelectedCompanyId] =
+    useState<string>(ALL_COMPANY_ID);
+  const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
 
   // modal states
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -39,66 +49,35 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   const [editProduct, setEditProduct] = useState<TProduct | null>(null);
   const [editSize, setEditSize] = useState<TSize | null>(null);
 
-  // selected states
-  const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
+  // Active promises state
+  const [companiesPromise, setCompaniesPromise] = useState(
+    initialCompaniesPromise,
+  );
+  const [productsPromise, setProductsPromise] = useState(
+    initialProductsPromise,
+  );
+  const [sizesPromise, setSizesPromise] = useState(initialSizesPromise);
 
-  // fetched data states
-  const [companies, setCompanies] = useState<TCompany[]>([]);
-  const [sizes, setSizes] = useState<TSize[]>([]);
-  const [products, setProducts] = useState<TProduct[]>([]);
-
-  // load companies
-  const fetchCompanies = async () => {
-    try {
-      const data = await getAllCompany();
-      if (data?.success && data.data.length > 0) {
-        setCompanies(data.data);
-        setSelectedCompany(data.data[0]);
-      }
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Update promises when dependencies change
   useEffect(() => {
-    fetchCompanies();
-  }, []);
+    setCompaniesPromise(getCompaniesPromise(refreshKey));
+    setSizesPromise(getSizesPromise(refreshKey));
+  }, [refreshKey]);
 
-  // fetch products
-  const fetchProducts = async () => {
-    try {
-      const data = await getAllProductsByCompany(selectedCompany?._id || "");
-      if (data?.success) {
-        setProducts(data.data);
-      }
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setIsProductLoading(false);
-    }
-  };
   useEffect(() => {
-    fetchProducts();
-  }, [selectedCompany]);
+    setProductsPromise(getProductsPromise(selectedCompanyId, refreshKey));
+  }, [selectedCompanyId, refreshKey]);
 
-  // size loading
-  const fetchSizes = async () => {
-    try {
-      const data = await getAllSizes();
-      if (data?.success) {
-        setSizes(data.data);
-      }
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setIsSizeLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchSizes();
-  }, []);
+  const companies = use(companiesPromise);
+  const products = use(productsPromise);
+  const sizes = use(sizesPromise);
+
+  const selectedCompany = useMemo(() => {
+    if (selectedCompanyId === ALL_COMPANY_ID) return null;
+    return companies.find((c: TCompany) => c._id === selectedCompanyId) || null;
+  }, [companies, selectedCompanyId]);
+
+
 
   // create sizes map
   const sizesByProduct = useMemo(() => {
@@ -120,7 +99,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
   const processData = useMemo(() => {
     if (!products.length) return [];
 
-    return products.flatMap((product) => {
+    return products.flatMap((product: TProduct) => {
       const productSizes = sizesByProduct.get(product?._id) ?? [];
 
       // 🟡 No sizes → return ONE empty row
@@ -148,7 +127,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
         toast.success(res.message, {
           id: toastId,
         });
-        fetchSizes();
+        clearCache();
+        setRefreshKey((prev) => prev + 1);
       } else {
         toast.error(res.message, {
           id: toastId,
@@ -169,7 +149,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
         toast.success(res.message, {
           id: toastId,
         });
-        fetchProducts();
+        clearCache();
+        setRefreshKey((prev) => prev + 1);
       } else {
         toast.error(res.message, {
           id: toastId,
@@ -181,6 +162,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
       });
     }
   };
+
 
   // columns
   const tableColumns = [
@@ -290,114 +272,128 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
     },
   ];
 
-  if (isLoading && isSizeLoading && isProductLoading) {
-    return <LoadingData />;
-  }
-
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Manage Information</h1>
 
-      <Tabs
-        defaultValue={companies?.[0]?._id}
-        className="w-full h-full mx-auto"
-      >
-        {/* TAB LIST of companies */}
-        <TabsList className="flex flex-wrap gap-5 h-full border mb-5">
-          {companies.map((company) => (
+      <Suspense fallback={<LoadingData />}>
+        <Tabs
+          value={selectedCompanyId}
+          onValueChange={setSelectedCompanyId}
+          className="w-full h-full mx-auto"
+        >
+          {/* TAB LIST of companies */}
+          <TabsList className="flex flex-wrap gap-5 h-full border mb-5">
+            {/* ALL COMPANIES TAB */}
             <div
-              key={company._id}
               className={`flex items-center gap-2 min-w-60 border border-accent rounded-xl ${
-                selectedCompany?._id === company._id && "bg-accent/50"
-              } ${company.isDisabled && "opacity-50"}`}
+                selectedCompanyId === ALL_COMPANY_ID && "bg-accent/50"
+              }`}
             >
-              {/* TAB */}
               <TabsTrigger
-                value={company._id}
-                onClick={() => setSelectedCompany(company)}
+                value={ALL_COMPANY_ID}
                 className="px-4 grow data-[state=active]:bg-base data-[state=active]:shadow-none"
               >
-                <span className="truncate">{company.name}</span>
+                All Companies
               </TabsTrigger>
+            </div>
 
-              {/* Edit button */}
-              <Button
-                title="Edit this company."
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 border-l border-accent text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditCompany(company);
-                }}
+            {companies.map((company: TCompany) => (
+              <div
+                key={company._id}
+                className={`flex items-center gap-2 min-w-60 border border-accent rounded-xl ${
+                  selectedCompanyId === company._id && "bg-accent/50"
+                } ${company.isDisabled && "opacity-50"}`}
               >
-                <Pen className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
+                {/* TAB */}
+                <TabsTrigger
+                  value={company._id}
+                  className="px-4 grow data-[state=active]:bg-base data-[state=active]:shadow-none"
+                >
+                  <span className="truncate">{company.name}</span>
+                </TabsTrigger>
 
-          {/* Add company */}
-          <Modal
-            key={"add-company"}
-            title="Add New Company"
-            trigger={
-              <Button className="gap-2 min-w-60">
-                <Plus className="h-4 w-4" />
-                Add Company
-              </Button>
-            }
-            content={
-              <CompanyForm
-                edit={false}
-                onSuccess={() => {
-                  fetchCompanies();
-                  setAddModalOpen(false);
-                }}
-              />
-            }
-            open={addModalOpen}
-            onOpenChange={setAddModalOpen}
-          />
-        </TabsList>
+                {/* Edit button */}
+                <Button
+                  title="Edit this company."
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 border-l border-accent text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditCompany(company);
+                  }}
+                >
+                  <Pen className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
 
-        <TabsContent value={selectedCompany?._id as string}>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Products and Sizes</h2>
-              <Modal
-                title="Add New Product"
-                trigger={
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Product
-                  </Button>
-                }
-                content={
-                  <ProductForm
-                    edit={false}
-                    companies={companies}
-                    selectedCompany={selectedCompany!}
-                    onSuccess={() => {
-                      fetchSizes();
-                      fetchProducts();
-                    }}
-                  />
-                }
-                open={addProductModalOpen}
-                onOpenChange={setAddProductModalOpen}
-              />
-            </div>
-
-            <GroupedTable
-              data={processData}
-              columns={tableColumns}
-              groupBy="product.name"
-              searchKeys={["product.name", "label", "unit"]}
-              enableColumnToggle
+            {/* Add company */}
+            <Modal
+              key={"add-company"}
+              title="Add New Company"
+              trigger={
+                <Button className="gap-2 min-w-60">
+                  <Plus className="h-4 w-4" />
+                  Add Company
+                </Button>
+              }
+              content={
+                <CompanyForm
+                  edit={false}
+                  onSuccess={() => {
+                    clearCache();
+                    setRefreshKey((prev) => prev + 1);
+                    setAddModalOpen(false);
+                  }}
+                />
+              }
+              open={addModalOpen}
+              onOpenChange={setAddModalOpen}
             />
-          </div>
-        </TabsContent>
-      </Tabs>
+          </TabsList>
+
+          <TabsContent value={selectedCompanyId}>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold">{selectedCompany ? `${selectedCompany.name} Products` : "All Products"}</h2>
+                <Modal
+                  title="Add New Product"
+                  trigger={
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Product
+                    </Button>
+                  }
+                  content={
+                    <ProductForm
+                      edit={false}
+                      companies={companies}
+                      selectedCompany={selectedCompany!}
+                      onSuccess={() => {
+                        clearCache();
+                        setRefreshKey((prev) => prev + 1);
+                      }}
+                    />
+                  }
+                  open={addProductModalOpen}
+                  onOpenChange={setAddProductModalOpen}
+                />
+              </div>
+
+              <GroupedTable
+                data={processData}
+                columns={tableColumns}
+                groupBy="product.name"
+                searchKeys={["product.name", "label", "unit"]}
+                enableColumnToggle
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </Suspense>
+
 
       {/* edit company modal */}
       <Modal
@@ -413,7 +409,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
               edit
               companyData={editCompany}
               onSuccess={() => {
-                fetchCompanies();
+                clearCache();
+                setRefreshKey((prev) => prev + 1);
                 setEditCompany(null);
               }}
             />
@@ -436,8 +433,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
               productData={editProduct}
               companies={companies}
               onSuccess={() => {
-                fetchSizes();
-                fetchProducts();
+                clearCache();
+                setRefreshKey((prev) => prev + 1);
                 setEditProduct(null);
               }}
             />
@@ -460,7 +457,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
               sizeData={editSize}
               products={products}
               onSuccess={() => {
-                fetchSizes();
+                clearCache();
+                setRefreshKey((prev) => prev + 1);
                 setEditSize(null);
               }}
             />
@@ -480,7 +478,8 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
               products={products}
               selectedProduct={selectedProduct}
               onSuccess={() => {
-                fetchSizes();
+                clearCache();
+                setRefreshKey((prev) => prev + 1);
                 setSelectedProduct(null);
               }}
             />
@@ -491,6 +490,7 @@ const ManageInfo = ({ query }: { query: Record<string, unknown> }) => {
           if (!open) setSelectedProduct(null);
         }}
       />
+
     </div>
   );
 };

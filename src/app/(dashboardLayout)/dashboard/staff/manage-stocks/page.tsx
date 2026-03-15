@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import ManageStock from "./ManageStock";
+import { getCompaniesPromise, getStocksPromise } from "./utils";
 
 export const metadata: Metadata = {
   title: "Add Stock | Krishan Traders",
@@ -13,7 +14,18 @@ const AddStockPage = async ({
 }) => {
   const query = await searchParams;
 
-  return <ManageStock query={query} />;
+  // Pre-fetch initial data
+  const initialCompaniesPromise = getCompaniesPromise();
+  const initialStocksPromise = getStocksPromise("all");
+
+  return (
+    <ManageStock
+      query={query}
+      initialCompaniesPromise={initialCompaniesPromise}
+      initialStocksPromise={initialStocksPromise}
+    />
+  );
 };
 
 export default AddStockPage;
+
