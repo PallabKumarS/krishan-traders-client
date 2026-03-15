@@ -7,6 +7,7 @@ import { TRecord, TStockAddRequest, TStockSellRequest } from "@/types";
 import RecordsTab from "./RecordsTab";
 import BuyRequestsTab from "./BuyRequestsTab";
 import SaleRequestsTab from "./SaleRequestsTab";
+import LoadingData from "@/components/shared/LoadingData";
 
 interface ManageRecordsContainerProps {
   recordsPromise: Promise<{ data: TRecord[] }>;
@@ -28,19 +29,19 @@ export default function ManageRecordsContainer({
       </TabsList>
 
       <TabsContent value="records">
-        <Suspense fallback={<div>Loading Records...</div>}>
+        <Suspense fallback={<LoadingData />}>
           <RecordsTab recordsPromise={recordsPromise} />
         </Suspense>
       </TabsContent>
 
       <TabsContent value="buy-requests">
-        <Suspense fallback={<div>Loading Buy Requests...</div>}>
+        <Suspense fallback={<LoadingData />}>
           <BuyRequestsTab buyRequestsPromise={buyRequestsPromise} />
         </Suspense>
       </TabsContent>
 
       <TabsContent value="sale-requests">
-        <Suspense fallback={<div>Loading Sale Requests...</div>}>
+        <Suspense fallback={<LoadingData />}>
           <SaleRequestsTab saleRequestsPromise={saleRequestsPromise} />
         </Suspense>
       </TabsContent>

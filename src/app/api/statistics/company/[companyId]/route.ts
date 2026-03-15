@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin", "staff"]);
+    await requireAuth(request, ["admin", "staff", "subAdmin"]);
 
     const companyId = (await params).companyId;
     const data = await StatisticsService.getCompanyStatsFromDB(companyId);

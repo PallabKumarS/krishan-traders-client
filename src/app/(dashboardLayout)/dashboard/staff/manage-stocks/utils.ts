@@ -39,7 +39,16 @@ export function getStocksPromise(companyId: string, refreshKey: number = 0) {
 export function getStatsPromise(companyId: string, refreshKey: number = 0) {
   return getCachedPromise(`stats-${companyId}-${refreshKey}`, () =>
     getCompanyStatistics(companyId).then((res) =>
-      res?.success ? res.data : { totalProducts: 0, itemsSold: 0 },
+      res?.success
+        ? res.data
+        : {
+            totalProducts: 0,
+            itemsSold: 0,
+            lowStockCount: 0,
+            expiringSoonCount: 0,
+            inventoryValue: 0,
+            potentialRevenue: 0,
+          },
     ),
   );
 }

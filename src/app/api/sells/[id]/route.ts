@@ -36,7 +36,7 @@ export async function DELETE(
 
     return Response.json({
       success: true,
-      message: "Stock deleted successfully",
+      message: "Sell deleted successfully",
       data: null,
     });
   } catch (error) {

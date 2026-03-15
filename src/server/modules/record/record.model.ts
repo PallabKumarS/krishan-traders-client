@@ -34,6 +34,10 @@ const recordSchema = new Schema<TRecord>(
     },
 
     profit: { type: Number, default: 0 },
+    saleId: {
+      type: Schema.Types.ObjectId,
+      ref: "Sell",
+    },
   },
   { timestamps: true },
 );

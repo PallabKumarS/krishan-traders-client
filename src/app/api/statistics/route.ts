@@ -6,13 +6,13 @@ import { StatisticsService } from "@/server/modules/statistics/statistics.servic
 export async function GET(request: Request) {
   try {
     await connectDB();
-    await requireAuth(request, ["admin", "staff","subAdmin"]);
+    await requireAuth(request, ["admin", "staff", "subAdmin"]);
 
-    const data = await StatisticsService.getCompanyStatsFromDB("all");
+    const data = await StatisticsService.getStoreStatsFromDB();
 
     return Response.json({
       success: true,
-      message: "All companies statistics retrieved successfully",
+      message: "Store statistics retrieved successfully",
       data,
     });
   } catch (error) {

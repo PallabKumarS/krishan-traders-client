@@ -121,6 +121,118 @@ const getCompanyStatsFromDB = async (companyId?: string) => {
   };
 };
 
+const getStoreStatsFromDB = async () => {
+  const now = new Date();
+  const todayStart = new Date(now.setHours(0, 0, 0, 0));
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // 1. Profit & Transaction Calculations
+  const profitPipeline: any[] = [
+    { $match: { type: "sale" } },
+    {
+      $group: {
+        _id: null,
+        allTimeProfit: { $sum: "$profit" },
+        thisMonthProfit: {
+          $sum: {
+            $cond: [{ $gte: ["$createdAt", monthStart] }, "$profit", 0],
+          },
+        },
+        todayProfit: {
+          $sum: {
+            $cond: [{ $gte: ["$createdAt", todayStart] }, "$profit", 0],
+          },
+        },
+        todaySalesCount: {
+          $sum: {
+            $cond: [{ $gte: ["$createdAt", todayStart] }, 1, 0],
+          },
+        },
+      },
+    },
+  ];
+
+  const profitResult = await RecordModel.aggregate(profitPipeline);
+  const profits = profitResult.length > 0
+    ? profitResult[0]
+    : { allTimeProfit: 0, thisMonthProfit: 0, todayProfit: 0, todaySalesCount: 0 };
+
+  // 2. Daily Profits Chart (Last 7 Days)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  const chartPipeline: any[] = [
+    {
+      $match: {
+        type: "sale",
+        createdAt: { $gte: sevenDaysAgo },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        profit: { $sum: "$profit" },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ];
+
+  const chartDataRaw = await RecordModel.aggregate(chartPipeline);
+  
+  const dailyProfitsChart = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(sevenDaysAgo);
+    date.setDate(date.getDate() + i);
+    const dateStr = date.toISOString().split("T")[0];
+    const match = chartDataRaw.find((d) => d._id === dateStr);
+    dailyProfitsChart.push({
+      date: dateStr,
+      day: date.toLocaleDateString("en-US", { weekday: "short" }),
+      profit: match ? match.profit : 0,
+    });
+  }
+
+  // 3. Inventory Analytics (Value, Low Stock, Expiry)
+  const thirtyDaysFromNow = new Date();
+  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+
+  const inventoryPipeline: any[] = [
+    { $match: { quantity: { $gt: 0 } } },
+    {
+      $group: {
+        _id: null,
+        totalStockValue: { $sum: { $multiply: ["$quantity", "$buyingPrice"] } },
+        lowStockCount: {
+          $sum: { $cond: [{ $lt: ["$quantity", 10] }, 1, 0] },
+        },
+        expiringSoonCount: {
+          $sum: { $cond: [{ $lte: ["$expiryDate", thirtyDaysFromNow] }, 1, 0] },
+        },
+      },
+    },
+  ];
+
+  const inventoryResult = await StockModel.aggregate(inventoryPipeline);
+  const inventoryStats = inventoryResult.length > 0 ? inventoryResult[0] : {
+    totalStockValue: 0,
+    lowStockCount: 0,
+    expiringSoonCount: 0,
+  };
+
+  // 4. Merge with Company "all" stats (Total Products, Items Sold)
+  const allCompanyStats = await getCompanyStatsFromDB("all");
+
+  return {
+    ...profits,
+    ...inventoryStats,
+    totalProducts: allCompanyStats.totalProducts,
+    itemsSold: allCompanyStats.itemsSold,
+    dailyProfitsChart,
+  };
+};
+
 export const StatisticsService = {
   getCompanyStatsFromDB,
+  getStoreStatsFromDB,
 };

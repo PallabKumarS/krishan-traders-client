@@ -17,6 +17,7 @@ export interface TAccountTransaction {
   reason: TTransactionReason;
   transferToAccountInfo?: string;
   note?: string;
+  saleId?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

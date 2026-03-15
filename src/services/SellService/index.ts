@@ -8,7 +8,8 @@ import { FieldValues } from "react-hook-form";
 
 // Get all
 export const getAllSells = async () => {
-  const token = await getValidToken();
+ try{
+   const token = await getValidToken();
 
   const res = await fetch(`${process.env.BASE_API}/sells`, {
     next: { tags: ["sells"] },
@@ -16,6 +17,9 @@ export const getAllSells = async () => {
   });
 
   return await res.json();
+ } catch (error: any) {
+  return error;
+ }
 };
 
 // Get single

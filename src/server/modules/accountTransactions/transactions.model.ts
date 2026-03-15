@@ -28,6 +28,10 @@ const AccountTransactionSchema = new Schema<TAccountTransaction>(
     },
 
     note: { type: String },
+    saleId: {
+      type: Schema.Types.ObjectId,
+      ref: "Sell",
+    },
   },
   { timestamps: true },
 );

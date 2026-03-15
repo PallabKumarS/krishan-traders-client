@@ -27,6 +27,7 @@ export default function BuyRequestsTab({ buyRequestsPromise }: BuyRequestsTabPro
       } else {
         toast.error(res.message, { id: toastId });
       }
+    // biome-ignore lint/suspicious/noExplicitAny: <>
     } catch (error: any) {
       toast.error(error.message || "Something went wrong", { id: toastId });
     }
