@@ -27,6 +27,11 @@ const AccountTransactionSchema = new Schema<TAccountTransaction>(
       type: String,
     },
 
+    fromAccountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+    },
+
     note: { type: String },
     saleId: {
       type: Schema.Types.ObjectId,

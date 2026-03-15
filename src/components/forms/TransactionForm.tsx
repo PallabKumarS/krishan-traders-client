@@ -30,23 +30,29 @@ import { useWheelSelectRHF } from "@/hooks/use-scroll-select";
 
 const schema = z.object({
   accountId: z.string().min(1),
+  fromAccountId: z.string().optional(),
   type: z.enum(["credit", "debit"]),
   amount: z.coerce.number().min(1),
   reason: z.enum(accountTransactionReasons),
   note: z.string().optional(),
 });
 
+import { TAccount } from "@/types/account.type";
+
 export default function TransactionForm({
   accountId,
+  accounts,
   onSuccess,
 }: {
   accountId: string;
+  accounts: TAccount[];
   onSuccess?: () => void;
 }) {
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       accountId,
+      fromAccountId: "",
       type: "credit",
       amount: 0,
       reason: "adjustment",
@@ -160,6 +166,44 @@ export default function TransactionForm({
             );
           }}
         />
+
+        {form.watch("reason") === "transfer" && (
+          <FormField
+            control={form.control}
+            name="fromAccountId"
+            render={({ field }) => {
+              const otherAccounts = accounts.filter((a) => a._id !== accountId);
+              // biome-ignore lint/correctness/useHookAtTopLevel: <>
+              const wheelProps = useWheelSelectRHF({
+                options: otherAccounts.map((a) => a._id),
+                value: field.value,
+                onChange: field.onChange,
+              });
+
+              return (
+                <FormItem>
+                  <FormLabel>From Account</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full capitalize" {...wheelProps}>
+                        <SelectValue placeholder="Select source account" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {otherAccounts.map((account) => (
+                            <SelectItem key={account._id} value={account._id}>
+                              {account.name} (৳{account.currentBalance.toFixed(2)})
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                </FormItem>
+              );
+            }}
+          />
+        )}
 
         <Button className="w-full" disabled={loading}>
           {loading ? <ButtonLoader /> : "Add Transaction"}

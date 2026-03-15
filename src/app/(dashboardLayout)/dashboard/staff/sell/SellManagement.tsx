@@ -11,6 +11,7 @@ import { CartItem, loadCart, saveCart } from "./cart-utils";
 import Cart from "./Cart";
 import { TAccount } from "@/types/account.type";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 export default function SellManagement({
   stocksPromise,
@@ -28,6 +29,8 @@ export default function SellManagement({
   const [editingValue, setEditingValue] = useState("");
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
+  const router = useRouter();
+
   // 🔹 Handle screen size changes
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 1440px)");
@@ -36,6 +39,15 @@ export default function SellManagement({
     mediaQuery.addEventListener("change", handleResize);
     return () => mediaQuery.removeEventListener("change", handleResize);
   }, []);
+
+  // handle search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push(`/dashboard/staff/sell?searchKey=${search}`);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search, router]);
 
   // 🔹 Load cart from localStorage
   useEffect(() => {
@@ -127,7 +139,12 @@ export default function SellManagement({
                   </p>
 
                   {/* Product Size */}
-                  <Badge className="text-xs leading-tight group-hover:text-primary transition-colors duration-200" variant="outline">{stock.size.label}</Badge>
+                  <Badge
+                    className="text-xs leading-tight group-hover:text-primary transition-colors duration-200"
+                    variant="outline"
+                  >
+                    {stock.size.label}
+                  </Badge>
 
                   {/* Price — most prominent */}
                   <p className="text-xl font-bold text-primary tracking-tight">

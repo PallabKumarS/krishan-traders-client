@@ -143,6 +143,7 @@ export default function AccountView({ accounts }: { accounts: TAccount[] }) {
           selectedAccount && (
             <TransactionForm
               accountId={selectedAccount._id}
+              accounts={accounts}
               onSuccess={() => {
                 setSelectedAccount(null);
               }}

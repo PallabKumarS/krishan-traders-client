@@ -14,13 +14,45 @@ const createTransaction = async (payload: TAccountTransaction) => {
 
     if (!account) throw new Error("Account not found");
 
-    if (payload.type === "credit") {
-      account.currentBalance += payload.amount;
-    } else {
-      account.currentBalance -= payload.amount;
-    }
+    if (payload.reason === "transfer" && payload.fromAccountId) {
+      const fromAccount = await AccountModel.findById(
+        payload.fromAccountId,
+      ).session(session);
 
-    await account.save({ session });
+      if (!fromAccount) throw new Error("Source account not found");
+
+      // Deduct from source
+      fromAccount.currentBalance -= payload.amount;
+      await fromAccount.save({ session });
+
+      // Add to destination
+      account.currentBalance += payload.amount;
+      await account.save({ session });
+
+      // Create a transaction for the source account as well
+      await AccountTransactionModel.create(
+        [
+          {
+            ...payload,
+            accountId: payload.fromAccountId,
+            type: "debit",
+            note: `Transfer to ${account.name}${payload.note ? `: ${payload.note}` : ""}`,
+          },
+        ],
+        { session },
+      );
+
+      // destination account will have the original payload as credit
+      payload.type = "credit";
+      payload.note = `Transfer from ${fromAccount.name}${payload.note ? `: ${payload.note}` : ""}`;
+    } else {
+      if (payload.type === "credit") {
+        account.currentBalance += payload.amount;
+      } else {
+        account.currentBalance -= payload.amount;
+      }
+      await account.save({ session });
+    }
 
     const transaction = await AccountTransactionModel.create([payload], {
       session,
